@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readDb, writeDb, Category } from '@/lib/db';
+import { db } from '@/lib/db';
+import { categories } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
 
 export async function GET(request: NextRequest) {
   try {
-    const db = readDb();
-    const paginated = paginate(db.categories, request.nextUrl);
+    const categoriesList = await db.select().from(categories);
+    const paginated = paginate(categoriesList, request.nextUrl);
     return NextResponse.json(paginated, { status: 200 });
   } catch (error) {
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });
@@ -33,16 +34,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = readDb();
-    const newCategory: Category = {
-      id: `cat-${Date.now()}`,
+    const newId = `cat-${Date.now()}`;
+    await db.insert(categories).values({
+      id: newId,
+      title,
+      description: description || '',
+      image: image || null
+    });
+
+    const newCategory = {
+      id: newId,
       title,
       description: description || '',
       image: image || null
     };
-
-    db.categories.push(newCategory);
-    writeDb(db);
 
     return NextResponse.json(newCategory, { status: 201 });
   } catch (error) {

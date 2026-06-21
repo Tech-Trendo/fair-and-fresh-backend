@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readDb, hashPassword } from '@/lib/db';
+import { db, hashPassword } from '@/lib/db';
+import { users } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
 import { signJwt } from '@/lib/jwt';
 
 export async function POST(request: NextRequest) {
@@ -13,8 +15,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = readDb();
-    const user = db.users.find(u => u.username === username);
+    // Query user using Drizzle
+    const userResult = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, username))
+      .limit(1);
+
+    const user = userResult[0];
 
     if (!user) {
       return NextResponse.json(
@@ -31,7 +39,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Access token (5 mins) & Refresh token (24 hours)
+    // Generate tokens
     const payload = {
       user_id: user.id,
       username: user.username,

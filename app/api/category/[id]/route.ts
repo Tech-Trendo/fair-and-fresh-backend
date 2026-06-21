@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readDb, writeDb, Category } from '@/lib/db';
+import { db } from '@/lib/db';
+import { categories } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
 
 export async function GET(
@@ -8,8 +10,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const db = readDb();
-    const category = db.categories.find(c => c.id === id);
+    const result = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    const category = result[0];
 
     if (!category) {
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
@@ -45,22 +47,25 @@ export async function PUT(
       );
     }
 
-    const db = readDb();
-    const categoryIdx = db.categories.findIndex(c => c.id === id);
-
-    if (categoryIdx === -1) {
+    const check = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    if (check.length === 0) {
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
     }
 
-    const updatedCategory: Category = {
+    await db.update(categories)
+      .set({
+        title,
+        description: description || '',
+        image: image || null
+      })
+      .where(eq(categories.id, id));
+
+    const updatedCategory = {
       id,
       title,
       description: description || '',
       image: image || null
     };
-
-    db.categories[categoryIdx] = updatedCategory;
-    writeDb(db);
 
     return NextResponse.json(updatedCategory, { status: 200 });
   } catch (error) {
@@ -84,20 +89,20 @@ export async function PATCH(
     const { id } = await params;
     const body = await request.json();
 
-    const db = readDb();
-    const category = db.categories.find(c => c.id === id);
-
+    const check = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    const category = check[0];
     if (!category) {
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
     }
 
-    if (body.title !== undefined) category.title = body.title;
-    if (body.description !== undefined) category.description = body.description;
-    if (body.image !== undefined) category.image = body.image;
+    const updateObj: Partial<typeof categories.$inferSelect> = {};
+    if (body.title !== undefined) updateObj.title = body.title;
+    if (body.description !== undefined) updateObj.description = body.description;
+    if (body.image !== undefined) updateObj.image = body.image;
 
-    writeDb(db);
+    await db.update(categories).set(updateObj).where(eq(categories.id, id));
 
-    return NextResponse.json(category, { status: 200 });
+    return NextResponse.json({ ...category, ...updateObj }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });
   }
@@ -117,17 +122,14 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const db = readDb();
-    const categoryIdx = db.categories.findIndex(c => c.id === id);
-
-    if (categoryIdx === -1) {
+    const check = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    if (check.length === 0) {
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
     }
 
-    db.categories.splice(categoryIdx, 1);
-    writeDb(db);
+    await db.delete(categories).where(eq(categories.id, id));
 
-    return new Response(null, { status: 204 }); // Django DRF usually returns 204 No Content for DELETE
+    return new Response(null, { status: 204 });
   } catch (error) {
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });
   }

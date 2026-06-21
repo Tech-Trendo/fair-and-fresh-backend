@@ -1,5 +1,7 @@
 import crypto from 'crypto';
-import { readDb } from './db';
+import { db } from './db';
+import { blacklistedTokens } from './schema';
+import { eq } from 'drizzle-orm';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fair_and_fresh_secret_key_12345';
 
@@ -69,9 +71,15 @@ export async function getAdminUser(request: Request): Promise<any | null> {
   }
 
   const token = authHeader.split(' ')[1];
-  const db = readDb();
   
-  if (db.blacklisted_tokens && db.blacklisted_tokens.includes(token)) {
+  // Check blacklist in Postgres
+  const blacklisted = await db
+    .select()
+    .from(blacklistedTokens)
+    .where(eq(blacklistedTokens.token, token))
+    .limit(1);
+    
+  if (blacklisted.length > 0) {
     return null;
   }
 

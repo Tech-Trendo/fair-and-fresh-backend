@@ -1,35 +1,74 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readDb, writeDb, Service, slugify, DatabaseSchema } from '@/lib/db';
+import { db, slugify } from '@/lib/db';
+import { services, whatsIncluded, benefits, serviceImages, testimonials } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
+import { eq } from 'drizzle-orm';
 
-export function resolveServiceRelations(service: Service, db: DatabaseSchema) {
-  const whatsIncluded = db.whats_included.filter(item => item.service_id === service.id);
-  const benefits = db.benefits.filter(item => item.service_id === service.id);
-  const images = db.images.filter(item => item.service_id === service.id);
-  const testimonials = db.testimonials.filter(item => item.service_id === service.id);
-  
+export function formatService(srv: any) {
   return {
-    ...service,
-    whats_included: whatsIncluded,
-    benefits,
-    images,
-    testimonials
+    id: srv.id,
+    name: srv.name,
+    short_description: srv.shortDescription || '',
+    long_description: srv.longDescription || '',
+    what_we_offer: srv.whatWeOffer || {},
+    created_at: srv.createdAt ? srv.createdAt.toISOString() : new Date().toISOString(),
+    slug: srv.slug,
+    meta_title: srv.metaTitle || '',
+    meta_description: srv.metaDescription || '',
+    meta_keywords: srv.metaKeywords || '',
+    og_title: srv.ogTitle || '',
+    og_description: srv.ogDescription || '',
+    og_image: srv.ogImage || '',
+    og_type: srv.ogType || 'website',
+    twitter_title: srv.twitterTitle || '',
+    twitter_description: srv.twitterDescription || '',
+    twitter_image: srv.twitterImage || '',
+    twitter_card: srv.twitterCard || 'summary_large_image',
+    canonical_url: srv.canonicalUrl || '',
+    whats_included: (srv.whatsIncluded || []).map((item: any) => ({
+      id: item.id,
+      service_id: item.serviceId,
+      title: item.title,
+      description: item.description || ''
+    })),
+    benefits: (srv.benefits || []).map((item: any) => ({
+      id: item.id,
+      service_id: item.serviceId,
+      title: item.title,
+      description: item.description || ''
+    })),
+    images: (srv.images || []).map((item: any) => ({
+      id: item.id,
+      service_id: item.serviceId,
+      image_url: item.imageUrl
+    })),
+    testimonials: (srv.testimonials || []).map((item: any) => ({
+      id: item.id,
+      service_id: item.serviceId,
+      author: item.author,
+      content: item.content,
+      rating: item.rating
+    }))
   };
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const db = readDb();
-    
-    // Map services with their nested relations resolved
-    const servicesWithRelations = db.services.map(service => 
-      resolveServiceRelations(service, db)
-    );
+    const servicesList = await db.query.services.findMany({
+      with: {
+        whatsIncluded: true,
+        benefits: true,
+        images: true,
+        testimonials: true
+      }
+    });
 
-    const paginated = paginate(servicesWithRelations, request.nextUrl);
+    const formattedServices = servicesList.map(formatService);
+    const paginated = paginate(formattedServices, request.nextUrl);
     return NextResponse.json(paginated, { status: 200 });
   } catch (error) {
+    console.error('List services failed:', error);
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });
   }
 }
@@ -50,10 +89,10 @@ export async function POST(request: NextRequest) {
       short_description,
       long_description,
       what_we_offer,
-      whats_included, // nested array
-      benefits,       // nested array
-      images,         // nested array
-      testimonials,   // nested array
+      whats_included,
+      benefits: benefitsInput,
+      images: imagesInput,
+      testimonials: testimonialsInput,
       meta_title,
       meta_description,
       meta_keywords,
@@ -76,88 +115,91 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = readDb();
     const serviceId = `srv-${Date.now()}`;
     const finalSlug = slug || slugify(name);
 
-    // 1. Create main service record
-    const newService: Service = {
+    // 1. Insert Service row
+    await db.insert(services).values({
       id: serviceId,
       name,
-      short_description: short_description || '',
-      long_description: long_description || '',
-      what_we_offer: what_we_offer || {},
-      created_at: new Date().toISOString(),
+      shortDescription: short_description || '',
+      longDescription: long_description || '',
+      whatWeOffer: what_we_offer || {},
       slug: finalSlug,
-      meta_title: meta_title || '',
-      meta_description: meta_description || '',
-      meta_keywords: meta_keywords || '',
-      og_title: og_title || '',
-      og_description: og_description || '',
-      og_image: og_image || '',
-      og_type: og_type || 'website',
-      twitter_title: twitter_title || '',
-      twitter_description: twitter_description || '',
-      twitter_image: twitter_image || '',
-      twitter_card: twitter_card || 'summary_large_image',
-      canonical_url: canonical_url || ''
-    };
+      metaTitle: meta_title || '',
+      metaDescription: meta_description || '',
+      metaKeywords: meta_keywords || '',
+      ogTitle: og_title || '',
+      ogDescription: og_description || '',
+      ogImage: og_image || '',
+      ogType: og_type || 'website',
+      twitterTitle: twitter_title || '',
+      twitterDescription: twitter_description || '',
+      twitterImage: twitter_image || '',
+      twitterCard: twitter_card || 'summary_large_image',
+      canonicalUrl: canonical_url || '',
+      createdAt: new Date()
+    });
 
-    db.services.push(newService);
-
-    // 2. Create whats_included records
-    if (Array.isArray(whats_included)) {
-      whats_included.forEach((item, idx) => {
-        db.whats_included.push({
-          id: `inc-${Date.now()}-${idx}`,
-          service_id: serviceId,
-          title: item.title,
-          description: item.description || ''
-        });
-      });
+    // 2. Insert whats_included
+    if (Array.isArray(whats_included) && whats_included.length > 0) {
+      const values = whats_included.map((item, idx) => ({
+        id: `inc-${Date.now()}-${idx}`,
+        serviceId,
+        title: item.title,
+        description: item.description || ''
+      }));
+      await db.insert(whatsIncluded).values(values);
     }
 
-    // 3. Create benefits records
-    if (Array.isArray(benefits)) {
-      benefits.forEach((item, idx) => {
-        db.benefits.push({
-          id: `ben-${Date.now()}-${idx}`,
-          service_id: serviceId,
-          title: item.title,
-          description: item.description || ''
-        });
-      });
+    // 3. Insert benefits
+    if (Array.isArray(benefitsInput) && benefitsInput.length > 0) {
+      const values = benefitsInput.map((item, idx) => ({
+        id: `ben-${Date.now()}-${idx}`,
+        serviceId,
+        title: item.title,
+        description: item.description || ''
+      }));
+      await db.insert(benefits).values(values);
     }
 
-    // 4. Create image records
-    if (Array.isArray(images)) {
-      images.forEach((item, idx) => {
-        db.images.push({
-          id: `img-${Date.now()}-${idx}`,
-          service_id: serviceId,
-          image_url: typeof item === 'string' ? item : item.image_url
-        });
-      });
+    // 4. Insert serviceImages
+    if (Array.isArray(imagesInput) && imagesInput.length > 0) {
+      const values = imagesInput.map((item, idx) => ({
+        id: `img-${Date.now()}-${idx}`,
+        serviceId,
+        imageUrl: typeof item === 'string' ? item : item.image_url
+      }));
+      await db.insert(serviceImages).values(values);
     }
 
-    // 5. Create testimonial records
-    if (Array.isArray(testimonials)) {
-      testimonials.forEach((item, idx) => {
-        db.testimonials.push({
-          id: `tst-${Date.now()}-${idx}`,
-          service_id: serviceId,
-          author: item.author,
-          content: item.content,
-          rating: Number(item.rating) || 5
-        });
-      });
+    // 5. Insert testimonials
+    if (Array.isArray(testimonialsInput) && testimonialsInput.length > 0) {
+      const values = testimonialsInput.map((item, idx) => ({
+        id: `tst-${Date.now()}-${idx}`,
+        serviceId,
+        author: item.author,
+        content: item.content,
+        rating: Number(item.rating) || 5
+      }));
+      await db.insert(testimonials).values(values);
     }
 
-    writeDb(db);
+    // Fetch newly created service with relational entries
+    const savedService = await db.query.services.findFirst({
+      where: eq(services.id, serviceId),
+      with: {
+        whatsIncluded: true,
+        benefits: true,
+        images: true,
+        testimonials: true
+      }
+    });
 
-    const resolvedResponse = resolveServiceRelations(newService, db);
-    return NextResponse.json(resolvedResponse, { status: 201 });
+    const responseData = formatService(savedService);
+    return NextResponse.json(responseData, { status: 201 });
   } catch (error) {
+    console.error('Create service failed:', error);
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });
   }
 }
