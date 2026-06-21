@@ -55,19 +55,22 @@ export async function seedDatabase() {
         id: 'cat-1',
         title: 'Residential Cleaning',
         description: 'Professional cleaning for houses, apartments, and residential spaces.',
-        image: '/uploads/residential.jpg'
+        image: '/uploads/residential.jpg',
+        slug: 'residential-cleaning'
       },
       {
         id: 'cat-2',
         title: 'Commercial Cleaning',
         description: 'Office, retail, and corporate cleaning solutions tailored to your business.',
-        image: '/uploads/commercial.jpg'
+        image: '/uploads/commercial.jpg',
+        slug: 'commercial-cleaning'
       },
       {
         id: 'cat-3',
         title: 'Deep Cleaning',
         description: 'Thorough, detailed sanitization and cleaning targeting every nook and cranny.',
-        image: '/uploads/deep.jpg'
+        image: '/uploads/deep.jpg',
+        slug: 'deep-cleaning'
       }
     ]);
 

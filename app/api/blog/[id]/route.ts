@@ -3,6 +3,7 @@ import { db, slugify } from '@/lib/db';
 import { blogs, blogsCategories } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
+import { formatBlog } from '../route';
 
 export async function GET(
   request: NextRequest,
@@ -25,13 +26,8 @@ export async function GET(
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
     }
 
-    const resolvedCategories = blog.blogsCategories.map(bc => bc.category);
-    const { blogsCategories: _, ...blogData } = blog;
-
-    return NextResponse.json({
-      ...blogData,
-      category: resolvedCategories
-    }, { status: 200 });
+    const responseData = formatBlog(blog);
+    return NextResponse.json(responseData, { status: 200 });
   } catch (error) {
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });
   }
@@ -227,13 +223,8 @@ export async function PATCH(
       }
     });
 
-    const resolvedCategories = updatedBlog!.blogsCategories.map(bc => bc.category);
-    const { blogsCategories: _, ...blogData } = updatedBlog!;
-
-    return NextResponse.json({
-      ...blogData,
-      category: resolvedCategories
-    }, { status: 200 });
+    const responseData = formatBlog(updatedBlog);
+    return NextResponse.json(responseData, { status: 200 });
   } catch (error) {
     console.error('PATCH blog failed:', error);
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });

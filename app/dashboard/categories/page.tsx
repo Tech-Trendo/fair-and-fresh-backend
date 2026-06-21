@@ -8,6 +8,19 @@ interface Category {
   title: string;
   description?: string;
   image?: string;
+  slug: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
+  og_title?: string;
+  og_description?: string;
+  og_image?: string;
+  og_type?: string;
+  twitter_title?: string;
+  twitter_description?: string;
+  twitter_image?: string;
+  twitter_card?: string;
+  canonical_url?: string;
 }
 
 export default function CategoriesPage() {
@@ -16,13 +29,29 @@ export default function CategoriesPage() {
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
+  const [activeTab, setActiveTab] = useState<'content' | 'seo'>('content');
   
-  // Form fields
+  // Form fields - Content
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [uploading, setUploading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+
+  // Form fields - SEO Mixin
+  const [slug, setSlug] = useState('');
+  const [metaTitle, setMetaTitle] = useState('');
+  const [metaDescription, setMetaDescription] = useState('');
+  const [metaKeywords, setMetaKeywords] = useState('');
+  const [ogTitle, setOgTitle] = useState('');
+  const [ogDescription, setOgDescription] = useState('');
+  const [ogImage, setOgImage] = useState('');
+  const [ogType, setOgType] = useState('website');
+  const [twitterTitle, setTwitterTitle] = useState('');
+  const [twitterDescription, setTwitterDescription] = useState('');
+  const [twitterImage, setTwitterImage] = useState('');
+  const [twitterCard, setTwitterCard] = useState('summary_large_image');
+  const [canonicalUrl, setCanonicalUrl] = useState('');
 
   const fetchCategories = async () => {
     try {
@@ -51,6 +80,20 @@ export default function CategoriesPage() {
     setTitle('');
     setDescription('');
     setImageUrl('');
+    setSlug('');
+    setMetaTitle('');
+    setMetaDescription('');
+    setMetaKeywords('');
+    setOgTitle('');
+    setOgDescription('');
+    setOgImage('');
+    setOgType('website');
+    setTwitterTitle('');
+    setTwitterDescription('');
+    setTwitterImage('');
+    setTwitterCard('summary_large_image');
+    setCanonicalUrl('');
+    setActiveTab('content');
     setModalOpen(true);
   };
 
@@ -59,6 +102,20 @@ export default function CategoriesPage() {
     setTitle(cat.title);
     setDescription(cat.description || '');
     setImageUrl(cat.image || '');
+    setSlug(cat.slug || '');
+    setMetaTitle(cat.meta_title || '');
+    setMetaDescription(cat.meta_description || '');
+    setMetaKeywords(cat.meta_keywords || '');
+    setOgTitle(cat.og_title || '');
+    setOgDescription(cat.og_description || '');
+    setOgImage(cat.og_image || '');
+    setOgType(cat.og_type || 'website');
+    setTwitterTitle(cat.twitter_title || '');
+    setTwitterDescription(cat.twitter_description || '');
+    setTwitterImage(cat.twitter_image || '');
+    setTwitterCard(cat.twitter_card || 'summary_large_image');
+    setCanonicalUrl(cat.canonical_url || '');
+    setActiveTab('content');
     setModalOpen(true);
   };
 
@@ -95,7 +152,24 @@ export default function CategoriesPage() {
     if (!title.trim()) return;
 
     setSubmitLoading(true);
-    const payload = { title, description, image: imageUrl || null };
+    const payload = {
+      title,
+      description,
+      image: imageUrl || null,
+      slug: slug || null,
+      meta_title: metaTitle,
+      meta_description: metaDescription,
+      meta_keywords: metaKeywords,
+      og_title: ogTitle,
+      og_description: ogDescription,
+      og_image: ogImage,
+      og_type: ogType,
+      twitter_title: twitterTitle,
+      twitter_description: twitterDescription,
+      twitter_image: twitterImage,
+      twitter_card: twitterCard,
+      canonical_url: canonicalUrl
+    };
 
     try {
       const url = currentCategory ? `/api/category/${currentCategory.id}/` : '/api/category/';
@@ -237,7 +311,8 @@ export default function CategoriesPage() {
       {/* Slide-over or Modal Dialog Overlay */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md rounded-lg border border-[#E5E7EB] bg-white p-6 shadow-xl flex flex-col gap-5">
+          <div className="w-full max-w-2xl rounded-lg border border-[#E5E7EB] bg-white p-6 shadow-xl flex flex-col gap-4 max-h-[90vh] overflow-hidden">
+            {/* Header */}
             <div className="flex justify-between items-center pb-3 border-b border-[#E5E7EB]">
               <h3 className="text-sm font-semibold text-[#111827]">
                 {currentCategory ? 'Edit Category' : 'Create Category'}
@@ -252,63 +327,209 @@ export default function CategoriesPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Title</label>
-                <input
-                  type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Residential Cleaning"
-                  className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
-                />
-              </div>
+            {/* Modal Tabs */}
+            <div className="flex border-b border-[#E5E7EB] text-xs font-medium">
+              {(['content', 'seo'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 capitalize border-b-2 -mb-px transition-colors cursor-pointer ${
+                    activeTab === tab
+                      ? 'border-[#2563EB] text-[#2563EB] font-bold'
+                      : 'border-transparent text-[#4B5563] hover:text-[#111827]'
+                  }`}
+                >
+                  {tab === 'seo' ? 'SEO Metadata' : tab}
+                </button>
+              ))}
+            </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Description</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Provide details about this service category..."
-                  rows={3}
-                  className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white resize-none"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Category Image</label>
-                <div className="flex items-center gap-3">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt="Thumbnail"
-                      className="h-10 w-10 rounded-md object-cover border border-[#E5E7EB]"
-                    />
-                  ) : (
-                    <div className="h-10 w-10 rounded-md bg-[#F3F4F6] border border-[#E5E7EB] flex items-center justify-center text-[10px] text-[#9CA3AF] font-bold">
-                      N/A
-                    </div>
-                  )}
-                  <div className="flex-1 flex flex-col gap-1">
+            {/* Form body */}
+            <form onSubmit={handleSubmit} className="flex-grow overflow-y-auto flex flex-col gap-4 pr-1 py-1">
+              {activeTab === 'content' && (
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Title</label>
                     <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      id="cat-image-file"
+                      type="text"
+                      required
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="e.g. Residential Cleaning"
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
                     />
-                    <label
-                      htmlFor="cat-image-file"
-                      className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-3 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors"
-                    >
-                      {uploading ? 'Uploading...' : 'Upload Image'}
-                    </label>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Description</label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Provide details about this service category..."
+                      rows={4}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white resize-none"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Category Image</label>
+                    <div className="flex items-center gap-3">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt="Thumbnail"
+                          className="h-10 w-10 rounded-md object-cover border border-[#E5E7EB]"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-md bg-[#F3F4F6] border border-[#E5E7EB] flex items-center justify-center text-[10px] text-[#9CA3AF] font-bold">
+                          N/A
+                        </div>
+                      )}
+                      <div className="flex-1 flex flex-col gap-1">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                          id="cat-image-file"
+                        />
+                        <label
+                          htmlFor="cat-image-file"
+                          className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-3 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors"
+                        >
+                          {uploading ? 'Uploading...' : 'Upload Image'}
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E7EB] mt-2">
+              {activeTab === 'seo' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5 col-span-2">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Custom Slug (Optional)</label>
+                    <input
+                      type="text"
+                      value={slug}
+                      onChange={(e) => setSlug(e.target.value)}
+                      placeholder="e.g. residential-cleaning"
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 col-span-2 border-t border-[#E5E7EB] pt-3 mt-1">
+                    <h4 className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider">Search Engine Listing</h4>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Meta Title</label>
+                    <input
+                      type="text"
+                      value={metaTitle}
+                      onChange={(e) => setMetaTitle(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Meta Keywords</label>
+                    <input
+                      type="text"
+                      value={metaKeywords}
+                      onChange={(e) => setMetaKeywords(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 col-span-2">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Meta Description</label>
+                    <textarea
+                      value={metaDescription}
+                      onChange={(e) => setMetaDescription(e.target.value)}
+                      rows={2}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white resize-none"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 col-span-2 border-t border-[#E5E7EB] pt-3">
+                    <h4 className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider">Open Graph & Twitter Sharing</h4>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">OG Title</label>
+                    <input
+                      type="text"
+                      value={ogTitle}
+                      onChange={(e) => setOgTitle(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">OG Type</label>
+                    <input
+                      type="text"
+                      value={ogType}
+                      onChange={(e) => setOgType(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 col-span-2">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">OG Description</label>
+                    <textarea
+                      value={ogDescription}
+                      onChange={(e) => setOgDescription(e.target.value)}
+                      rows={2}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white resize-none"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">OG Image URL</label>
+                    <input
+                      type="text"
+                      value={ogImage}
+                      onChange={(e) => setOgImage(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Canonical URL</label>
+                    <input
+                      type="text"
+                      value={canonicalUrl}
+                      onChange={(e) => setCanonicalUrl(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Twitter Title</label>
+                    <input
+                      type="text"
+                      value={twitterTitle}
+                      onChange={(e) => setTwitterTitle(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Twitter Card Type</label>
+                    <input
+                      type="text"
+                      value={twitterCard}
+                      onChange={(e) => setTwitterCard(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E7EB] mt-auto">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}

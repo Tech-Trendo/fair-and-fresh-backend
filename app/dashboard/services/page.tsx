@@ -14,6 +14,19 @@ interface Service {
   images?: { id: string; image_url: string }[];
   testimonials?: { id: string; author: string; content: string; rating: number }[];
   slug: string;
+  // SEO Mixin fields
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
+  og_title?: string;
+  og_description?: string;
+  og_image?: string;
+  og_type?: string;
+  twitter_title?: string;
+  twitter_description?: string;
+  twitter_image?: string;
+  twitter_card?: string;
+  canonical_url?: string;
 }
 
 export default function ServicesPage() {
@@ -22,6 +35,7 @@ export default function ServicesPage() {
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'general' | 'content' | 'images' | 'seo'>('general');
+  const [currentService, setCurrentService] = useState<Service | null>(null);
 
   // Form Fields - General
   const [name, setName] = useState('');
@@ -78,7 +92,7 @@ export default function ServicesPage() {
   }, []);
 
   const openCreateModal = () => {
-    // Reset all fields
+    setCurrentService(null);
     setName('');
     setShortDescription('');
     setLongDescription('');
@@ -101,6 +115,53 @@ export default function ServicesPage() {
     setTwitterCard('summary_large_image');
     setCanonicalUrl('');
     
+    setActiveTab('general');
+    setModalOpen(true);
+  };
+
+  const openEditModal = (srv: Service) => {
+    setCurrentService(srv);
+    setName(srv.name);
+    setShortDescription(srv.short_description || '');
+    setLongDescription(srv.long_description || '');
+    setWhatWeOfferText(JSON.stringify(srv.what_we_offer || {}));
+    
+    setWhatsIncludedList(
+      (srv.whats_included || []).map((item) => ({
+        title: item.title,
+        description: item.description || '',
+      }))
+    );
+    setBenefitsList(
+      (srv.benefits || []).map((item) => ({
+        title: item.title,
+        description: item.description || '',
+      }))
+    );
+    setTestimonialsList(
+      (srv.testimonials || []).map((item) => ({
+        author: item.author,
+        content: item.content,
+        rating: item.rating,
+      }))
+    );
+    setImagesList((srv.images || []).map((img) => img.image_url));
+    
+    // SEO fields
+    setSlug(srv.slug || '');
+    setMetaTitle(srv.meta_title || '');
+    setMetaDescription(srv.meta_description || '');
+    setMetaKeywords(srv.meta_keywords || '');
+    setOgTitle(srv.og_title || '');
+    setOgDescription(srv.og_description || '');
+    setOgImage(srv.og_image || '');
+    setOgType(srv.og_type || 'website');
+    setTwitterTitle(srv.twitter_title || '');
+    setTwitterDescription(srv.twitter_description || '');
+    setTwitterImage(srv.twitter_image || '');
+    setTwitterCard(srv.twitter_card || 'summary_large_image');
+    setCanonicalUrl(srv.canonical_url || '');
+
     setActiveTab('general');
     setModalOpen(true);
   };
@@ -219,18 +280,21 @@ export default function ServicesPage() {
     };
 
     try {
-      const res = await apiFetch('/api/services/', {
-        method: 'POST',
+      const url = currentService ? `/api/services/${currentService.id}/` : '/api/services/';
+      const method = currentService ? 'PUT' : 'POST';
+
+      const res = await apiFetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      if (res.status === 201) {
+      if (res.status === 200 || res.status === 201) {
         setModalOpen(false);
         fetchServices();
       } else {
         const data = await res.json();
-        alert(data.name ? `Name error: ${data.name.join(' ')}` : 'Creation failed.');
+        alert(data.name ? `Name error: ${data.name.join(' ')}` : 'Request failed.');
       }
     } catch (err) {
       console.error(err);
@@ -322,7 +386,12 @@ export default function ServicesPage() {
                     <td className="px-5 py-3 text-center text-[#4B5563]">{(srv.benefits || []).length}</td>
                     <td className="px-5 py-3 text-center text-[#4B5563]">{(srv.testimonials || []).length}</td>
                     <td className="px-5 py-3 text-right flex items-center justify-end gap-2.5 h-12">
-                      <span className="text-[#9CA3AF] text-[10px]">Edit via Task 5</span>
+                      <button
+                        onClick={() => openEditModal(srv)}
+                        className="text-xs font-semibold text-[#2563EB] hover:text-[#1D4ED8] transition-colors cursor-pointer"
+                      >
+                        Edit
+                      </button>
                       <span className="text-[#E5E7EB]">|</span>
                       <button
                         onClick={() => handleDelete(srv.id)}
@@ -339,13 +408,15 @@ export default function ServicesPage() {
         </div>
       )}
 
-      {/* Creation Modal */}
+      {/* Creation/Editing Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
           <div className="w-full max-w-2xl rounded-lg border border-[#E5E7EB] bg-white p-6 shadow-xl flex flex-col gap-4 max-h-[90vh] overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center pb-3 border-b border-[#E5E7EB]">
-              <h3 className="text-sm font-semibold text-[#111827]">Create Service Catalog</h3>
+              <h3 className="text-sm font-semibold text-[#111827]">
+                {currentService ? 'Edit Service Catalog' : 'Create Service Catalog'}
+              </h3>
               <button
                 onClick={() => setModalOpen(false)}
                 className="text-[#9CA3AF] hover:text-[#4B5563] transition-colors cursor-pointer"
@@ -764,7 +835,7 @@ export default function ServicesPage() {
                   disabled={submitLoading}
                   className="inline-flex h-8 items-center justify-center rounded-md bg-[#2563EB] px-4 text-xs font-semibold text-white hover:bg-[#1D4ED8] cursor-pointer transition-colors disabled:opacity-50"
                 >
-                  {submitLoading ? 'Creating...' : 'Create Service'}
+                  {submitLoading ? 'Saving...' : currentService ? 'Save Changes' : 'Create Service'}
                 </button>
               </div>
             </form>

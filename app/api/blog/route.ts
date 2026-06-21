@@ -4,9 +4,37 @@ import { blogs, blogsCategories } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
 
+export function formatBlog(blog: any) {
+  const resolvedCategories = blog.blogsCategories
+    ? blog.blogsCategories.map((bc: any) => bc.category)
+    : (blog.category || []);
+  return {
+    id: blog.id,
+    title: blog.title,
+    featured_image: blog.featuredImage || '',
+    description: blog.description || '',
+    slug: blog.slug,
+    meta_title: blog.metaTitle || '',
+    meta_description: blog.metaDescription || '',
+    meta_keywords: blog.metaKeywords || '',
+    og_title: blog.ogTitle || '',
+    og_description: blog.ogDescription || '',
+    og_image: blog.ogImage || '',
+    og_type: blog.ogType || 'article',
+    twitter_title: blog.twitterTitle || '',
+    twitter_description: blog.twitterDescription || '',
+    twitter_image: blog.twitterImage || '',
+    twitter_card: blog.twitterCard || 'summary_large_image',
+    canonical_url: blog.canonicalUrl || '',
+    created_at: blog.createdAt
+      ? (typeof blog.createdAt === 'string' ? blog.createdAt : blog.createdAt.toISOString())
+      : new Date().toISOString(),
+    category: resolvedCategories
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
-    // Query all blogs with category relations resolved
     const blogsWithRelations = await db.query.blogs.findMany({
       with: {
         blogsCategories: {
@@ -17,19 +45,11 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    const resolvedBlogs = blogsWithRelations.map(blog => {
-      const resolvedCategories = blog.blogsCategories.map(bc => bc.category);
-      // Remove blogsCategories join property and shape like DRF
-      const { blogsCategories: _, ...blogData } = blog;
-      return {
-        ...blogData,
-        category: resolvedCategories
-      };
-    });
-
+    const resolvedBlogs = blogsWithRelations.map(formatBlog);
     const paginated = paginate(resolvedBlogs, request.nextUrl);
     return NextResponse.json(paginated, { status: 200 });
   } catch (error) {
+    console.error('List blogs failed:', error);
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });
   }
 }
