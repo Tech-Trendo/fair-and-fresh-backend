@@ -26,6 +26,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: service.metaTitle || `Professional ${service.name} Brisbane | Fair & Fresh`,
     description: service.metaDescription || `Brisbane's top-rated ${service.name.toLowerCase()} service. We provide premium cleaning using eco-friendly solutions. Get a free quote today!`,
     keywords: service.metaKeywords ? service.metaKeywords.split(",").map(k => k.trim()) : [service.name.toLowerCase(), "Brisbane", "cleaning", "Fair and Fresh"],
+    alternates: {
+      canonical: service.canonicalUrl || undefined,
+    },
     openGraph: {
       title: service.ogTitle || service.name,
       description: service.ogDescription || service.shortDescription || undefined,

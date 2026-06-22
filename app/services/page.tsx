@@ -43,6 +43,9 @@ export async function generateMetadata(): Promise<Metadata> {
     title: page.metaTitle || "Our Professional Services | Fair and Fresh Cleaning",
     description: page.metaDescription || undefined,
     keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
+    alternates: {
+      canonical: page.canonicalUrl || undefined,
+    },
     openGraph: {
       title: page.ogTitle || undefined,
       description: page.ogDescription || undefined,
