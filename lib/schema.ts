@@ -31,6 +31,7 @@ export const categories = pgTable('categories', {
   twitterImage: text('twitter_image'),
   twitterCard: text('twitter_card').default('summary_large_image'),
   canonicalUrl: text('canonical_url'),
+  metaRobots: text('meta_robots'),
 });
 
 // Blogs Table
@@ -55,6 +56,7 @@ export const blogs = pgTable('blogs', {
   twitterImage: text('twitter_image'),
   twitterCard: text('twitter_card').default('summary_large_image'),
   canonicalUrl: text('canonical_url'),
+  metaRobots: text('meta_robots'),
 });
 
 // Blogs to Categories Join Table (Many-to-Many)
@@ -88,6 +90,7 @@ export const services = pgTable('services', {
   twitterImage: text('twitter_image'),
   twitterCard: text('twitter_card').default('summary_large_image'),
   canonicalUrl: text('canonical_url'),
+  metaRobots: text('meta_robots'),
 });
 
 // Whats Included Table (One-to-Many with Service)
@@ -147,6 +150,7 @@ export const staticPages = pgTable('static_pages', {
   twitterImage: text('twitter_image'),
   twitterCard: text('twitter_card').default('summary_large_image'),
   canonicalUrl: text('canonical_url'),
+  metaRobots: text('meta_robots'),
 });
 
 // --- Relations Definitions ---

@@ -27,6 +27,7 @@ interface Service {
   twitter_image?: string;
   twitter_card?: string;
   canonical_url?: string;
+  meta_robots?: string;
 }
 
 export default function ServicesPage() {
@@ -66,6 +67,7 @@ export default function ServicesPage() {
   const [twitterImage, setTwitterImage] = useState('');
   const [twitterCard, setTwitterCard] = useState('summary_large_image');
   const [canonicalUrl, setCanonicalUrl] = useState('');
+  const [metaRobots, setMetaRobots] = useState('');
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -114,6 +116,7 @@ export default function ServicesPage() {
     setTwitterImage('');
     setTwitterCard('summary_large_image');
     setCanonicalUrl('');
+    setMetaRobots('');
     
     setActiveTab('general');
     setModalOpen(true);
@@ -161,6 +164,7 @@ export default function ServicesPage() {
     setTwitterImage(srv.twitter_image || '');
     setTwitterCard(srv.twitter_card || 'summary_large_image');
     setCanonicalUrl(srv.canonical_url || '');
+    setMetaRobots(srv.meta_robots || '');
 
     setActiveTab('general');
     setModalOpen(true);
@@ -276,7 +280,8 @@ export default function ServicesPage() {
       twitter_description: twitterDescription,
       twitter_image: twitterImage,
       twitter_card: twitterCard,
-      canonical_url: canonicalUrl
+      canonical_url: canonicalUrl,
+      meta_robots: metaRobots
     };
 
     try {
@@ -775,6 +780,17 @@ export default function ServicesPage() {
                       type="text"
                       value={canonicalUrl}
                       onChange={(e) => setCanonicalUrl(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Robots Tag (meta_robots)</label>
+                    <input
+                      type="text"
+                      value={metaRobots}
+                      onChange={(e) => setMetaRobots(e.target.value)}
+                      placeholder="e.g. noindex, nofollow"
                       className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
                     />
                   </div>

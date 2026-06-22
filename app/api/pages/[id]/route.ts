@@ -53,7 +53,8 @@ export async function PUT(
       twitter_description,
       twitter_image,
       twitter_card,
-      canonical_url
+      canonical_url,
+      meta_robots
     } = body;
 
     if (!name) {
@@ -85,7 +86,8 @@ export async function PUT(
         twitterDescription: twitter_description || '',
         twitterImage: twitter_image || '',
         twitterCard: twitter_card || 'summary_large_image',
-        canonicalUrl: canonical_url || ''
+        canonicalUrl: canonical_url || '',
+        metaRobots: meta_robots || ''
       })
       .where(eq(staticPages.id, id));
 
@@ -104,7 +106,8 @@ export async function PUT(
       twitter_description: twitter_description || '',
       twitter_image: twitter_image || '',
       twitter_card: twitter_card || 'summary_large_image',
-      canonical_url: canonical_url || ''
+      canonical_url: canonical_url || '',
+      meta_robots: meta_robots || ''
     };
 
     return NextResponse.json(updatedPage, { status: 200 });

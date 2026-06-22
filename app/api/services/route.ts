@@ -26,6 +26,7 @@ export function formatService(srv: any) {
     twitter_image: srv.twitterImage || '',
     twitter_card: srv.twitterCard || 'summary_large_image',
     canonical_url: srv.canonicalUrl || '',
+    meta_robots: srv.metaRobots || '',
     whats_included: (srv.whatsIncluded || []).map((item: any) => ({
       id: item.id,
       service_id: item.serviceId,
@@ -105,7 +106,8 @@ export async function POST(request: NextRequest) {
       twitter_description,
       twitter_image,
       twitter_card,
-      canonical_url
+      canonical_url,
+      meta_robots
     } = body;
 
     if (!name) {
@@ -138,6 +140,7 @@ export async function POST(request: NextRequest) {
       twitterImage: twitter_image || '',
       twitterCard: twitter_card || 'summary_large_image',
       canonicalUrl: canonical_url || '',
+      metaRobots: meta_robots || '',
       createdAt: new Date()
     });
 

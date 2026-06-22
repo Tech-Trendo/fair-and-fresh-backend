@@ -19,7 +19,8 @@ export function formatPage(page: any) {
     twitter_description: page.twitterDescription || '',
     twitter_image: page.twitterImage || '',
     twitter_card: page.twitterCard || 'summary_large_image',
-    canonical_url: page.canonicalUrl || ''
+    canonical_url: page.canonicalUrl || '',
+    meta_robots: page.metaRobots || ''
   };
 }
 
@@ -60,7 +61,8 @@ export async function POST(request: NextRequest) {
       twitter_description,
       twitter_image,
       twitter_card,
-      canonical_url
+      canonical_url,
+      meta_robots
     } = body;
 
     if (!id || !name) {
@@ -87,7 +89,8 @@ export async function POST(request: NextRequest) {
       twitterDescription: twitter_description || '',
       twitterImage: twitter_image || '',
       twitterCard: twitter_card || 'summary_large_image',
-      canonicalUrl: canonical_url || ''
+      canonicalUrl: canonical_url || '',
+      metaRobots: meta_robots || ''
     });
 
     const responseObj = {
@@ -105,7 +108,8 @@ export async function POST(request: NextRequest) {
       twitter_description: twitter_description || '',
       twitter_image: twitter_image || '',
       twitter_card: twitter_card || 'summary_large_image',
-      canonical_url: canonical_url || ''
+      canonical_url: canonical_url || '',
+      meta_robots: meta_robots || ''
     };
 
     return NextResponse.json(responseObj, { status: 201 });
