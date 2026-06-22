@@ -17,69 +17,29 @@ import {
   Shirt,
   Droplets,
   ArrowRight,
+  HelpCircle,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { db } from "@/lib/db";
 
-const services = [
-  {
-    icon: Home,
-    title: "Carpet Cleaning",
-    description: "Deep steam cleaning that removes dirt, stains, and allergens from all carpet types.",
-    features: ["Steam cleaning", "Stain removal", "Odor elimination", "Fast drying"],
-    image: "/professional-carpet-cleaning.png",
-    slug: "carpet-cleaning",
-  },
-  {
-    icon: Bed,
-    title: "Mattress Cleaning",
-    description: "Hygienic deep cleaning to remove dust mites, bacteria, and allergens for better sleep.",
-    features: ["Dust mite removal", "Bacteria elimination", "Allergen reduction", "Sanitization"],
-    image: "/mattress-deep-cleaning-service.jpg",
-    slug: "mattress-cleaning",
-  },
-  {
-    icon: Sparkles,
-    title: "Rug Cleaning",
-    description: "Specialized cleaning for delicate and valuable rugs with care for different materials.",
-    features: ["Delicate handling", "Color protection", "Fiber care", "Restoration"],
-    image: "/professional-rug-cleaning-service.jpg",
-    slug: "rug-cleaning",
-  },
-  {
-    icon: Sofa,
-    title: "Upholstery Cleaning",
-    description: "Gentle yet effective cleaning for sofas, chairs, and other upholstered furniture.",
-    features: ["Fabric protection", "Color restoration", "Stain treatment", "Deodorizing"],
-    image: "/upholstery-furniture-cleaning-service.jpg",
-    slug: "upholstery-cleaning",
-  },
-  {
-    icon: Shirt,
-    title: "Curtain Cleaning",
-    description: "Professional cleaning that maintains the beauty and longevity of your window treatments.",
-    features: ["On-site cleaning", "Fabric care", "Pleat preservation", "UV protection"],
-    image: "/curtain-cleaning-service-professional.jpg",
-    slug: "curtain-cleaning",
-  },
-  {
-    icon: Car,
-    title: "Car Seat Cleaning",
-    description: "Thorough cleaning of vehicle interiors, removing stains, odors, and bacteria.",
-    features: ["Interior detailing", "Leather care", "Fabric cleaning", "Odor removal"],
-    image: "/car-seat-interior-cleaning-service.jpg",
-    slug: "car-seat-cleaning",
-  },
-  {
-    icon: Droplets,
-    title: "Flood Damage Restoration",
-    description:
-      "Emergency water extraction and restoration services to minimize damage and prevent mold growth.",
-    features: ["24/7 emergency response", "Water extraction", "Drying & dehumidification", "Mold prevention"],
-    image: "/flood-damage-restoration-water-extraction-emergenc.jpg",
-    slug: "flood-damage-restoration",
-  },
-];
+// Map slugs to appropriate Lucide icons
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  "carpet-cleaning": Home,
+  "mattress-cleaning": Bed,
+  "rug-cleaning": Sparkles,
+  "upholstery-cleaning": Sofa,
+  "curtain-cleaning": Shirt,
+  "car-seat-cleaning": Car,
+  "car-detailing": Car,
+  "bond-cleaning": Home,
+  "lawn-mowing": Scissors,
+  "flood-damage-restoration": Droplets,
+};
+
+function getServiceIcon(slug: string) {
+  return iconMap[slug] || HelpCircle;
+}
 
 const benefits = [
   {
@@ -104,7 +64,26 @@ const benefits = [
   },
 ];
 
-export default function ServicesPage() {
+import { Scissors } from "lucide-react";
+
+export default async function ServicesPage() {
+  // Query all services along with their relations dynamically
+  const dbServices = await db.query.services.findMany({
+    with: {
+      images: { limit: 1 },
+      whatsIncluded: true,
+    },
+    orderBy: (services, { asc }) => [asc(services.name)],
+  });
+
+  const services = dbServices.map((s) => ({
+    title: s.name,
+    description: s.shortDescription || s.longDescription || "",
+    features: s.whatsIncluded.map((w) => w.title),
+    image: s.images[0]?.imageUrl || "/placeholder.svg",
+    slug: s.slug,
+  }));
+
   return (
     <main className="min-h-screen bg-background">
       <Header />
@@ -159,54 +138,57 @@ export default function ServicesPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {services.map((service, index) => (
-              <Card
-                key={service.title}
-                className="border-0 shadow-lg hover:shadow-2xl transition-all duration-500 group animate-fade-in-up overflow-hidden bg-white"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden">
-                    <Image
-                      src={service.image || "/placeholder.svg"}
-                      alt={service.title}
-                      width={400}
-                      height={300}
-                      className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <div className="absolute top-4 right-4 bg-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <service.icon className="h-6 w-6 text-primary" />
-                    </div>
-                  </div>
-
-                  <div className="p-6">
-                    <h3 className="text-2xl font-serif font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
-                      {service.title}
-                    </h3>
-                    <p className="text-muted-foreground mb-6 text-pretty leading-relaxed">
-                      {service.description}
-                    </p>
-
-                    <div className="space-y-3 mb-6">
-                      {service.features.map((feature) => (
-                        <div key={feature} className="flex items-center gap-3">
-                          <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                          <span className="text-sm text-foreground font-medium">{feature}</span>
-                        </div>
-                      ))}
+            {services.map((service, index) => {
+              const IconComponent = getServiceIcon(service.slug);
+              return (
+                <Card
+                  key={service.title}
+                  className="border-0 shadow-lg hover:shadow-2xl transition-all duration-500 group animate-fade-in-up overflow-hidden bg-white"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <CardContent className="p-0">
+                    <div className="relative overflow-hidden">
+                      <Image
+                        src={service.image || "/placeholder.svg"}
+                        alt={service.title}
+                        width={400}
+                        height={300}
+                        className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute top-4 right-4 bg-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <IconComponent className="h-6 w-6 text-primary" />
+                      </div>
                     </div>
 
-                    <Link href={`/services/${service.slug}`}>
-                      <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 group-hover:shadow-lg font-semibold py-6">
-                        Learn More
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <div className="p-6">
+                      <h3 className="text-2xl font-serif font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                        {service.title}
+                      </h3>
+                      <p className="text-muted-foreground mb-6 text-pretty leading-relaxed">
+                        {service.description}
+                      </p>
+
+                      <div className="space-y-3 mb-6">
+                        {service.features.map((feature) => (
+                          <div key={feature} className="flex items-center gap-3">
+                            <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                            <span className="text-sm text-foreground font-medium">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <Link href={`/services/${service.slug}`}>
+                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 group-hover:shadow-lg font-semibold py-6">
+                          Learn More
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
