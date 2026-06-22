@@ -69,11 +69,16 @@ export default async function ServicePage({ params }: PageProps) {
     description: w.description || "",
   }));
 
-  // Fallback to local gallery folders if not enough DB images
-  const galleryImages = [1, 2, 3, 4].map((num) => ({
-    url: `/${service.slug}/photo${num}.jpg`,
-    alt: `${service.name} result ${num}`,
-  }));
+  // Use database images if available, otherwise fallback to local gallery folders
+  const galleryImages = service.images.length > 0
+    ? service.images.map((img, idx) => ({
+        url: img.imageUrl,
+        alt: `${service.name} result ${idx + 1}`,
+      }))
+    : [1, 2, 3, 4].map((num) => ({
+        url: `/${service.slug}/photo${num}.jpg`,
+        alt: `${service.name} result ${num}`,
+      }));
 
   const standardFaqs = [
     {
