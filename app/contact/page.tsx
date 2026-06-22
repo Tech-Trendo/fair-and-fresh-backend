@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +17,33 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { FadeIn, SlideIn, StaggerContainer, StaggerItem, CountUp, ScaleIn } from "@/components/motion-wrapper";
+import { db } from "@/lib/db";
+import { staticPages } from "@/lib/schema";
+import { eq } from "drizzle-orm";
+
+// Dynamically generate contact page metadata from staticPages table in DB
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await db.query.staticPages.findFirst({
+    where: eq(staticPages.slug, "contact-us"),
+  });
+
+  if (!page) {
+    return {
+      title: "Contact Us | Fair and Fresh Cleaning",
+    };
+  }
+
+  return {
+    title: page.metaTitle || "Contact Us | Fair and Fresh Cleaning",
+    description: page.metaDescription || undefined,
+    keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
+    openGraph: {
+      title: page.ogTitle || undefined,
+      description: page.ogDescription || undefined,
+      type: "website",
+    },
+  };
+}
 
 export default function ContactPage() {
   return (
