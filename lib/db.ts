@@ -160,6 +160,59 @@ export async function seedDatabase() {
       categoryId: 'cat-2'
     });
 
+    await db.insert(schema.staticPages).values([
+      {
+        id: 'home',
+        name: 'Home Page',
+        slug: 'home',
+        metaTitle: 'Fair & Fresh - Premium Professional Cleaning Services',
+        metaDescription: 'Spotless residential, deep, and commercial cleaning. Reclaim your time with our expert cleaners.',
+        ogTitle: 'Fair & Fresh Cleaning Services',
+        ogType: 'website',
+        canonicalUrl: 'https://fairfresh.com/'
+      },
+      {
+        id: 'about',
+        name: 'About Us',
+        slug: 'about-us',
+        metaTitle: 'About Fair & Fresh Cleaning Services',
+        metaDescription: 'Learn about our cleaning standards, background-checked professionals, and mission to deliver fresh homes.',
+        ogTitle: 'About Fair & Fresh',
+        ogType: 'website',
+        canonicalUrl: 'https://fairfresh.com/about-us/'
+      },
+      {
+        id: 'contact',
+        name: 'Contact Us',
+        slug: 'contact-us',
+        metaTitle: 'Contact Fair & Fresh Cleaning Services',
+        metaDescription: 'Get in touch for customized clean packages, office quotes, or support with booking.',
+        ogTitle: 'Contact Fair & Fresh',
+        ogType: 'website',
+        canonicalUrl: 'https://fairfresh.com/contact-us/'
+      },
+      {
+        id: 'services',
+        name: 'Services Catalog',
+        slug: 'services',
+        metaTitle: 'Professional Cleaning Services Directory',
+        metaDescription: 'Explore our catalog of custom cleaning services including Deep Clean, Office Clean, and Standard Home Care.',
+        ogTitle: 'Fair & Fresh Cleaning Catalog',
+        ogType: 'website',
+        canonicalUrl: 'https://fairfresh.com/services/'
+      },
+      {
+        id: 'blog',
+        name: 'Blog Index',
+        slug: 'blog',
+        metaTitle: 'Cleaning Guides, Tips & Professional Advice',
+        metaDescription: 'Explore our blog for professional sanitization advice, spring cleaning guides, and office workspace health tips.',
+        ogTitle: 'Fair & Fresh Cleaning Guides',
+        ogType: 'website',
+        canonicalUrl: 'https://fairfresh.com/blog/'
+      }
+    ]);
+
     console.log('✅ PostgreSQL Database seeded successfully.');
   } catch (error) {
     console.error('❌ Error seeding PostgreSQL database:', error);

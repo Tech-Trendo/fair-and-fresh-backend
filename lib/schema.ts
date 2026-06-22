@@ -128,6 +128,27 @@ export const blacklistedTokens = pgTable('blacklisted_tokens', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// Static Pages SEO Table
+export const staticPages = pgTable('static_pages', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  slug: text('slug').unique().notNull(),
+
+  // SEOMixin fields
+  metaTitle: text('meta_title'),
+  metaDescription: text('meta_description'),
+  metaKeywords: text('meta_keywords'),
+  ogTitle: text('og_title'),
+  ogDescription: text('og_description'),
+  ogImage: text('og_image'),
+  ogType: text('og_type').default('website'),
+  twitterTitle: text('twitter_title'),
+  twitterDescription: text('twitter_description'),
+  twitterImage: text('twitter_image'),
+  twitterCard: text('twitter_card').default('summary_large_image'),
+  canonicalUrl: text('canonical_url'),
+});
+
 // --- Relations Definitions ---
 
 export const blogsRelations = relations(blogs, ({ many }) => ({
