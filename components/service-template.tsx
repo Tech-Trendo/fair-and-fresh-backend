@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Reviews, Review } from "@/components/reviews";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -62,6 +63,7 @@ interface ServiceTemplateProps {
   faqs: FAQ[];
   ctaTitle: string;
   ctaDescription: string;
+  reviews?: Review[];
 }
 
 const circles = [
@@ -97,6 +99,7 @@ export function ServiceTemplate({
   faqs,
   ctaTitle,
   ctaDescription,
+  reviews,
 }: ServiceTemplateProps) {
   return (
     <main className="min-h-screen bg-background selection:bg-primary/20">
@@ -349,6 +352,9 @@ export function ServiceTemplate({
           </div>
         </div>
       </section>
+
+      {/* ─── Testimonials Section ─── */}
+      <Reviews reviews={reviews} />
 
       {/* ─── FAQs Section ─── */}
       <section className="py-24 lg:py-32">

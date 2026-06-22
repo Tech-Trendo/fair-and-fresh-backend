@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
@@ -62,21 +62,49 @@ export interface Review {
   service: string;
 }
 
-export interface ReviewsProps {
-  reviews?: Review[];
+export interface ReviewServiceOption {
+  id: string;
+  name: string;
 }
 
-export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
+export interface ReviewsProps {
+  reviews?: Review[];
+  services?: ReviewServiceOption[];
+}
+
+export function Reviews({ reviews: customReviews, services: customServicesOptions }: ReviewsProps = {}) {
   const router = useRouter();
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
   // Form states
   const [author, setAuthor] = useState("");
-  const [serviceId, setServiceId] = useState("srv-carpet");
+  const [serviceId, setServiceId] = useState("");
   const [rating, setRating] = useState(5);
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [servicesOptions, setServicesOptions] = useState<ReviewServiceOption[]>(customServicesOptions || []);
+
+  useEffect(() => {
+    if (customServicesOptions && customServicesOptions.length > 0) {
+      setServicesOptions(customServicesOptions);
+      setServiceId(customServicesOptions[0].id);
+    } else {
+      fetch("/api/services")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.results) {
+            const mapped = data.results.map((s: any) => ({ id: s.id, name: s.name }));
+            setServicesOptions(mapped);
+            if (mapped.length > 0) {
+              setServiceId(mapped[0].id);
+            }
+          }
+        })
+        .catch((err) => console.error("Failed to load services in review form", err));
+    }
+  }, [customServicesOptions]);
 
   const activeReviews = customReviews !== undefined ? customReviews : reviews;
   const displayedReviews = showAllReviews ? activeReviews : activeReviews.slice(0, 3);
@@ -110,7 +138,7 @@ export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
 
       toast.success("Review submitted successfully! Thank you.");
       setAuthor("");
-      setServiceId("srv-carpet");
+      setServiceId(servicesOptions[0]?.id || "");
       setRating(5);
       setContent("");
       setShowReviewForm(false);
@@ -233,12 +261,11 @@ export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
                         onChange={(e) => setServiceId(e.target.value)}
                         className="w-full p-2 md:p-3 border border-gray-300 rounded-lg text-sm md:text-base text-gray-900 bg-white"
                       >
-                        <option value="srv-carpet">Carpet Cleaning</option>
-                        <option value="srv-mattress">Mattress Cleaning</option>
-                        <option value="srv-rug">Rug Cleaning</option>
-                        <option value="srv-upholstery">Upholstery Cleaning</option>
-                        <option value="srv-curtain">Curtain Cleaning</option>
-                        <option value="srv-carseat">Car Seat Cleaning</option>
+                        {servicesOptions.map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            {opt.name}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div>
