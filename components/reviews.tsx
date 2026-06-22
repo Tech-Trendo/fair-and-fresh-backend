@@ -68,7 +68,7 @@ export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
-  const activeReviews = customReviews && customReviews.length > 0 ? customReviews : reviews;
+  const activeReviews = customReviews !== undefined ? customReviews : reviews;
   const displayedReviews = showAllReviews ? activeReviews : activeReviews.slice(0, 3);
 
   return (
