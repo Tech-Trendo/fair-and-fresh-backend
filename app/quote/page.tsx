@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,20 @@ import { useRouter } from "next/navigation"; // Add this import
 import { add } from "date-fns";
 import { motion } from "framer-motion";
 
-const services = [
+const getIcon = (slug: string) => {
+  const s = slug.toLowerCase();
+  if (s.includes("bond")) return "🏠";
+  if (s.includes("carpet") || s.includes("rug")) return "🧹";
+  if (s.includes("upholstery") || s.includes("seat") || s.includes("sofa")) return "🛋️";
+  if (s.includes("mattress")) return "🛏️";
+  if (s.includes("curtain")) return "🪟";
+  if (s.includes("detail") || s.includes("car")) return "🚗";
+  if (s.includes("lawn") || s.includes("mow") || s.includes("garden")) return "🌱";
+  if (s.includes("flood") || s.includes("water") || s.includes("restoration")) return "💧";
+  return "✨";
+};
+
+const initialServices = [
   { id: "bond-cleaning", name: "Bond Cleaning", icon: "🏠" },
   { id: "carpet-and-rug", name: "Carpet and Rug Cleaning", icon: "🧹" },
   { id: "upholstery-and-car-seats", name: "Upholstery and Car Seat Cleaning", icon: "🛋️" },
@@ -116,6 +129,29 @@ function DateTimePicker({
 export default function QuotePage() {
   const router = useRouter(); // Add this
   const [currentStep, setCurrentStep] = useState(1);
+  const [activeServices, setActiveServices] = useState(initialServices);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/services")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          const mapped = data.results.map((srv: any) => ({
+            id: srv.id,
+            name: srv.name,
+            icon: getIcon(srv.slug),
+          }));
+          setActiveServices(mapped);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch quote services:", err);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   const [formData, setFormData] = useState({
     services: [] as string[],
     date: "",
@@ -345,7 +381,7 @@ export default function QuotePage() {
                   <p className="text-muted-foreground mb-6">Choose one or more cleaning services you need</p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {services.map((service) => (
+                    {activeServices.map((service) => (
                       <button
                         key={service.id}
                         onClick={() => toggleService(service.id)}
