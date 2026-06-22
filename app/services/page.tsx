@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -18,27 +19,36 @@ import {
   Droplets,
   ArrowRight,
   HelpCircle,
+  Scissors,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { staticPages } from "@/lib/schema";
+import { eq } from "drizzle-orm";
 
-// Map slugs to appropriate Lucide icons
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  "carpet-cleaning": Home,
-  "mattress-cleaning": Bed,
-  "rug-cleaning": Sparkles,
-  "upholstery-cleaning": Sofa,
-  "curtain-cleaning": Shirt,
-  "car-seat-cleaning": Car,
-  "car-detailing": Car,
-  "bond-cleaning": Home,
-  "lawn-mowing": Scissors,
-  "flood-damage-restoration": Droplets,
-};
+// Dynamically generate services catalog metadata from staticPages table in DB
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await db.query.staticPages.findFirst({
+    where: eq(staticPages.slug, "services"),
+  });
 
-function getServiceIcon(slug: string) {
-  return iconMap[slug] || HelpCircle;
+  if (!page) {
+    return {
+      title: "Our Professional Services | Fair and Fresh Cleaning",
+    };
+  }
+
+  return {
+    title: page.metaTitle || "Our Professional Services | Fair and Fresh Cleaning",
+    description: page.metaDescription || undefined,
+    keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
+    openGraph: {
+      title: page.ogTitle || undefined,
+      description: page.ogDescription || undefined,
+      type: "website",
+    },
+  };
 }
 
 const benefits = [
@@ -64,7 +74,23 @@ const benefits = [
   },
 ];
 
-import { Scissors } from "lucide-react";
+// Map slugs to appropriate Lucide icons
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  "carpet-cleaning": Home,
+  "mattress-cleaning": Bed,
+  "rug-cleaning": Sparkles,
+  "upholstery-cleaning": Sofa,
+  "curtain-cleaning": Shirt,
+  "car-seat-cleaning": Car,
+  "car-detailing": Car,
+  "bond-cleaning": Home,
+  "lawn-mowing": Scissors,
+  "flood-damage-restoration": Droplets,
+};
+
+function getServiceIcon(slug: string) {
+  return iconMap[slug] || HelpCircle;
+}
 
 export default async function ServicesPage() {
   // Query all services along with their relations dynamically
