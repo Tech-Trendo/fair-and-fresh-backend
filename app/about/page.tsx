@@ -1,5 +1,4 @@
-"use client";
-
+import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,33 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, SlideIn, StaggerContainer, StaggerItem, CountUp } from "@/components/motion-wrapper";
+import { db } from "@/lib/db";
+import { staticPages } from "@/lib/schema";
+import { eq } from "drizzle-orm";
+
+// Dynamically generate about page metadata from staticPages table in DB
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await db.query.staticPages.findFirst({
+    where: eq(staticPages.slug, "about-us"),
+  });
+
+  if (!page) {
+    return {
+      title: "About Us | Fair and Fresh Cleaning",
+    };
+  }
+
+  return {
+    title: page.metaTitle || "About Us | Fair and Fresh Cleaning",
+    description: page.metaDescription || undefined,
+    keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
+    openGraph: {
+      title: page.ogTitle || undefined,
+      description: page.ogDescription || undefined,
+      type: "website",
+    },
+  };
+}
 
 export default function AboutPage() {
   return (
