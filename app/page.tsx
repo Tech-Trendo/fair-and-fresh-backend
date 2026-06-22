@@ -29,6 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: page.canonicalUrl || undefined,
     },
+    robots: page.metaRobots || undefined,
+    other: page.metaRobots ? {
+      "x-robots-tag": page.metaRobots,
+    } : undefined,
     openGraph: {
       title: page.ogTitle || undefined,
       description: page.ogDescription || undefined,

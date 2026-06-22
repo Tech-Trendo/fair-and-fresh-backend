@@ -29,6 +29,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: {
       canonical: service.canonicalUrl || undefined,
     },
+    robots: service.metaRobots || undefined,
+    other: service.metaRobots ? {
+      "x-robots-tag": service.metaRobots,
+    } : undefined,
     openGraph: {
       title: service.ogTitle || service.name,
       description: service.ogDescription || service.shortDescription || undefined,
@@ -109,6 +113,14 @@ export default async function ServicePage({ params }: PageProps) {
     "Deep Stain Extractions & Odor Control",
   ];
 
+  const testimonialsList = service.testimonials.map((t) => ({
+    name: t.author,
+    location: "Brisbane, QLD",
+    rating: t.rating,
+    text: t.content,
+    service: service.name,
+  }));
+
   return (
     <ServiceTemplate
       badge="Professional Cleaning Care"
@@ -133,6 +145,7 @@ export default async function ServicePage({ params }: PageProps) {
       typesTitle={`Types of ${service.name} We Masterfully Clean`}
       types={typesList}
       faqs={standardFaqs}
+      reviews={testimonialsList.length > 0 ? testimonialsList : undefined}
       ctaTitle={`Experience Brisbane's Best ${service.name} Care`}
       ctaDescription={`Don't wait—restore the beauty and hygiene of your space today. Contact us for a free, no-obligation quote.`}
     />
