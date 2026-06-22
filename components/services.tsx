@@ -2,77 +2,38 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sofa, Car, Bed, Home, Shirt, Sparkles, Droplets, Scissors } from "lucide-react";
+import { Sofa, Car, Bed, Home, Shirt, Sparkles, Droplets, Scissors, HelpCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
 
-const services = [
-  {
-    icon: Home,
-    title: "Carpet Cleaning",
-    url: "/services/carpet-cleaning",
-    image: "/professional-carpet-cleaning.png",
-  },
-  {
-    icon: Bed,
-    title: "Mattress Cleaning",
-    url: "/services/mattress-cleaning",
-    image: "/mattress-deep-cleaning-service.jpg",
-  },
-  {
-    icon: Sparkles,
-    title: "Rug Cleaning",
-    url: "/services/rug-cleaning",
-    image: "/professional-rug-cleaning-service.jpg",
-  },
-  {
-    icon: Sofa,
-    title: "Upholstery Cleaning",
-    url: "/services/upholstery-cleaning",
-    image: "/upholstery-cleaning-photo.jpg",
-  },
-  {
-    icon: Shirt,
-    title: "Curtain Cleaning",
-    url: "/services/curtain-cleaning",
-    image: "/curtain-cleaning-photo.jpg",
-  },
-  {
-    icon: Car,
-    title: "Car Seat Cleaning",
-    url: "/services/car-seat-cleaning",
-    image: "/car-seat-cleaning-photo.jpg",
-  },
-  {
-    icon: Car,
-    title: "Car Detailing",
-    url: "/services/car-detailing",
-    image: "/car-detailing-hero-image.jpg",
-  },
-  {
-    icon: Home,
-    title: "Bond Cleaning",
-    url: "/services/bond-cleaning",
-    image: "/bond-cleaning-hero-image.png",
-  },
-  {
-    icon: Scissors,
-    title: "Lawn Mowing",
-    url: "/services/lawn-mowing",
-    image: "/lawn-mowing-hero-image.jpg",
-  },
-  {
-    icon: Droplets,
-    title: "Flood Damage Restoration",
-    url: "/services/flood-damage-restoration",
-    image: "/flood-damage-restoration-water-extraction-emergenc.jpg",
-  },
-];
+// Map slugs to appropriate Lucide icons
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  "carpet-cleaning": Home,
+  "mattress-cleaning": Bed,
+  "rug-cleaning": Sparkles,
+  "upholstery-cleaning": Sofa,
+  "curtain-cleaning": Shirt,
+  "car-seat-cleaning": Car,
+  "car-detailing": Car,
+  "bond-cleaning": Home,
+  "lawn-mowing": Scissors,
+  "flood-damage-restoration": Droplets,
+};
 
-export function Services() {
+function getServiceIcon(slug: string) {
+  return iconMap[slug] || HelpCircle;
+}
+
+export interface ServiceData {
+  name: string;
+  slug: string;
+  image?: string;
+}
+
+export function Services({ services }: { services: ServiceData[] }) {
   return (
-    <section id="services" className="py-12 md:py-20 bg-gray-50">
+    <section id="services" className="py-12 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <FadeIn>
@@ -89,48 +50,51 @@ export function Services() {
         </div>
 
         <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {services.map((service, index) => (
-            <StaggerItem key={index}>
-              <Card
-                className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group border-0 h-full"
-              >
-                <CardContent className="p-0 h-full">
-                  <Link href={service.url} className="block h-full">
-                    <div className="relative overflow-hidden h-56 md:h-64">
-                      <Image
-                        src={service.image || "/placeholder.svg"}
-                        alt={service.title}
-                        width={400}
-                        height={300}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
+          {services.map((service, index) => {
+            const IconComponent = getServiceIcon(service.slug);
+            return (
+              <StaggerItem key={index}>
+                <Card
+                  className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group border-0 h-full"
+                >
+                  <CardContent className="p-0 h-full">
+                    <Link href={`/services/${service.slug}`} className="block h-full">
+                      <div className="relative overflow-hidden h-56 md:h-64">
+                        <Image
+                          src={service.image || "/placeholder.svg"}
+                          alt={service.name}
+                          width={400}
+                          height={300}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
 
-                      <div className="absolute top-4 right-4 bg-white/90 p-2.5 rounded-full backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
-                        <service.icon className="h-5 w-5 text-primary" />
-                      </div>
+                        <div className="absolute top-4 right-4 bg-white/90 p-2.5 rounded-full backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
+                          <IconComponent className="h-5 w-5 text-primary" />
+                        </div>
 
-                      <div className="absolute bottom-0 left-0 right-0 p-5">
-                        <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-accent transition-colors duration-300">
-                          {service.title}
-                        </h3>
-                        <Button
-                          variant="secondary"
-                          className="w-full bg-white text-primary hover:bg-accent hover:text-white transition-all duration-300 font-semibold"
-                        >
-                          Learn More
-                        </Button>
+                        <div className="absolute bottom-0 left-0 right-0 p-5">
+                          <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-accent transition-colors duration-300">
+                            {service.name}
+                          </h3>
+                          <Button
+                            variant="secondary"
+                            className="w-full bg-white text-primary hover:bg-accent hover:text-white transition-all duration-300 font-semibold"
+                          >
+                            Learn More
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                </CardContent>
-              </Card>
-            </StaggerItem>
-          ))}
+                    </Link>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            );
+          })}
         </StaggerContainer>
 
         <FadeIn y={20} delay={0.4} className="text-center mt-8 md:mt-12">
-          <Link href="/quote">
+          <Link href="/services">
             <Button
               size="lg"
               className="text-base md:text-lg px-6 md:px-8 transition-all duration-300 hover:scale-105 hover:shadow-lg"
