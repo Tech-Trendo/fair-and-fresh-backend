@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,28 @@ const servicesMenu = [
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [menuItems, setMenuItems] = useState(servicesMenu);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/services")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          const mapped = data.results.map((srv: any) => ({
+            name: srv.name,
+            href: `/services/${srv.slug}`,
+          }));
+          setMenuItems(mapped);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch header services:", err);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <motion.header
@@ -75,7 +97,7 @@ export function Header() {
                   >
                     <div className="bg-card shadow-lg rounded-lg border border-border overflow-hidden">
                       <div className="py-2">
-                        {servicesMenu.map((service, index) => (
+                        {menuItems.map((service, index) => (
                           <motion.div
                             key={service.name}
                             initial={{ opacity: 0, x: -10 }}
@@ -168,7 +190,7 @@ export function Header() {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: [0.25, 0.4, 0, 1] }}
                       >
-                        {servicesMenu.map((service) => (
+                        {menuItems.map((service) => (
                           <Link
                             key={service.name}
                             href={service.href}
