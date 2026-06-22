@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, Quote, ChevronDown, ChevronUp } from "lucide-react";
@@ -65,11 +67,60 @@ export interface ReviewsProps {
 }
 
 export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
+  const router = useRouter();
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
+  // Form states
+  const [author, setAuthor] = useState("");
+  const [serviceId, setServiceId] = useState("srv-carpet");
+  const [rating, setRating] = useState(5);
+  const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const activeReviews = customReviews !== undefined ? customReviews : reviews;
   const displayedReviews = showAllReviews ? activeReviews : activeReviews.slice(0, 3);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!author.trim() || !content.trim()) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          author,
+          serviceId,
+          rating,
+          content,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to submit review");
+      }
+
+      toast.success("Review submitted successfully! Thank you.");
+      setAuthor("");
+      setServiceId("srv-carpet");
+      setRating(5);
+      setContent("");
+      setShowReviewForm(false);
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section id="reviews" className="py-12 md:py-20 bg-white overflow-hidden">
@@ -159,27 +210,35 @@ export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
                   transition={{ duration: 0.4, ease: [0.25, 0.4, 0, 1] }}
                 >
                   <h4 className="font-semibold mb-4 text-sm md:text-base">Write Your Review</h4>
-                  <div className="space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                       <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                         Your Name
                       </label>
                       <input
                         type="text"
-                        className="w-full p-2 md:p-3 border border-gray-300 rounded-lg text-sm md:text-base"
+                        value={author}
+                        onChange={(e) => setAuthor(e.target.value)}
+                        required
+                        className="w-full p-2 md:p-3 border border-gray-300 rounded-lg text-sm md:text-base text-gray-900"
+                        placeholder="Your name"
                       />
                     </div>
                     <div>
                       <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                         Service Used
                       </label>
-                      <select className="w-full p-2 md:p-3 border border-gray-300 rounded-lg text-sm md:text-base">
-                        <option>Carpet Cleaning</option>
-                        <option>Mattress Cleaning</option>
-                        <option>Rug Cleaning</option>
-                        <option>Upholstery Cleaning</option>
-                        <option>Curtain Cleaning</option>
-                        <option>Car Seat Cleaning</option>
+                      <select 
+                        value={serviceId}
+                        onChange={(e) => setServiceId(e.target.value)}
+                        className="w-full p-2 md:p-3 border border-gray-300 rounded-lg text-sm md:text-base text-gray-900 bg-white"
+                      >
+                        <option value="srv-carpet">Carpet Cleaning</option>
+                        <option value="srv-mattress">Mattress Cleaning</option>
+                        <option value="srv-rug">Rug Cleaning</option>
+                        <option value="srv-upholstery">Upholstery Cleaning</option>
+                        <option value="srv-curtain">Curtain Cleaning</option>
+                        <option value="srv-carseat">Car Seat Cleaning</option>
                       </select>
                     </div>
                     <div>
@@ -188,7 +247,10 @@ export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
                             key={star}
-                            className="h-5 md:h-6 w-5 md:w-6 text-gray-300 hover:text-yellow-400 cursor-pointer transition-colors duration-200"
+                            onClick={() => setRating(star)}
+                            className={`h-5 md:h-6 w-5 md:w-6 cursor-pointer transition-colors duration-200 ${
+                              star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
+                            }`}
                           />
                         ))}
                       </div>
@@ -199,13 +261,19 @@ export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
                       </label>
                       <textarea
                         rows={4}
-                        className="w-full p-2 md:p-3 border border-gray-300 rounded-lg text-sm md:text-base"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        required
+                        className="w-full p-2 md:p-3 border border-gray-300 rounded-lg text-sm md:text-base text-gray-900"
                         placeholder="Tell us about your experience..."
                       ></textarea>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
-                      <Button className="transition-all duration-300 hover:scale-105">Submit Review</Button>
+                      <Button type="submit" disabled={isSubmitting} className="transition-all duration-300 hover:scale-105">
+                        {isSubmitting ? "Submitting..." : "Submit Review"}
+                      </Button>
                       <Button
+                        type="button"
                         variant="outline"
                         onClick={() => setShowReviewForm(false)}
                         className="transition-all duration-300 hover:scale-105"
@@ -213,7 +281,7 @@ export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
                         Cancel
                       </Button>
                     </div>
-                  </div>
+                  </form>
                 </motion.div>
               )}
             </AnimatePresence>
