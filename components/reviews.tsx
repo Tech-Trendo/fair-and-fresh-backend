@@ -52,11 +52,24 @@ const reviews = [
   },
 ];
 
-export function Reviews() {
+export interface Review {
+  name: string;
+  location: string;
+  rating: number;
+  text: string;
+  service: string;
+}
+
+export interface ReviewsProps {
+  reviews?: Review[];
+}
+
+export function Reviews({ reviews: customReviews }: ReviewsProps = {}) {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
 
-  const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 3);
+  const activeReviews = customReviews && customReviews.length > 0 ? customReviews : reviews;
+  const displayedReviews = showAllReviews ? activeReviews : activeReviews.slice(0, 3);
 
   return (
     <section id="reviews" className="py-12 md:py-20 bg-white overflow-hidden">

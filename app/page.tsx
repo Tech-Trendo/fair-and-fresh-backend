@@ -51,13 +51,28 @@ export default async function Home() {
     image: s.images[0]?.imageUrl || "/placeholder.svg",
   }));
 
+  // Fetch testimonials from database dynamically using Drizzle query
+  const dbTestimonials = await db.query.testimonials.findMany({
+    with: {
+      service: true,
+    },
+  });
+
+  const testimonialsList = dbTestimonials.map((t) => ({
+    name: t.author,
+    location: "Brisbane, QLD",
+    rating: t.rating,
+    text: t.content,
+    service: t.service?.name || "Cleaning Service",
+  }));
+
   return (
     <main className="min-h-screen">
       <Header />
       <Hero />
       <Services services={servicesList} />
       <AboutPreview />
-      <Reviews />
+      <Reviews reviews={testimonialsList} />
       <CtaSection />
       <Footer />
     </main>
