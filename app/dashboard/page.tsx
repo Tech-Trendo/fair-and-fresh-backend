@@ -10,11 +10,13 @@ interface DashboardStats {
   blogs: number;
   messages: number;
   unreadMessages: number;
+  quotes: number;
+  pendingQuotes: number;
 }
 
 interface RecentActivityItem {
   id: string;
-  type: 'Service' | 'Category' | 'Blog' | 'Message';
+  type: 'Service' | 'Category' | 'Blog' | 'Message' | 'Quote';
   name: string;
   date: string;
   status: string;
@@ -30,26 +32,31 @@ export default function DashboardPage() {
     async function fetchStatsAndActivity() {
       try {
         setError('');
-        const [catRes, srvRes, blogRes, contactRes] = await Promise.all([
+        const [catRes, srvRes, blogRes, contactRes, quoteRes] = await Promise.all([
           apiFetch('/api/category/'),
           apiFetch('/api/services/'),
           apiFetch('/api/blog/'),
-          apiFetch('/api/contact')
+          apiFetch('/api/contact'),
+          apiFetch('/api/quote')
         ]);
 
-        if (catRes.status !== 200 || srvRes.status !== 200 || blogRes.status !== 200 || contactRes.status !== 200) {
+        if (catRes.status !== 200 || srvRes.status !== 200 || blogRes.status !== 200 || contactRes.status !== 200 || quoteRes.status !== 200) {
           throw new Error('Failed to load dashboard metrics');
         }
 
-        const [catData, srvData, blogData, contactData] = await Promise.all([
+        const [catData, srvData, blogData, contactData, quoteData] = await Promise.all([
           catRes.json(),
           srvRes.json(),
           blogRes.json(),
-          contactRes.json()
+          contactRes.json(),
+          quoteRes.json()
         ]);
 
         const rawContacts = contactData.results || [];
         const unreadCount = rawContacts.filter((c: any) => !c.isRead).length;
+
+        const rawQuotes = quoteData.results || [];
+        const pendingQuotesCount = rawQuotes.filter((q: any) => q.status === 'Pending').length;
 
         setStats({
           categories: catData.count || 0,
@@ -57,6 +64,8 @@ export default function DashboardPage() {
           blogs: blogData.count || 0,
           messages: contactData.count || 0,
           unreadMessages: unreadCount,
+          quotes: quoteData.count || 0,
+          pendingQuotes: pendingQuotesCount,
         });
 
         // Parse combined list of recent items to render in data table
@@ -92,6 +101,13 @@ export default function DashboardPage() {
             name: `Message from ${m.name}`,
             date: new Date(m.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
             status: m.isRead ? 'Read' : 'New'
+          })),
+          ...rawQuotes.map((q: any) => ({
+            id: q.id,
+            type: 'Quote' as const,
+            name: `Quote Request from ${q.name}`,
+            date: new Date(q.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            status: q.status
           }))
         ];
 
@@ -144,7 +160,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {/* Services Count Card */}
         <div className="rounded-lg border border-[#E5E7EB] bg-white p-5 flex flex-col justify-between shadow-xs">
           <div>
@@ -198,6 +214,23 @@ export default function DashboardPage() {
               </span>
             </div>
             <p className="text-2xl font-bold text-[#111827] tracking-tight mt-3">{stats?.messages || 0}</p>
+          </div>
+        </div>
+
+        {/* Quotations Count Card */}
+        <div className="rounded-lg border border-[#E5E7EB] bg-white p-5 flex flex-col justify-between shadow-xs">
+          <div>
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-bold text-[#4B5563] uppercase tracking-wider">Quote Requests</span>
+              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold ${
+                stats?.pendingQuotes && stats.pendingQuotes > 0
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                  : 'bg-green-50 text-green-700 border border-green-200'
+              }`}>
+                {stats?.pendingQuotes && stats.pendingQuotes > 0 ? `${stats.pendingQuotes} Pending` : 'All Done'}
+              </span>
+            </div>
+            <p className="text-2xl font-bold text-[#111827] tracking-tight mt-3">{stats?.quotes || 0}</p>
           </div>
         </div>
       </div>
@@ -339,6 +372,7 @@ export default function DashboardPage() {
                       act.type === 'Service' ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]/50' :
                       act.type === 'Category' ? 'bg-[#F0FDF4] text-[#166534] border border-[#DCFCE7]/50' :
                       act.type === 'Blog' ? 'bg-[#EFF6FF] text-[#1E40AF] border border-[#DBEAFE]/50' :
+                      act.type === 'Quote' ? 'bg-amber-50 text-amber-700 border border-amber-200/50' :
                       'bg-purple-55 text-purple-700 border border-purple-200/50'
                     }`}>
                       {act.type}
