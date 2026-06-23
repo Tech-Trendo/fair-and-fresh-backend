@@ -14,6 +14,7 @@ interface Service {
   images?: { id: string; image_url: string }[];
   testimonials?: { id: string; author: string; content: string; rating: number }[];
   slug: string;
+  icon?: string;
   // SEO Mixin fields
   meta_title?: string;
   meta_description?: string;
@@ -43,6 +44,7 @@ export default function ServicesPage() {
   const [shortDescription, setShortDescription] = useState('');
   const [longDescription, setLongDescription] = useState('');
   const [whatWeOfferText, setWhatWeOfferText] = useState('{"supplies_included": true}'); // JSONField
+  const [icon, setIcon] = useState('Sparkles');
 
   // Form Fields - Content lists (dynamic arrays)
   const [whatsIncludedList, setWhatsIncludedList] = useState<{ title: string; description: string }[]>([]);
@@ -117,6 +119,7 @@ export default function ServicesPage() {
     setTwitterCard('summary_large_image');
     setCanonicalUrl('');
     setMetaRobots('');
+    setIcon('Sparkles');
     
     setActiveTab('general');
     setModalOpen(true);
@@ -165,6 +168,7 @@ export default function ServicesPage() {
     setTwitterCard(srv.twitter_card || 'summary_large_image');
     setCanonicalUrl(srv.canonical_url || '');
     setMetaRobots(srv.meta_robots || '');
+    setIcon(srv.icon || 'Sparkles');
 
     setActiveTab('general');
     setModalOpen(true);
@@ -264,6 +268,7 @@ export default function ServicesPage() {
       short_description: shortDescription,
       long_description: longDescription,
       what_we_offer: parsedOffer,
+      icon,
       whats_included: whatsIncludedList.filter(item => item.title.trim()),
       benefits: benefitsList.filter(item => item.title.trim()),
       images: imagesList,
@@ -497,6 +502,33 @@ export default function ServicesPage() {
                       rows={3}
                       className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden font-mono focus:border-zinc-400 focus:bg-white resize-none"
                     />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Service Icon</label>
+                    <select
+                      value={icon}
+                      onChange={(e) => setIcon(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white cursor-pointer"
+                    >
+                      <option value="Home">Home / Residential</option>
+                      <option value="Sofa">Sofa / Upholstery</option>
+                      <option value="Bed">Bed / Mattress</option>
+                      <option value="Car">Car Seat / Vehicle</option>
+                      <option value="Shirt">Shirt / Curtain</option>
+                      <option value="Sparkles">Sparkles / Deep Clean</option>
+                      <option value="Droplets">Droplets / Flood Damage</option>
+                      <option value="Scissors">Scissors / Lawn Mowing</option>
+                      <option value="Brush">Brush / Scrubbing</option>
+                      <option value="Trash2">Trash / Rubbish Removal</option>
+                      <option value="Wind">Wind / Air Freshness</option>
+                      <option value="ShieldCheck">Shield Check / Sanitized</option>
+                      <option value="Leaf">Leaf / Eco-Friendly</option>
+                      <option value="Utensils">Utensils / Kitchen Clean</option>
+                      <option value="Key">Key / Bond Clean</option>
+                      <option value="Sun">Sun / Window Clean</option>
+                      <option value="HelpCircle">Help / General</option>
+                    </select>
                   </div>
                 </div>
               )}

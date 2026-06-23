@@ -76,6 +76,7 @@ export const services = pgTable('services', {
   whatWeOffer: jsonb('what_we_offer'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   slug: text('slug').unique().notNull(),
+  icon: text('icon'),
 
   // SEOMixin fields
   metaTitle: text('meta_title'),
@@ -152,6 +153,19 @@ export const staticPages = pgTable('static_pages', {
   canonicalUrl: text('canonical_url'),
   metaRobots: text('meta_robots'),
 });
+
+// Contact Messages Table
+export const contactMessages = pgTable('contact_messages', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone'),
+  subject: text('subject'),
+  message: text('message').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  isRead: boolean('is_read').default(false).notNull(),
+});
+
 
 // --- Relations Definitions ---
 

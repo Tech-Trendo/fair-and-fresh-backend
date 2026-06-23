@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sofa, Car, Bed, Home, Shirt, Sparkles, Droplets, Scissors, HelpCircle } from "lucide-react";
+import { Sofa, Car, Bed, Home, Shirt, Sparkles, Droplets, Scissors, HelpCircle, Brush, Trash2, Wind, ShieldCheck, Leaf, Utensils, Key, Sun } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
@@ -21,7 +21,30 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   "flood-damage-restoration": Droplets,
 };
 
-function getServiceIcon(slug: string) {
+const lucideIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Home,
+  Sofa,
+  Bed,
+  Car,
+  Shirt,
+  Sparkles,
+  Droplets,
+  Scissors,
+  HelpCircle,
+  Brush,
+  Trash2,
+  Wind,
+  ShieldCheck,
+  Leaf,
+  Utensils,
+  Key,
+  Sun
+};
+
+function getServiceIcon(slug: string, customIcon?: string) {
+  if (customIcon && lucideIconMap[customIcon]) {
+    return lucideIconMap[customIcon];
+  }
   return iconMap[slug] || HelpCircle;
 }
 
@@ -29,6 +52,7 @@ export interface ServiceData {
   name: string;
   slug: string;
   image?: string;
+  icon?: string;
 }
 
 export function Services({ services }: { services: ServiceData[] }) {
@@ -51,7 +75,7 @@ export function Services({ services }: { services: ServiceData[] }) {
 
         <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
           {services.map((service, index) => {
-            const IconComponent = getServiceIcon(service.slug);
+            const IconComponent = getServiceIcon(service.slug, service.icon);
             return (
               <StaggerItem key={index}>
                 <Card

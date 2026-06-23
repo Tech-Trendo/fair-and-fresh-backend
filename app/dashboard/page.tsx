@@ -8,11 +8,13 @@ interface DashboardStats {
   categories: number;
   services: number;
   blogs: number;
+  messages: number;
+  unreadMessages: number;
 }
 
 interface RecentActivityItem {
   id: string;
-  type: 'Service' | 'Category' | 'Blog';
+  type: 'Service' | 'Category' | 'Blog' | 'Message';
   name: string;
   date: string;
   status: string;
@@ -28,26 +30,33 @@ export default function DashboardPage() {
     async function fetchStatsAndActivity() {
       try {
         setError('');
-        const [catRes, srvRes, blogRes] = await Promise.all([
+        const [catRes, srvRes, blogRes, contactRes] = await Promise.all([
           apiFetch('/api/category/'),
           apiFetch('/api/services/'),
-          apiFetch('/api/blog/')
+          apiFetch('/api/blog/'),
+          apiFetch('/api/contact')
         ]);
 
-        if (catRes.status !== 200 || srvRes.status !== 200 || blogRes.status !== 200) {
+        if (catRes.status !== 200 || srvRes.status !== 200 || blogRes.status !== 200 || contactRes.status !== 200) {
           throw new Error('Failed to load dashboard metrics');
         }
 
-        const [catData, srvData, blogData] = await Promise.all([
+        const [catData, srvData, blogData, contactData] = await Promise.all([
           catRes.json(),
           srvRes.json(),
-          blogRes.json()
+          blogRes.json(),
+          contactRes.json()
         ]);
+
+        const rawContacts = contactData.results || [];
+        const unreadCount = rawContacts.filter((c: any) => !c.isRead).length;
 
         setStats({
           categories: catData.count || 0,
           services: srvData.count || 0,
           blogs: blogData.count || 0,
+          messages: contactData.count || 0,
+          unreadMessages: unreadCount,
         });
 
         // Parse combined list of recent items to render in data table
@@ -76,6 +85,13 @@ export default function DashboardPage() {
             name: b.title,
             date: new Date(b.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
             status: 'Published'
+          })),
+          ...rawContacts.map((m: any) => ({
+            id: m.id,
+            type: 'Message' as const,
+            name: `Message from ${m.name}`,
+            date: new Date(m.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            status: m.isRead ? 'Read' : 'New'
           }))
         ];
 
@@ -128,7 +144,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Services Count Card */}
         <div className="rounded-lg border border-[#E5E7EB] bg-white p-5 flex flex-col justify-between shadow-xs">
           <div>
@@ -165,6 +181,23 @@ export default function DashboardPage() {
               </span>
             </div>
             <p className="text-2xl font-bold text-[#111827] tracking-tight mt-3">{stats?.blogs || 0}</p>
+          </div>
+        </div>
+
+        {/* Messages Count Card */}
+        <div className="rounded-lg border border-[#E5E7EB] bg-white p-5 flex flex-col justify-between shadow-xs">
+          <div>
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-bold text-[#4B5563] uppercase tracking-wider">Contact Messages</span>
+              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold ${
+                stats?.unreadMessages && stats.unreadMessages > 0
+                  ? 'bg-red-50 text-red-700 border border-red-200'
+                  : 'bg-green-50 text-green-700 border border-green-200'
+              }`}>
+                {stats?.unreadMessages && stats.unreadMessages > 0 ? `${stats.unreadMessages} New` : 'All Read'}
+              </span>
+            </div>
+            <p className="text-2xl font-bold text-[#111827] tracking-tight mt-3">{stats?.messages || 0}</p>
           </div>
         </div>
       </div>
@@ -264,6 +297,18 @@ export default function DashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </Link>
+            <Link
+              href="/dashboard/messages"
+              className="flex justify-between items-center p-3 rounded border border-[#E5E7EB] bg-white hover:border-[#2563EB] transition-colors group"
+            >
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs font-semibold text-[#111827] group-hover:text-[#2563EB] transition-colors">Inbox Messages</span>
+                <span className="text-[9px] text-[#4B5563]">View user contact form submissions</span>
+              </div>
+              <svg className="h-4 w-4 text-[#9CA3AF] group-hover:text-[#2563EB] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </div>
       </div>
@@ -293,7 +338,8 @@ export default function DashboardPage() {
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium ${
                       act.type === 'Service' ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]/50' :
                       act.type === 'Category' ? 'bg-[#F0FDF4] text-[#166534] border border-[#DCFCE7]/50' :
-                      'bg-[#EFF6FF] text-[#1E40AF] border border-[#DBEAFE]/50'
+                      act.type === 'Blog' ? 'bg-[#EFF6FF] text-[#1E40AF] border border-[#DBEAFE]/50' :
+                      'bg-purple-55 text-purple-700 border border-purple-200/50'
                     }`}>
                       {act.type}
                     </span>

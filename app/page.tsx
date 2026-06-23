@@ -56,6 +56,7 @@ export default async function Home() {
     name: s.name,
     slug: s.slug,
     image: s.images[0]?.imageUrl || "/placeholder.svg",
+    icon: s.icon || undefined,
   }));
 
   // Fetch testimonials from database dynamically using Drizzle query

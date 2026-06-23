@@ -20,6 +20,7 @@ import { FadeIn, SlideIn, StaggerContainer, StaggerItem, CountUp, ScaleIn } from
 import { db } from "@/lib/db";
 import { staticPages } from "@/lib/schema";
 import { eq } from "drizzle-orm";
+import { ContactForm } from "@/components/contact-form";
 
 // Dynamically generate contact page metadata from staticPages table in DB
 export async function generateMetadata(): Promise<Metadata> {
@@ -241,85 +242,84 @@ export default function ContactPage() {
               </StaggerItem>
             </StaggerContainer>
 
-              {/* Contact Information Grid */}
-              <StaggerContainer className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                <StaggerItem>
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
-                    <CardContent className="p-4 md:p-6">
-                      <div className="flex flex-col items-center text-center gap-2 md:gap-3">
-                        <div className="bg-primary/10 p-2 md:p-3 rounded-full">
-                          <Phone className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-foreground mb-1 text-sm md:text-base">Phone</h3>
-                          <a
-                            href="tel:0430799567"
-                            className="text-primary font-medium hover:underline text-xs md:text-sm"
-                          >
-                            0430 799 567
-                          </a>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </StaggerItem>
+              {/* Contact Section with Form */}
+              <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start mt-6">
+                {/* Left Side: Contact info cards */}
+                <div className="lg:col-span-5 space-y-4">
+                  <FadeIn>
+                    <h2 className="text-xl md:text-2xl font-bold tracking-tight text-foreground mb-2">
+                      Get in Touch
+                    </h2>
+                    <p className="text-muted-foreground text-xs md:text-sm leading-relaxed mb-4">
+                      Have questions about our cleaning services, pricing, or availability? Drop us a message, and our team will get back to you as soon as possible.
+                    </p>
+                  </FadeIn>
 
-                <StaggerItem>
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
-                    <CardContent className="p-4 md:p-6">
-                      <div className="flex flex-col items-center text-center gap-2 md:gap-3">
-                        <div className="bg-primary/10 p-2 md:p-3 rounded-full">
-                          <Mail className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                        </div>
-                        <div className="min-w-0 w-full">
-                          <h3 className="font-semibold text-foreground mb-1 text-sm md:text-base">Email</h3>
-                          <a
-                            href="mailto:support@fairandfreshcleaning.com.au"
-                            className="text-primary font-medium hover:underline text-[10px] md:text-xs break-all block px-1"
-                          >
-                            support@fairandfreshcleaning.com.au
-                          </a>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </StaggerItem>
+                  <StaggerContainer className="space-y-4">
+                    <StaggerItem>
+                      <Card className="border border-border/60 shadow-md hover:shadow-lg transition-all duration-300">
+                        <CardContent className="p-4 md:p-5">
+                          <div className="flex items-start gap-4">
+                            <div className="bg-primary/10 p-2.5 rounded-full flex-shrink-0">
+                              <Phone className="h-4.5 w-4.5 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-foreground text-sm mb-0.5">Phone Support</h3>
+                              <a href="tel:0430799567" className="text-primary font-medium hover:underline text-xs md:text-sm">
+                                0430 799 567
+                              </a>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">Mon - Sun: 7:00 AM - 7:00 PM</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </StaggerItem>
 
-                <StaggerItem>
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
-                    <CardContent className="p-4 md:p-6">
-                      <div className="flex flex-col items-center text-center gap-2 md:gap-3">
-                        <div className="bg-primary/10 p-2 md:p-3 rounded-full">
-                          <MapPin className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-foreground mb-1 text-sm md:text-base">
-                            Service Area
-                          </h3>
-                          <p className="text-primary font-medium text-xs md:text-sm">Brisbane, QLD</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </StaggerItem>
+                    <StaggerItem>
+                      <Card className="border border-border/60 shadow-md hover:shadow-lg transition-all duration-300">
+                        <CardContent className="p-4 md:p-5">
+                          <div className="flex items-start gap-4">
+                            <div className="bg-primary/10 p-2.5 rounded-full flex-shrink-0">
+                              <Mail className="h-4.5 w-4.5 text-primary" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-semibold text-foreground text-sm mb-0.5">Email Inquiries</h3>
+                              <a href="mailto:support@fairandfreshcleaning.com.au" className="text-primary font-medium hover:underline text-xs break-all block">
+                                support@fairandfreshcleaning.com.au
+                              </a>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">Average response time: &lt; 2 hours</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </StaggerItem>
 
-                <StaggerItem>
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
-                    <CardContent className="p-4 md:p-6">
-                      <div className="flex flex-col items-center text-center gap-2 md:gap-3">
-                        <div className="bg-primary/10 p-2 md:p-3 rounded-full">
-                          <Clock className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-foreground mb-1 text-sm md:text-base">Hours</h3>
-                          <p className="text-muted-foreground text-[10px] md:text-xs mb-1">Mon - Sun</p>
-                          <p className="text-primary font-medium text-xs md:text-sm">7:00 AM - 7:00 PM</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </StaggerItem>
-              </StaggerContainer>
+                    <StaggerItem>
+                      <Card className="border border-border/60 shadow-md hover:shadow-lg transition-all duration-300">
+                        <CardContent className="p-4 md:p-5">
+                          <div className="flex items-start gap-4">
+                            <div className="bg-primary/10 p-2.5 rounded-full flex-shrink-0">
+                              <MapPin className="h-4.5 w-4.5 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-foreground text-sm mb-0.5">Service Coverage</h3>
+                              <p className="text-foreground/90 font-medium text-xs md:text-sm">Brisbane, Queensland</p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">And surrounding metropolitan areas</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </StaggerItem>
+                  </StaggerContainer>
+                </div>
+
+                {/* Right Side: Form */}
+                <div className="lg:col-span-7">
+                  <SlideIn direction="up">
+                    <ContactForm />
+                  </SlideIn>
+                </div>
+              </div>
           </div>
         </div>
       </section>

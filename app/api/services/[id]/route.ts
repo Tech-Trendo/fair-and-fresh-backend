@@ -69,7 +69,8 @@ export async function PUT(
       twitter_image,
       twitter_card,
       canonical_url,
-      meta_robots
+      meta_robots,
+      icon
     } = body;
 
     if (!name) {
@@ -106,7 +107,8 @@ export async function PUT(
         twitterImage: twitter_image || '',
         twitterCard: twitter_card || 'summary_large_image',
         canonicalUrl: canonical_url || '',
-        metaRobots: meta_robots || ''
+        metaRobots: meta_robots || '',
+        icon: icon || ''
       })
       .where(eq(services.id, id));
 
@@ -209,6 +211,7 @@ export async function PATCH(
     if (body.short_description !== undefined) updateObj.shortDescription = body.short_description;
     if (body.long_description !== undefined) updateObj.longDescription = body.long_description;
     if (body.what_we_offer !== undefined) updateObj.whatWeOffer = body.what_we_offer;
+    if (body.icon !== undefined) updateObj.icon = body.icon;
 
     // SEO updates
     if (body.slug !== undefined) updateObj.slug = body.slug;
