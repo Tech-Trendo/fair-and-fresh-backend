@@ -11,9 +11,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
 import { toast } from "sonner";
-import client from "@/app/api/client";
 import { useRouter } from "next/navigation"; // Add this import
-import { add } from "date-fns";
 import { motion } from "framer-motion";
 
 const getIcon = (slug: string) => {
@@ -217,49 +215,33 @@ export default function QuotePage() {
         additional_notes: formData.additional_notes || "No additional notes",
       };
 
-      const { data, error } = await client.from("quotation").insert([payload]).select();
+      const res = await fetch("/api/quote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
       console.log("Form submitted:", formData);
 
-      const newbody = {
-        services: payload.services,
-        preferred_date: payload.preferred_date,
-        preferred_time: payload.preferred_time,
-        name: payload.name,
-        phone: payload.phone,
-        email: payload.email,
-        street: payload.street,
-        city: payload.city,
-        additional_notes: payload.additional_notes,
-      };
-
-      const sendWhatsApp = async () => {
-        try {
-          await fetch("https://notify-booking-4603.twil.io/sender1", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newbody),
-          });
-          console.log(newbody);
-        } catch (err) {
-          console.error("Fetch Error:", err);
-        }
-      };
-
-      sendWhatsApp();
-
-      if (error) {
-        console.error("Insert error:", error);
-        setErrors((prev) => ({ ...prev, submit: error.message || "Submit failed" }));
-        toast.error("Error submitting quote request");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        const firstErrKey = Object.keys(errorData)[0];
+        const errorMsg = firstErrKey && Array.isArray(errorData[firstErrKey])
+          ? errorData[firstErrKey][0]
+          : "Submit failed";
+        
+        console.error("Insert error:", errorData);
+        setErrors((prev) => ({ ...prev, submit: errorMsg }));
+        toast.error(`Error submitting quote request: ${errorMsg}`);
         return;
       }
 
+      const data = await res.json();
       console.log("Inserted:", data);
 
       toast.success("Your quote request has been submitted! Our team will contact you soon.");
-      // Add this: Store data and redirect
       localStorage.setItem("quoteSubmission", JSON.stringify(formData));
       router.push("/thank-you");
     } catch (err) {
