@@ -166,6 +166,22 @@ export const contactMessages = pgTable('contact_messages', {
   isRead: boolean('is_read').default(false).notNull(),
 });
 
+// Quotation Requests Table
+export const quotationRequests = pgTable('quotation_requests', {
+  id: text('id').primaryKey(),
+  services: jsonb('services').$type<string[]>().notNull(),
+  preferredDate: text('preferred_date'),
+  preferredTime: text('preferred_time'),
+  name: text('name').notNull(),
+  phone: text('phone').notNull(),
+  email: text('email').notNull(),
+  street: text('street').notNull(),
+  city: text('city').notNull(),
+  additionalNotes: text('additional_notes'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  status: text('status').default('Pending').notNull(),
+});
+
 
 // --- Relations Definitions ---
 
