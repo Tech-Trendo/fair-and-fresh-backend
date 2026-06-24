@@ -94,6 +94,14 @@ export const services = pgTable('services', {
   metaRobots: text('meta_robots'),
 });
 
+// Services to Categories Join Table (Many-to-Many)
+export const servicesCategories = pgTable('services_categories', {
+  serviceId: text('service_id').references(() => services.id, { onDelete: 'cascade' }).notNull(),
+  categoryId: text('category_id').references(() => categories.id, { onDelete: 'cascade' }).notNull(),
+}, (table) => [
+  primaryKey({ columns: [table.serviceId, table.categoryId] })
+]);
+
 // Whats Included Table (One-to-Many with Service)
 export const whatsIncluded = pgTable('whats_included', {
   id: text('id').primaryKey(),
@@ -191,6 +199,7 @@ export const blogsRelations = relations(blogs, ({ many }) => ({
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
   blogsCategories: many(blogsCategories),
+  servicesCategories: many(servicesCategories),
 }));
 
 export const blogsCategoriesRelations = relations(blogsCategories, ({ one }) => ({
@@ -209,6 +218,18 @@ export const servicesRelations = relations(services, ({ many }) => ({
   benefits: many(benefits),
   images: many(serviceImages),
   testimonials: many(testimonials),
+  servicesCategories: many(servicesCategories),
+}));
+
+export const servicesCategoriesRelations = relations(servicesCategories, ({ one }) => ({
+  service: one(services, {
+    fields: [servicesCategories.serviceId],
+    references: [services.id],
+  }),
+  category: one(categories, {
+    fields: [servicesCategories.categoryId],
+    references: [categories.id],
+  }),
 }));
 
 export const whatsIncludedRelations = relations(whatsIncluded, ({ one }) => ({
