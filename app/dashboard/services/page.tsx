@@ -15,6 +15,7 @@ interface Service {
   testimonials?: { id: string; author: string; content: string; rating: number }[];
   slug: string;
   icon?: string;
+  category?: { id: string; title: string; slug: string }[];
   // SEO Mixin fields
   meta_title?: string;
   meta_description?: string;
@@ -70,6 +71,8 @@ export default function ServicesPage() {
   const [twitterCard, setTwitterCard] = useState('summary_large_image');
   const [canonicalUrl, setCanonicalUrl] = useState('');
   const [metaRobots, setMetaRobots] = useState('');
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [allCategories, setAllCategories] = useState<{ id: string; title: string }[]>([]);
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -91,8 +94,21 @@ export default function ServicesPage() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const res = await apiFetch('/api/category/');
+      if (res.ok) {
+        const data = await res.json();
+        setAllCategories(data.results || []);
+      }
+    } catch (err) {
+      console.error('Failed to load categories', err);
+    }
+  };
+
   useEffect(() => {
     fetchServices();
+    fetchCategories();
   }, []);
 
   const openCreateModal = () => {
@@ -120,6 +136,7 @@ export default function ServicesPage() {
     setCanonicalUrl('');
     setMetaRobots('');
     setIcon('Sparkles');
+    setSelectedCategoryIds([]);
     
     setActiveTab('general');
     setModalOpen(true);
@@ -169,7 +186,8 @@ export default function ServicesPage() {
     setCanonicalUrl(srv.canonical_url || '');
     setMetaRobots(srv.meta_robots || '');
     setIcon(srv.icon || 'Sparkles');
-
+    setSelectedCategoryIds((srv.category || []).map((cat) => cat.id));
+ 
     setActiveTab('general');
     setModalOpen(true);
   };
@@ -286,7 +304,8 @@ export default function ServicesPage() {
       twitter_image: twitterImage,
       twitter_card: twitterCard,
       canonical_url: canonicalUrl,
-      meta_robots: metaRobots
+      meta_robots: metaRobots,
+      categoryIds: selectedCategoryIds
     };
 
     try {
@@ -529,6 +548,32 @@ export default function ServicesPage() {
                       <option value="Sun">Sun / Window Clean</option>
                       <option value="HelpCircle">Help / General</option>
                     </select>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5 mt-2">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Service Categories</label>
+                    <div className="grid grid-cols-2 gap-2 border border-[#E5E7EB] bg-[#F9FAFB] rounded-md p-3 max-h-32 overflow-y-auto">
+                      {allCategories.map((cat) => {
+                        const isChecked = selectedCategoryIds.includes(cat.id);
+                        return (
+                          <label key={cat.id} className="flex items-center gap-2 text-xs text-[#111827] cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => {
+                                if (isChecked) {
+                                  setSelectedCategoryIds(selectedCategoryIds.filter(id => id !== cat.id));
+                                } else {
+                                  setSelectedCategoryIds([...selectedCategoryIds, cat.id]);
+                                }
+                              }}
+                              className="rounded border-[#E5E7EB] text-[#2563EB] focus:ring-[#2563EB]/25"
+                            />
+                            {cat.title}
+                          </label>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               )}
