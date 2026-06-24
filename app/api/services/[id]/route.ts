@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, slugify } from '@/lib/db';
-import { services, whatsIncluded, benefits, serviceImages, testimonials } from '@/lib/schema';
+import { services, whatsIncluded, benefits, serviceImages, testimonials, servicesCategories } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
 import { formatService } from '../route';
@@ -17,7 +17,12 @@ export async function GET(
         whatsIncluded: true,
         benefits: true,
         images: true,
-        testimonials: true
+        testimonials: true,
+        servicesCategories: {
+          with: {
+            category: true
+          }
+        }
       }
     });
 
@@ -70,7 +75,9 @@ export async function PUT(
       twitter_card,
       canonical_url,
       meta_robots,
-      icon
+      icon,
+      categoryIds,
+      category
     } = body;
 
     if (!name) {
@@ -160,6 +167,17 @@ export async function PUT(
       await db.insert(testimonials).values(values);
     }
 
+    // Sync categories (clear and recreate)
+    await db.delete(servicesCategories).where(eq(servicesCategories.serviceId, id));
+    const resolvedCategoryIds = categoryIds || category || [];
+    if (resolvedCategoryIds.length > 0) {
+      const joinValues = resolvedCategoryIds.map((catId: string) => ({
+        serviceId: id,
+        categoryId: catId
+      }));
+      await db.insert(servicesCategories).values(joinValues);
+    }
+
     // Fetch updated service details
     const updatedSrv = await db.query.services.findFirst({
       where: eq(services.id, id),
@@ -167,7 +185,12 @@ export async function PUT(
         whatsIncluded: true,
         benefits: true,
         images: true,
-        testimonials: true
+        testimonials: true,
+        servicesCategories: {
+          with: {
+            category: true
+          }
+        }
       }
     });
 
@@ -285,6 +308,18 @@ export async function PATCH(
       }
     }
 
+    if (body.categoryIds !== undefined || body.category !== undefined) {
+      const resolvedCategoryIds = body.categoryIds || body.category || [];
+      await db.delete(servicesCategories).where(eq(servicesCategories.serviceId, id));
+      if (resolvedCategoryIds.length > 0) {
+        const joinValues = resolvedCategoryIds.map((catId: string) => ({
+          serviceId: id,
+          categoryId: catId
+        }));
+        await db.insert(servicesCategories).values(joinValues);
+      }
+    }
+
     // Fetch updated details
     const updatedSrv = await db.query.services.findFirst({
       where: eq(services.id, id),
@@ -292,7 +327,12 @@ export async function PATCH(
         whatsIncluded: true,
         benefits: true,
         images: true,
-        testimonials: true
+        testimonials: true,
+        servicesCategories: {
+          with: {
+            category: true
+          }
+        }
       }
     });
 

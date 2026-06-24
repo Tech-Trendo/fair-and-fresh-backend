@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, slugify } from '@/lib/db';
-import { services, whatsIncluded, benefits, serviceImages, testimonials } from '@/lib/schema';
+import { services, whatsIncluded, benefits, serviceImages, testimonials, servicesCategories } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
 import { eq } from 'drizzle-orm';
 
 export function formatService(srv: any) {
+  const resolvedCategories = srv.servicesCategories
+    ? srv.servicesCategories.map((sc: any) => sc.category)
+    : (srv.category || []);
+
   return {
     id: srv.id,
     name: srv.name,
@@ -51,7 +55,8 @@ export function formatService(srv: any) {
       author: item.author,
       content: item.content,
       rating: item.rating
-    }))
+    })),
+    category: resolvedCategories
   };
 }
 
@@ -62,7 +67,12 @@ export async function GET(request: NextRequest) {
         whatsIncluded: true,
         benefits: true,
         images: true,
-        testimonials: true
+        testimonials: true,
+        servicesCategories: {
+          with: {
+            category: true
+          }
+        }
       }
     });
 
@@ -109,7 +119,9 @@ export async function POST(request: NextRequest) {
       twitter_card,
       canonical_url,
       meta_robots,
-      icon
+      icon,
+      categoryIds,
+      category
     } = body;
 
     if (!name) {
@@ -191,6 +203,16 @@ export async function POST(request: NextRequest) {
       await db.insert(testimonials).values(values);
     }
 
+    // 6. Insert join table categories
+    const resolvedCategoryIds = categoryIds || category || [];
+    if (resolvedCategoryIds.length > 0) {
+      const joinValues = resolvedCategoryIds.map((catId: string) => ({
+        serviceId,
+        categoryId: catId
+      }));
+      await db.insert(servicesCategories).values(joinValues);
+    }
+
     // Fetch newly created service with relational entries
     const savedService = await db.query.services.findFirst({
       where: eq(services.id, serviceId),
@@ -198,7 +220,12 @@ export async function POST(request: NextRequest) {
         whatsIncluded: true,
         benefits: true,
         images: true,
-        testimonials: true
+        testimonials: true,
+        servicesCategories: {
+          with: {
+            category: true
+          }
+        }
       }
     });
 
@@ -209,3 +236,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });
   }
 }
+
