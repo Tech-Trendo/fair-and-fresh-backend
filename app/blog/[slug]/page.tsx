@@ -178,7 +178,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                   [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_ol]:space-y-2 [&_ol]:text-muted-foreground
                   [&_strong]:font-semibold [&_strong]:text-foreground
                   [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground"
-                dangerouslySetInnerHTML={{ __html: post.description }}
+                dangerouslySetInnerHTML={{ __html: post.description || "" }}
               />
             </article>
 
