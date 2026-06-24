@@ -48,18 +48,35 @@ function getServiceIcon(slug: string, customIcon?: string) {
   return iconMap[slug] || HelpCircle;
 }
 
+import { useState } from "react";
+
 export interface ServiceData {
   name: string;
   slug: string;
   image?: string;
   icon?: string;
+  shortDescription?: string;
+  category?: { id: string; title: string; slug: string }[];
 }
 
-export function Services({ services }: { services: ServiceData[] }) {
+export function Services({
+  services,
+  categories = [],
+}: {
+  services: ServiceData[];
+  categories?: { id: string; title: string; slug: string }[];
+}) {
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
+  const filteredServices = services.filter((service) => {
+    if (selectedCategory === "all") return true;
+    return (service.category || []).some((cat) => cat.slug === selectedCategory);
+  });
+
   return (
     <section id="services" className="py-12 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12 md:mb-16">
+        <div className="text-center mb-12">
           <FadeIn>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 text-balance">
               Our Professional Cleaning Services
@@ -73,43 +90,93 @@ export function Services({ services }: { services: ServiceData[] }) {
           </FadeIn>
         </div>
 
+        {/* Category Tabs Filter */}
+        {categories.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-2 mb-10 border-b border-border/20 pb-6">
+            <button
+              onClick={() => setSelectedCategory("all")}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                selectedCategory === "all"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "bg-muted text-muted-foreground hover:bg-zinc-200"
+              }`}
+            >
+              All Services
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.slug)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  selectedCategory === cat.slug
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "bg-muted text-muted-foreground hover:bg-zinc-200"
+                }`}
+              >
+                {cat.title}
+              </button>
+            ))}
+          </div>
+        )}
+
         <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {services.map((service, index) => {
+          {filteredServices.map((service, index) => {
             const IconComponent = getServiceIcon(service.slug, service.icon);
             return (
               <StaggerItem key={index}>
                 <Card
-                  className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group border-0 h-full"
+                  className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 overflow-hidden group border border-border/40 bg-card rounded-2xl h-full flex flex-col"
                 >
-                  <CardContent className="p-0 h-full">
-                    <Link href={`/services/${service.slug}`} className="block h-full">
-                      <div className="relative overflow-hidden h-56 md:h-64">
+                  <CardContent className="p-0 h-full flex flex-col flex-grow">
+                    <Link href={`/services/${service.slug}`} className="block flex-grow">
+                      {/* Image aspect-video */}
+                      <div className="relative overflow-hidden aspect-video bg-muted">
                         <Image
                           src={service.image || "/placeholder.svg"}
                           alt={service.name}
                           width={400}
-                          height={300}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          height={250}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-550 ease-out"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
-
-                        <div className="absolute top-4 right-4 bg-white/90 p-2.5 rounded-full backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
-                          <IconComponent className="h-5 w-5 text-primary" />
-                        </div>
-
-                        <div className="absolute bottom-0 left-0 right-0 p-5">
-                          <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-accent transition-colors duration-300">
-                            {service.name}
-                          </h3>
-                          <Button
-                            variant="secondary"
-                            className="w-full bg-white text-primary hover:bg-accent hover:text-white transition-all duration-300 font-semibold"
-                          >
-                            Learn More
-                          </Button>
+                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300" />
+                        
+                        {/* Floating category icon */}
+                        <div className="absolute top-4 right-4 bg-white/95 p-2.5 rounded-xl backdrop-blur-xs shadow-md border border-border/20 group-hover:scale-110 transition-all duration-300">
+                          <IconComponent className="h-4.5 w-4.5 text-primary" />
                         </div>
                       </div>
+
+                      {/* Card Content body */}
+                      <div className="p-5 space-y-2.5">
+                        <h3 className="text-lg md:text-xl font-extrabold text-gray-900 group-hover:text-primary transition-colors duration-300 leading-snug">
+                          {service.name}
+                        </h3>
+                        {service.shortDescription && (
+                          <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
+                            {service.shortDescription}
+                          </p>
+                        )}
+                      </div>
                     </Link>
+
+                    {/* Learn More link */}
+                    <div className="p-5 pt-0 mt-auto">
+                      <Link
+                        href={`/services/${service.slug}`}
+                        className="text-xs font-bold text-primary group-hover:text-accent flex items-center gap-1 transition-colors w-fit"
+                      >
+                        Learn More
+                        <svg
+                          className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </div>
                   </CardContent>
                 </Card>
               </StaggerItem>
@@ -117,7 +184,7 @@ export function Services({ services }: { services: ServiceData[] }) {
           })}
         </StaggerContainer>
 
-        <FadeIn y={20} delay={0.4} className="text-center mt-8 md:mt-12">
+        <FadeIn y={20} delay={0.4} className="text-center mt-12">
           <Link href="/services">
             <Button
               size="lg"
@@ -131,3 +198,4 @@ export function Services({ services }: { services: ServiceData[] }) {
     </section>
   );
 }
+

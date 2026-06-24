@@ -42,11 +42,16 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  // Query all services and fetch their first image dynamically using Drizzle relations
+  // Query all services and fetch their first image and categories dynamically using Drizzle relations
   const dbServices = await db.query.services.findMany({
     with: {
       images: {
         limit: 1,
+      },
+      servicesCategories: {
+        with: {
+          category: true,
+        },
       },
     },
     orderBy: (services, { asc }) => [asc(services.name)],
@@ -57,6 +62,19 @@ export default async function Home() {
     slug: s.slug,
     image: s.images[0]?.imageUrl || "/placeholder.svg",
     icon: s.icon || undefined,
+    shortDescription: s.shortDescription || "",
+    category: s.servicesCategories.map((sc) => sc.category),
+  }));
+
+  // Fetch all categories for filtering tabs
+  const dbCategories = await db.query.categories.findMany({
+    orderBy: (categories, { asc }) => [asc(categories.title)],
+  });
+
+  const categoriesList = dbCategories.map((c) => ({
+    id: c.id,
+    title: c.title,
+    slug: c.slug,
   }));
 
   // Fetch testimonials from database dynamically using Drizzle query
@@ -78,7 +96,7 @@ export default async function Home() {
     <main className="min-h-screen">
       <Header />
       <Hero />
-      <Services services={servicesList} />
+      <Services services={servicesList} categories={categoriesList} />
       <AboutPreview />
       <Reviews reviews={testimonialsList} />
       <CtaSection />
