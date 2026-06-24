@@ -127,6 +127,9 @@ export function Header() {
             <Link href="/about" className="text-foreground hover:text-primary transition-colors font-medium">
               About
             </Link>
+            <Link href="/blog" className="text-foreground hover:text-primary transition-colors font-medium">
+              Blog
+            </Link>
             <Link
               href="/contact"
               className="text-foreground hover:text-primary transition-colors font-medium"
@@ -214,6 +217,12 @@ export function Header() {
                   className="text-foreground hover:text-primary transition-colors font-medium"
                 >
                   About
+                </Link>
+                <Link
+                  href="/blog"
+                  className="text-foreground hover:text-primary transition-colors font-medium"
+                >
+                  Blog
                 </Link>
                 <Link
                   href="/contact"
