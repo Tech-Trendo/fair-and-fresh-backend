@@ -10,7 +10,7 @@ const globalForDrizzle = global as unknown as {
 };
 
 if (!globalForDrizzle.postgresClient) {
-  globalForDrizzle.postgresClient = postgres(connectionString);
+  globalForDrizzle.postgresClient = postgres(connectionString, { max: 1});
 }
 
 export const db = drizzle(globalForDrizzle.postgresClient, { schema });
