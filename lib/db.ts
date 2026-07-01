@@ -39,12 +39,21 @@ export async function seedDatabase() {
 
     console.log('🌱 Seeding PostgreSQL Database with initial data...');
 
+    const adminUser = process.env.ADMIN_USERNAME;
+    const adminPass = process.env.ADMIN_PASSWORD;
+
+    // The Guard Clause: Protects the crypto library from undefined, with ZERO hardcoded fallbacks
+    if (!adminUser || !adminPass) {
+      console.warn('⚠️ Skipping admin account seeding: ADMIN_USERNAME or ADMIN_PASSWORD is missing in environment variables.');
+      return; 
+    }
+
     const adminSalt = crypto.randomBytes(16).toString('hex');
-    const adminPasswordHash = hashPassword('admin123', adminSalt);
+    const adminPasswordHash = hashPassword(adminPass, adminSalt);
 
     await db.insert(schema.users).values({
       id: 'usr-admin',
-      username: 'admin',
+      username: adminUser,
       passwordHash: adminPasswordHash,
       salt: adminSalt,
       isStaff: true
