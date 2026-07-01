@@ -32,32 +32,44 @@ export function hashPassword(password: string, salt: string): string {
 
 export async function seedDatabase() {
   try {
-    const usersCount = await db.select().from(schema.users).limit(1);
-    if (usersCount.length > 0) {
-      return; // Already seeded
-    }
-
-    console.log('🌱 Seeding PostgreSQL Database with initial data...');
+    console.log('🌱 Checking database sync status...');
 
     const adminUser = process.env.ADMIN_USERNAME;
     const adminPass = process.env.ADMIN_PASSWORD;
 
-    // The Guard Clause: Protects the crypto library from undefined, with ZERO hardcoded fallbacks
-    if (!adminUser || !adminPass) {
-      console.warn('⚠️ Skipping admin account seeding: ADMIN_USERNAME or ADMIN_PASSWORD is missing in environment variables.');
-      return; 
+    // 1. ALWAYS sync the admin credentials based on Vercel Environment Variables
+    if (adminUser && adminPass) {
+      const adminSalt = crypto.randomBytes(16).toString('hex');
+      const adminPasswordHash = hashPassword(adminPass, adminSalt);
+
+      // This inserts the admin if missing, OR updates it if 'usr-admin' already exists!
+      await db.insert(schema.users)
+        .values({
+          id: 'usr-admin',
+          username: adminUser,
+          passwordHash: adminPasswordHash,
+          salt: adminSalt,
+          isStaff: true
+        })
+        .onConflictDoUpdate({
+          target: schema.users.id,
+          set: {
+            username: adminUser,
+            passwordHash: adminPasswordHash,
+            salt: adminSalt
+          }
+        });
+      
+      console.log('🔒 Admin credentials successfully synchronized with environment variables.');
     }
 
-    const adminSalt = crypto.randomBytes(16).toString('hex');
-    const adminPasswordHash = hashPassword(adminPass, adminSalt);
+    // 2. Safely check if structural data (categories/services) is already seeded
+    const categoriesCount = await db.select().from(schema.categories).limit(1);
+    if (categoriesCount.length > 0) {
+      return; // Safe exit: Content layout already exists, do not duplicate rows
+    }
 
-    await db.insert(schema.users).values({
-      id: 'usr-admin',
-      username: adminUser,
-      passwordHash: adminPasswordHash,
-      salt: adminSalt,
-      isStaff: true
-    });
+    console.log('🌱 Seeding PostgreSQL Database with content layout data...');
 
     await db.insert(schema.categories).values([
       {
