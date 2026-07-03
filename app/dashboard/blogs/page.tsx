@@ -299,7 +299,7 @@ export default function BlogsPage() {
       
       const [blogRes, catRes] = await Promise.all([
         apiFetch('/api/blog/'),
-        apiFetch('/api/category/')
+        apiFetch('/api/category/?type=blog')
       ]);
 
       if (blogRes.status === 200 && catRes.status === 200) {

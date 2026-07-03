@@ -116,7 +116,7 @@ export async function PUT(
       await db.insert(blogsCategories).values(joinValues);
     }
 
-    const allCategories = await db.query.categories.findMany();
+    const allCategories = await db.query.blogCategories.findMany();
     const savedCategories = allCategories.filter(c => resolvedCategoryIds.includes(c.id));
 
     const responseObj = {

@@ -25,6 +25,7 @@ interface Category {
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryType, setCategoryType] = useState<'service' | 'blog'>('service');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -53,11 +54,11 @@ export default function CategoriesPage() {
   const [twitterCard, setTwitterCard] = useState('summary_large_image');
   const [canonicalUrl, setCanonicalUrl] = useState('');
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (type = categoryType) => {
     try {
       setLoading(true);
       setError('');
-      const res = await apiFetch('/api/category/');
+      const res = await apiFetch(`/api/category/?type=${type}`);
       if (res.status === 200) {
         const data = await res.json();
         setCategories(data.results || []);
@@ -72,8 +73,8 @@ export default function CategoriesPage() {
   };
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    fetchCategories(categoryType);
+  }, [categoryType]);
 
   const openCreateModal = () => {
     setCurrentCategory(null);
@@ -172,7 +173,9 @@ export default function CategoriesPage() {
     };
 
     try {
-      const url = currentCategory ? `/api/category/${currentCategory.id}/` : '/api/category/';
+      const url = currentCategory 
+        ? `/api/category/${currentCategory.id}/?type=${categoryType}` 
+        : `/api/category/?type=${categoryType}`;
       const method = currentCategory ? 'PUT' : 'POST';
 
       const res = await apiFetch(url, {
@@ -183,7 +186,7 @@ export default function CategoriesPage() {
 
       if (res.status === 200 || res.status === 201) {
         setModalOpen(false);
-        fetchCategories();
+        fetchCategories(categoryType);
       } else {
         const data = await res.json();
         alert(data.title ? `Title error: ${data.title.join(' ')}` : 'Request failed.');
@@ -200,12 +203,12 @@ export default function CategoriesPage() {
     if (!confirm('Are you sure you want to delete this category?')) return;
 
     try {
-      const res = await apiFetch(`/api/category/${id}/`, {
+      const res = await apiFetch(`/api/category/${id}/?type=${categoryType}`, {
         method: 'DELETE',
       });
 
       if (res.status === 204) {
-        fetchCategories();
+        fetchCategories(categoryType);
       } else {
         alert('Delete failed.');
       }
@@ -221,13 +224,37 @@ export default function CategoriesPage() {
       <div className="flex justify-between items-center">
         <div className="flex flex-col gap-1">
           <h1 className="text-lg font-bold text-[#111827] tracking-tight">Categories</h1>
-          <p className="text-xs text-[#4B5563]">Manage service collection directories.</p>
+          <p className="text-xs text-[#4B5563]">Manage {categoryType === 'service' ? 'service' : 'blog'} category directories.</p>
         </div>
         <button
           onClick={openCreateModal}
           className="inline-flex items-center justify-center rounded-md bg-[#2563EB] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#1D4ED8] transition-colors cursor-pointer"
         >
           Create Category
+        </button>
+      </div>
+
+      {/* Category Type Switcher */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setCategoryType('service')}
+          className={`px-4 py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+            categoryType === 'service'
+              ? 'bg-[#2563EB] text-white shadow-xs'
+              : 'bg-white text-[#4B5563] border border-[#E5E7EB] hover:bg-[#F9FAFB]'
+          }`}
+        >
+          Service Categories
+        </button>
+        <button
+          onClick={() => setCategoryType('blog')}
+          className={`px-4 py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+            categoryType === 'blog'
+              ? 'bg-[#2563EB] text-white shadow-xs'
+              : 'bg-white text-[#4B5563] border border-[#E5E7EB] hover:bg-[#F9FAFB]'
+          }`}
+        >
+          Blog Categories
         </button>
       </div>
 

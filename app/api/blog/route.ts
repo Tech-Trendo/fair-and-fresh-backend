@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Retrieve categories to return fully populated object
-    const dbCategories = await db.query.categories.findMany();
+    const dbCategories = await db.query.blogCategories.findMany();
     const savedCategories = dbCategories.filter(c => resolvedCategoryIds.includes(c.id));
 
     const responseObj = {

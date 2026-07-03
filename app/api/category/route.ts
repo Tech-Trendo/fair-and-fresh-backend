@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, slugify } from '@/lib/db';
-import { categories } from '@/lib/schema';
+import { blogCategories, serviceCategories } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
 
@@ -28,7 +28,11 @@ export function formatCategory(cat: any) {
 
 export async function GET(request: NextRequest) {
   try {
-    const categoriesList = await db.select().from(categories);
+    const type = request.nextUrl.searchParams.get('type') || 'service';
+    const categoriesList = type === 'blog'
+      ? await db.select().from(blogCategories)
+      : await db.select().from(serviceCategories);
+
     const formattedCategories = categoriesList.map(formatCategory);
     const paginated = paginate(formattedCategories, request.nextUrl);
     return NextResponse.json(paginated, { status: 200 });
@@ -46,6 +50,9 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    const type = request.nextUrl.searchParams.get('type') || 'service';
+    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
 
     const body = await request.json();
     const {
@@ -77,7 +84,7 @@ export async function POST(request: NextRequest) {
     const newId = `cat-${Date.now()}`;
     const finalSlug = slug || slugify(title);
 
-    await db.insert(categories).values({
+    await db.insert(targetTable).values({
       id: newId,
       title,
       description: description || '',

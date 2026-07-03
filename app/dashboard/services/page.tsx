@@ -96,7 +96,7 @@ export default function ServicesPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await apiFetch('/api/category/');
+      const res = await apiFetch('/api/category/?type=service');
       if (res.ok) {
         const data = await res.json();
         setAllCategories(data.results || []);

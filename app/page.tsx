@@ -67,8 +67,8 @@ export default async function Home() {
   }));
 
   // Fetch all categories for filtering tabs
-  const dbCategories = await db.query.categories.findMany({
-    orderBy: (categories, { asc }) => [asc(categories.title)],
+  const dbCategories = await db.query.serviceCategories.findMany({
+    orderBy: (serviceCategories, { asc }) => [asc(serviceCategories.title)],
   });
 
   const categoriesList = dbCategories.map((c) => ({

@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { categories } from "@/lib/schema";
+import { serviceCategories } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { ArrowLeft, Sparkles, ShieldCheck, CheckCircle } from "lucide-react";
 import { Metadata } from "next";
@@ -18,8 +18,8 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   
-  const category = await db.query.categories.findFirst({
-    where: eq(categories.slug, slug),
+  const category = await db.query.serviceCategories.findFirst({
+    where: eq(serviceCategories.slug, slug),
   });
 
   if (!category) {
@@ -62,8 +62,8 @@ export default async function CategoryPage({ params }: PageProps) {
   const { slug } = await params;
 
   // Query category and its corresponding services
-  const categoryData = await db.query.categories.findFirst({
-    where: eq(categories.slug, slug),
+  const categoryData = await db.query.serviceCategories.findFirst({
+    where: eq(serviceCategories.slug, slug),
     with: {
       servicesCategories: {
         with: {

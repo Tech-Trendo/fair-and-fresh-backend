@@ -41,7 +41,7 @@ export default function BlogIndexPage() {
         setLoading(true);
         const [blogRes, catRes] = await Promise.all([
           fetch("/api/blog"),
-          fetch("/api/category"),
+          fetch("/api/category?type=blog"),
         ]);
         
         if (blogRes.ok && catRes.ok) {

@@ -10,8 +10,8 @@ export const users = pgTable('users', {
   isStaff: boolean('is_staff').default(false).notNull(),
 });
 
-// Categories Table
-export const categories = pgTable('categories', {
+// Blog Categories Table
+export const blogCategories = pgTable('blog_categories', {
   id: text('id').primaryKey(),
   title: text('title').notNull(),
   description: text('description'),
@@ -33,6 +33,31 @@ export const categories = pgTable('categories', {
   canonicalUrl: text('canonical_url'),
   metaRobots: text('meta_robots'),
 });
+
+// Service Categories Table
+export const serviceCategories = pgTable('service_categories', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description'),
+  image: text('image'),
+  slug: text('slug').unique().notNull(),
+
+  // SEOMixin fields
+  metaTitle: text('meta_title'),
+  metaDescription: text('meta_description'),
+  metaKeywords: text('meta_keywords'),
+  ogTitle: text('og_title'),
+  ogDescription: text('og_description'),
+  ogImage: text('og_image'),
+  ogType: text('og_type').default('website'),
+  twitterTitle: text('twitter_title'),
+  twitterDescription: text('twitter_description'),
+  twitterImage: text('twitter_image'),
+  twitterCard: text('twitter_card').default('summary_large_image'),
+  canonicalUrl: text('canonical_url'),
+  metaRobots: text('meta_robots'),
+});
+
 
 // Blogs Table
 export const blogs = pgTable('blogs', {
@@ -62,7 +87,7 @@ export const blogs = pgTable('blogs', {
 // Blogs to Categories Join Table (Many-to-Many)
 export const blogsCategories = pgTable('blogs_categories', {
   blogId: text('blog_id').references(() => blogs.id, { onDelete: 'cascade' }).notNull(),
-  categoryId: text('category_id').references(() => categories.id, { onDelete: 'cascade' }).notNull(),
+  categoryId: text('category_id').references(() => blogCategories.id, { onDelete: 'cascade' }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.blogId, table.categoryId] })
 ]);
@@ -97,7 +122,7 @@ export const services = pgTable('services', {
 // Services to Categories Join Table (Many-to-Many)
 export const servicesCategories = pgTable('services_categories', {
   serviceId: text('service_id').references(() => services.id, { onDelete: 'cascade' }).notNull(),
-  categoryId: text('category_id').references(() => categories.id, { onDelete: 'cascade' }).notNull(),
+  categoryId: text('category_id').references(() => serviceCategories.id, { onDelete: 'cascade' }).notNull(),
 }, (table) => [
   primaryKey({ columns: [table.serviceId, table.categoryId] })
 ]);
@@ -197,8 +222,11 @@ export const blogsRelations = relations(blogs, ({ many }) => ({
   blogsCategories: many(blogsCategories),
 }));
 
-export const categoriesRelations = relations(categories, ({ many }) => ({
+export const blogCategoriesRelations = relations(blogCategories, ({ many }) => ({
   blogsCategories: many(blogsCategories),
+}));
+
+export const serviceCategoriesRelations = relations(serviceCategories, ({ many }) => ({
   servicesCategories: many(servicesCategories),
 }));
 
@@ -207,9 +235,9 @@ export const blogsCategoriesRelations = relations(blogsCategories, ({ one }) => 
     fields: [blogsCategories.blogId],
     references: [blogs.id],
   }),
-  category: one(categories, {
+  category: one(blogCategories, {
     fields: [blogsCategories.categoryId],
-    references: [categories.id],
+    references: [blogCategories.id],
   }),
 }));
 
@@ -226,9 +254,9 @@ export const servicesCategoriesRelations = relations(servicesCategories, ({ one 
     fields: [servicesCategories.serviceId],
     references: [services.id],
   }),
-  category: one(categories, {
+  category: one(serviceCategories, {
     fields: [servicesCategories.categoryId],
-    references: [categories.id],
+    references: [serviceCategories.id],
   }),
 }));
 

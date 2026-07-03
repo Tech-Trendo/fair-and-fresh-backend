@@ -64,14 +64,14 @@ export async function seedDatabase() {
     }
 
     // 2. Safely check if structural data (categories/services) is already seeded
-    const categoriesCount = await db.select().from(schema.categories).limit(1);
+    const categoriesCount = await db.select().from(schema.serviceCategories).limit(1);
     if (categoriesCount.length > 0) {
       return; // Safe exit: Content layout already exists, do not duplicate rows
     }
 
     console.log('🌱 Seeding PostgreSQL Database with content layout data...');
 
-    await db.insert(schema.categories).values([
+    await db.insert(schema.serviceCategories).values([
       {
         id: 'cat-1',
         title: 'Residential Cleaning',
@@ -92,6 +92,16 @@ export async function seedDatabase() {
         description: 'Thorough, detailed sanitization and cleaning targeting every nook and cranny.',
         image: '/uploads/deep.jpg',
         slug: 'deep-cleaning'
+      }
+    ]);
+
+    await db.insert(schema.blogCategories).values([
+      {
+        id: 'cat-2',
+        title: 'Commercial Cleaning',
+        description: 'Office, retail, and corporate cleaning solutions tailored to your business.',
+        image: '/uploads/commercial.jpg',
+        slug: 'commercial-cleaning'
       }
     ]);
 

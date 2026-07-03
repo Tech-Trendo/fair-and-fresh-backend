@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, slugify } from '@/lib/db';
-import { categories } from '@/lib/schema';
+import { blogCategories, serviceCategories } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
 import { formatCategory } from '../route';
@@ -11,7 +11,10 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const result = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    const type = request.nextUrl.searchParams.get('type') || 'service';
+    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
+
+    const result = await db.select().from(targetTable).where(eq(targetTable.id, id)).limit(1);
     const category = result[0];
 
     if (!category) {
@@ -38,6 +41,9 @@ export async function PUT(
     }
 
     const { id } = await params;
+    const type = request.nextUrl.searchParams.get('type') || 'service';
+    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
+
     const body = await request.json();
     const {
       title,
@@ -65,14 +71,14 @@ export async function PUT(
       );
     }
 
-    const check = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    const check = await db.select().from(targetTable).where(eq(targetTable.id, id)).limit(1);
     if (check.length === 0) {
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
     }
 
     const finalSlug = slug || slugify(title);
 
-    await db.update(categories)
+    await db.update(targetTable)
       .set({
         title,
         description: description || '',
@@ -91,7 +97,7 @@ export async function PUT(
         twitterCard: twitter_card || 'summary_large_image',
         canonicalUrl: canonical_url || ''
       })
-      .where(eq(categories.id, id));
+      .where(eq(targetTable.id, id));
 
     const updatedCategory = {
       id,
@@ -134,15 +140,18 @@ export async function PATCH(
     }
 
     const { id } = await params;
+    const type = request.nextUrl.searchParams.get('type') || 'service';
+    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
+
     const body = await request.json();
 
-    const check = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    const check = await db.select().from(targetTable).where(eq(targetTable.id, id)).limit(1);
     const category = check[0];
     if (!category) {
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
     }
 
-    const updateObj: Partial<typeof categories.$inferSelect> = {};
+    const updateObj: Partial<typeof targetTable.$inferSelect> = {};
     if (body.title !== undefined) {
       updateObj.title = body.title;
       if (!body.slug) {
@@ -168,10 +177,10 @@ export async function PATCH(
     if (body.canonical_url !== undefined) updateObj.canonicalUrl = body.canonical_url;
 
     if (Object.keys(updateObj).length > 0) {
-      await db.update(categories).set(updateObj).where(eq(categories.id, id));
+      await db.update(targetTable).set(updateObj).where(eq(targetTable.id, id));
     }
 
-    const updated = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    const updated = await db.select().from(targetTable).where(eq(targetTable.id, id)).limit(1);
     return NextResponse.json(formatCategory(updated[0]), { status: 200 });
   } catch (error) {
     console.error('PATCH category failed:', error);
@@ -193,12 +202,15 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const check = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    const type = request.nextUrl.searchParams.get('type') || 'service';
+    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
+
+    const check = await db.select().from(targetTable).where(eq(targetTable.id, id)).limit(1);
     if (check.length === 0) {
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
     }
 
-    await db.delete(categories).where(eq(categories.id, id));
+    await db.delete(targetTable).where(eq(targetTable.id, id));
 
     return new Response(null, { status: 204 });
   } catch (error) {
