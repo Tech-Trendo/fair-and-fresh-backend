@@ -15,11 +15,45 @@ erDiagram
         string salt
         boolean is_staff
     }
-    categories {
+    blog_categories {
         string id PK
         string title
         string description
         string image
+        string slug
+        string meta_title
+        string meta_description
+        string meta_keywords
+        string og_title
+        string og_description
+        string og_image
+        string og_type
+        string twitter_title
+        string twitter_description
+        string twitter_image
+        string twitter_card
+        string canonical_url
+        string meta_robots
+    }
+    service_categories {
+        string id PK
+        string title
+        string description
+        string image
+        string slug
+        string meta_title
+        string meta_description
+        string meta_keywords
+        string og_title
+        string og_description
+        string og_image
+        string og_type
+        string twitter_title
+        string twitter_description
+        string twitter_image
+        string twitter_card
+        string canonical_url
+        string meta_robots
     }
     blogs {
         string id PK
@@ -66,6 +100,10 @@ erDiagram
         string twitter_card
         string canonical_url
     }
+    services_categories {
+        string service_id PK, FK
+        string category_id PK, FK
+    }
     whats_included {
         string id PK
         string service_id FK
@@ -96,7 +134,9 @@ erDiagram
     }
 
     blogs_categories }|..|| blogs : "cascades on delete"
-    blogs_categories }|..|| categories : "cascades on delete"
+    blogs_categories }|..|| blog_categories : "cascades on delete"
+    services_categories }|..|| services : "cascades on delete"
+    services_categories }|..|| service_categories : "cascades on delete"
     whats_included }|..|| services : "cascades on delete"
     benefits }|..|| services : "cascades on delete"
     service_images }|..|| services : "cascades on delete"
@@ -112,20 +152,21 @@ erDiagram
 - Stores account details for authentication.
 - Field `is_staff` restricts write access (POST, PUT, PATCH, DELETE) to admin accounts.
 
-### Categories Table
+### Blog Categories & Service Categories Tables
 
-- Defines clean categories (e.g. Residential Cleaning, Deep Cleaning).
-- Connects to blogs via a many-to-many relationship.
+- `blog_categories` defines categories for blog posts (e.g. Tips, Guides).
+- `service_categories` defines categories for cleaning services (e.g. Residential, Commercial).
 
 ### Blogs & Blogs-Categories Tables
 
 - Stores articles and SEO metadata (inherited from SEOMixin fields).
-- Many-to-many join table resolves categories with cascading deletion rules.
+- Many-to-many join table resolves blog posts with their respective blog categories.
 
-### Services Table
+### Services & Services-Categories Tables
 
 - Core catalog table for cleaning services.
 - Contains metadata, SEO fields, and a `what_we_offer` JSONB field for custom options.
+- Many-to-many join table resolves services with their respective service categories.
 
 ### whats_included / benefits / service_images / testimonials Tables
 
