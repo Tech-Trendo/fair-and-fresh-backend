@@ -9,9 +9,17 @@ import { serviceCategories } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { ArrowLeft, Sparkles, ShieldCheck, CheckCircle } from "lucide-react";
 import { Metadata } from "next";
+import { CategoryTabs } from "@/components/category-tabs";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  const categories = await db.query.serviceCategories.findMany({
+    columns: { slug: true },
+  });
+  return categories.map((c) => ({ slug: c.slug }));
 }
 
 // Generate dynamic metadata for category SEO indexability
@@ -82,6 +90,16 @@ export default async function CategoryPage({ params }: PageProps) {
   if (!categoryData) {
     notFound();
   }
+
+  const allCategories = await db.query.serviceCategories.findMany({
+    orderBy: (serviceCategories, { asc }) => [asc(serviceCategories.title)],
+  });
+
+  const categoriesList = allCategories.map((c) => ({
+    id: c.id,
+    title: c.title,
+    slug: c.slug,
+  }));
 
   // Extract linked services
   const servicesList = (categoryData.servicesCategories || [])
@@ -160,6 +178,8 @@ export default async function CategoryPage({ params }: PageProps) {
 
         {/* Services List Section */}
         <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <CategoryTabs categories={categoriesList} activeSlug={slug} />
+
           <div className="mb-10 text-center lg:text-left">
             <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">
               Available {categoryData.title} Packages

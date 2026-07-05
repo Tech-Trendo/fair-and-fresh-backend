@@ -6,6 +6,7 @@ import { Sofa, Car, Bed, Home, Shirt, Sparkles, Droplets, Scissors, HelpCircle, 
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
+import { CategoryTabs } from "@/components/category-tabs";
 
 // Map slugs to appropriate Lucide icons
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -48,8 +49,6 @@ function getServiceIcon(slug: string, customIcon?: string) {
   return iconMap[slug] || HelpCircle;
 }
 
-import { useState } from "react";
-
 export interface ServiceData {
   name: string;
   slug: string;
@@ -66,13 +65,6 @@ export function Services({
   services: ServiceData[];
   categories?: { id: string; title: string; slug: string }[];
 }) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-
-  const filteredServices = services.filter((service) => {
-    if (selectedCategory === "all") return true;
-    return (service.category || []).some((cat) => cat.slug === selectedCategory);
-  });
-
   return (
     <section id="services" className="py-12 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,37 +82,10 @@ export function Services({
           </FadeIn>
         </div>
 
-        {/* Category Tabs Filter */}
-        {categories.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 mb-10 border-b border-border/20 pb-6">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                selectedCategory === "all"
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "bg-muted text-muted-foreground hover:bg-zinc-200"
-              }`}
-            >
-              All Services
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.slug)}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  selectedCategory === cat.slug
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-muted text-muted-foreground hover:bg-zinc-200"
-                }`}
-              >
-                {cat.title}
-              </button>
-            ))}
-          </div>
-        )}
+        <CategoryTabs categories={categories} activeSlug="all" />
 
         <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {filteredServices.map((service, index) => {
+          {services.map((service, index) => {
             const IconComponent = getServiceIcon(service.slug, service.icon);
             return (
               <StaggerItem key={index}>
