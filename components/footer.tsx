@@ -1,13 +1,50 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp, FaEnvelope } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
 
+const fallbackServices = [
+  { name: "Carpet Cleaning", slug: "carpet-cleaning" },
+  { name: "Mattress Cleaning", slug: "mattress-cleaning" },
+  { name: "Rug Cleaning", slug: "rug-cleaning" },
+  { name: "Upholstery Cleaning", slug: "upholstery-cleaning" },
+  { name: "Curtain Cleaning", slug: "curtain-cleaning" },
+  { name: "Car Seat Cleaning", slug: "car-seat-cleaning" },
+  { name: "Flood Damage Restoration", slug: "flood-damage-restoration" },
+];
+
 export function Footer() {
+  const [services, setServices] = useState(fallbackServices);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/services")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          setServices(
+            data.results.map((srv: { name: string; slug: string }) => ({
+              name: srv.name,
+              slug: srv.slug,
+            }))
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch footer services:", err);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="bg-foreground text-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -25,6 +62,13 @@ export function Footer() {
               satisfaction.
             </p>
             <div className="flex space-x-4">
+              <a
+                href="mailto:support@fairandfreshcleaning.com.au"
+                aria-label="Email us"
+                className="text-background/60 hover:text-background transition-colors"
+              >
+                <Mail className="h-5 w-5" />
+              </a>
               <Facebook className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
               <Instagram className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
               <Twitter className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
@@ -34,47 +78,16 @@ export function Footer() {
           <StaggerItem>
             <h3 className="text-lg font-semibold mb-4">Our Services</h3>
             <ul className="space-y-2 text-background/80">
-              <li>
-                <Link href="/services/carpet-cleaning" className="hover:text-background transition-colors">
-                  Carpet Cleaning
-                </Link>
-              </li>
-              <li>
-                <Link href="/services/mattress-cleaning" className="hover:text-background transition-colors">
-                  Mattress Cleaning
-                </Link>
-              </li>
-              <li>
-                <Link href="/services/rug-cleaning" className="hover:text-background transition-colors">
-                  Rug Cleaning
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/services/upholstery-cleaning"
-                  className="hover:text-background transition-colors"
-                >
-                  Upholstery Cleaning
-                </Link>
-              </li>
-              <li>
-                <Link href="/services/curtain-cleaning" className="hover:text-background transition-colors">
-                  Curtain Cleaning
-                </Link>
-              </li>
-              <li>
-                <Link href="/services/car-seat-cleaning" className="hover:text-background transition-colors">
-                  Car Seat Cleaning
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/services/flood-damage-restoration"
-                  className="hover:text-background transition-colors"
-                >
-                  Flood Damage Restoration
-                </Link>
-              </li>
+              {services.map((service) => (
+                <li key={service.slug}>
+                  <Link
+                    href={`/services/${service.slug}`}
+                    className="hover:text-background transition-colors"
+                  >
+                    {service.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </StaggerItem>
 
@@ -123,15 +136,20 @@ export function Footer() {
             <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
             <div className="space-y-3 text-background/80">
               <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4" />
-                <span>0430 799 567</span>
+                <Phone className="h-4 w-4 shrink-0" />
+                <a href="tel:+61430799567" className="hover:text-background transition-colors">
+                  0430 799 567
+                </a>
               </div>
-              <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4" />
-                <span>support@fairandfreshcleaning.com.au</span>
-              </div>
+              <a
+                href="mailto:support@fairandfreshcleaning.com.au"
+                className="flex items-center gap-3 hover:text-background transition-colors"
+              >
+                <FaEnvelope className="h-4 w-4 shrink-0" />
+                <span className="break-all">support@fairandfreshcleaning.com.au</span>
+              </a>
               <div className="flex items-start gap-3">
-                <MapPin className="h-4 w-4 mt-1" />
+                <MapPin className="h-4 w-4 shrink-0 mt-1" />
                 <div>
                   <div>Brisbane and Surrounding Areas</div>
                   <div className="text-sm">Gold Coast and Sunshine Coast</div>
@@ -157,7 +175,7 @@ export function Footer() {
         >
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-background/60 text-sm">
-              © 2025 Fair and Fresh Cleaning. All rights reserved.
+              © {currentYear} Fair and Fresh Cleaning. All rights reserved.
             </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-background/60 hover:text-background text-sm transition-colors">
@@ -165,9 +183,6 @@ export function Footer() {
               </a>
               <a href="#" className="text-background/60 hover:text-background text-sm transition-colors">
                 Terms of Service
-              </a>
-              <a href="#" className="text-background/60 hover:text-background text-sm transition-colors">
-                Sitemap
               </a>
             </div>
           </div>
