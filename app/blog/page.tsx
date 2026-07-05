@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import Link from "next/link";
-import Image from "next/image";
-import { Search, Calendar, User, ArrowRight, BookOpen, Tag } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Search, BookOpen } from "lucide-react";
+import { motion } from "framer-motion";
+import { BlogCategoryTabs } from "@/components/blog-category-tabs";
+import { BlogPostCard } from "@/components/blog-post-card";
 
 interface Category {
   id: string;
@@ -29,7 +29,6 @@ export default function BlogIndexPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,11 +65,7 @@ export default function BlogIndexPage() {
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCategory =
-      selectedCategory === "all" ||
-      post.category.some((cat) => cat.slug === selectedCategory);
-
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
 
   // Pagination calculation
@@ -87,7 +82,7 @@ export default function BlogIndexPage() {
   // Reset page when filter/search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery]);
 
   return (
     <>
@@ -144,32 +139,7 @@ export default function BlogIndexPage() {
               />
             </div>
 
-            {/* Category Tabs */}
-            <div className="flex flex-wrap gap-2 items-center">
-              <button
-                onClick={() => setSelectedCategory("all")}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  selectedCategory === "all"
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-card text-muted-foreground hover:bg-muted border border-border"
-                }`}
-              >
-                All Topics
-              </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.slug)}
-                  className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                    selectedCategory === cat.slug
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "bg-card text-muted-foreground hover:bg-muted border border-border"
-                  }`}
-                >
-                  {cat.title}
-                </button>
-              ))}
-            </div>
+            <BlogCategoryTabs categories={categories} activeSlug="all" />
           </div>
         </section>
 
@@ -194,74 +164,25 @@ export default function BlogIndexPage() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {currentPosts.map((post) => {
-                  const formattedDate = new Date(post.created_at).toLocaleDateString("en-AU", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  });
-
-                  return (
-                    <motion.article
-                      key={post.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4 }}
-                      className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full"
-                    >
-                      {/* Image container */}
-                      <Link href={`/blog/${post.slug}`} className="relative block aspect-video overflow-hidden bg-muted">
-                        <Image
-                          src={post.featured_image || "/uploads/blog_workspace.jpg"}
-                          alt={post.title}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-550 ease-out"
-                        />
-                      </Link>
-
-                      {/* Card Content */}
-                      <div className="p-6 flex flex-col flex-grow">
-                        {/* Meta Category & Date */}
-                        <div className="flex items-center gap-3 mb-4 text-[10px] uppercase font-bold tracking-wider text-primary">
-                          <span className="flex items-center gap-1">
-                            <Tag className="w-3 h-3" />
-                            {post.category.length > 0 ? post.category[0].title : "General"}
-                          </span>
-                          <span className="text-border">•</span>
-                          <span className="flex items-center gap-1 text-muted-foreground font-semibold">
-                            <Calendar className="w-3 h-3" />
-                            {formattedDate}
-                          </span>
-                        </div>
-
-                        {/* Title */}
-                        <h2 className="text-xl font-bold leading-snug group-hover:text-primary transition-colors mb-3">
-                          <Link href={`/blog/${post.slug}`}>
-                            {post.title}
-                          </Link>
-                        </h2>
-
-                        {/* Description snippet */}
-                        <p className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-3"
-                           dangerouslySetInnerHTML={{ __html: post.description.replace(/<[^>]*>/g, '') }}
-                        />
-
-                        {/* Footer details */}
-                        <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
-                          <Link
-                            href={`/blog/${post.slug}`}
-                            className="text-xs font-bold text-primary group-hover:text-accent flex items-center gap-1 transition-colors"
-                          >
-                            Read Article
-                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                          </Link>
-                        </div>
-                      </div>
-                    </motion.article>
-                  );
-                })}
+                {currentPosts.map((post) => (
+                  <motion.div
+                    key={post.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <BlogPostCard
+                      slug={post.slug}
+                      title={post.title}
+                      featuredImage={post.featured_image}
+                      description={post.description}
+                      createdAt={post.created_at}
+                      categoryTitle={post.category[0]?.title}
+                      categorySlug={post.category[0]?.slug}
+                    />
+                  </motion.div>
+                ))}
               </div>
 
               {/* Pagination controls */}

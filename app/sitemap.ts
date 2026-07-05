@@ -18,11 +18,14 @@ function toAbsoluteUrl(pathOrUrl: string): string {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [dbServices, dbCategories, dbBlogs] = await Promise.all([
+  const [dbServices, dbCategories, dbBlogCategories, dbBlogs] = await Promise.all([
     db.query.services.findMany({
       columns: { slug: true, createdAt: true, canonicalUrl: true, metaRobots: true },
     }),
     db.query.serviceCategories.findMany({
+      columns: { slug: true, canonicalUrl: true, metaRobots: true },
+    }),
+    db.query.blogCategories.findMany({
       columns: { slug: true, canonicalUrl: true, metaRobots: true },
     }),
     db.query.blogs.findMany({
@@ -58,6 +61,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     }));
 
+  const blogCategoryPages: MetadataRoute.Sitemap = dbBlogCategories
+    .filter((c) => isIndexable(c.metaRobots))
+    .map((c) => ({
+      url: toAbsoluteUrl(c.canonicalUrl || `/blog/category/${c.slug}`),
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    }));
+
   const blogPages: MetadataRoute.Sitemap = dbBlogs
     .filter((b) => isIndexable(b.metaRobots))
     .map((b) => ({
@@ -67,5 +79,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-  return [...staticPages, ...categoryPages, ...servicePages, ...blogPages];
+  return [...staticPages, ...categoryPages, ...servicePages, ...blogCategoryPages, ...blogPages];
 }
