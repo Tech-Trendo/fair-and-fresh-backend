@@ -29,6 +29,7 @@ export default function BlogIndexPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,7 +66,11 @@ export default function BlogIndexPage() {
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSearch;
+    const matchesCategory =
+      selectedCategory === "all" ||
+      post.category.some((cat) => cat.slug === selectedCategory);
+
+    return matchesSearch && matchesCategory;
   });
 
   // Pagination calculation
@@ -82,7 +87,7 @@ export default function BlogIndexPage() {
   // Reset page when filter/search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, selectedCategory]);
 
   return (
     <>
@@ -139,7 +144,11 @@ export default function BlogIndexPage() {
               />
             </div>
 
-            <BlogCategoryTabs categories={categories} activeSlug="all" />
+            <BlogCategoryTabs
+              categories={categories}
+              activeSlug={selectedCategory}
+              onSelect={setSelectedCategory}
+            />
           </div>
         </section>
 

@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
 import { CategoryTabs } from "@/components/category-tabs";
+import { useState } from "react";
 
 // Map slugs to appropriate Lucide icons
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -65,6 +66,13 @@ export function Services({
   services: ServiceData[];
   categories?: { id: string; title: string; slug: string }[];
 }) {
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const filteredServices = services.filter((service) => {
+    if (selectedCategory === "all") return true;
+    return (service.category || []).some((cat) => cat.slug === selectedCategory);
+  });
+
   return (
     <section id="services" className="py-12 md:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -82,10 +90,14 @@ export function Services({
           </FadeIn>
         </div>
 
-        <CategoryTabs categories={categories} activeSlug="all" />
+        <CategoryTabs
+          categories={categories}
+          activeSlug={selectedCategory}
+          onSelect={setSelectedCategory}
+        />
 
         <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {services.map((service, index) => {
+          {filteredServices.map((service, index) => {
             const IconComponent = getServiceIcon(service.slug, service.icon);
             return (
               <StaggerItem key={index}>
