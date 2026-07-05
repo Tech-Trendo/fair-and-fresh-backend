@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/jwt';
-import fs from 'fs';
-import path from 'path';
+import { put } from '@vercel/blob';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,25 +22,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
+    const ext = file.name.split('.').pop() || '';
+    const basename = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9]/g, '_');
+    const filename = `uploads/${basename}-${Date.now()}.${ext}`;
 
-    const ext = path.extname(file.name);
-    const basename = path.basename(file.name, ext).replace(/[^a-zA-Z0-9]/g, '_');
-    const filename = `${basename}-${Date.now()}${ext}`;
-    const filePath = path.join(uploadDir, filename);
-
-    fs.writeFileSync(filePath, buffer);
+    const { url } = await put(filename, file, {
+      access: 'public',
+    });
 
     return NextResponse.json(
-      { image_url: `/uploads/${filename}` },
+      { image_url: url },
       { status: 201 }
     );
   } catch (error) {
+    console.error('File upload failed:', error);
     return NextResponse.json(
       { detail: 'File upload failed' },
       { status: 500 }

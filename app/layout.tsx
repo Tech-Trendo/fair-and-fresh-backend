@@ -4,6 +4,8 @@ import "./globals.css";
 import { AuthProvider } from "@/components/context/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +32,8 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>{children}</AuthProvider>
         <Toaster />
+        <Analytics />
+        <SpeedInsights />
       </body>
       <GoogleAnalytics gaId="AW-17599498680" />
       <GoogleTagManager gtmId="GTM-NXLBM7W4" />

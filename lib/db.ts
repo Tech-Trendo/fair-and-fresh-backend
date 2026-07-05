@@ -7,10 +7,16 @@ const connectionString = process.env.DATABASE_URL || 'postgresql://faf_user:faf_
 
 const globalForDrizzle = global as unknown as {
   postgresClient: postgres.Sql | undefined;
+  seeded?: boolean;
 };
 
 if (!globalForDrizzle.postgresClient) {
-  globalForDrizzle.postgresClient = postgres(connectionString, { max: 1});
+  globalForDrizzle.postgresClient = postgres(connectionString, {
+    prepare: false,
+    max: 10,
+    idle_timeout: 20,
+    connect_timeout: 10,
+  });
 }
 
 export const db = drizzle(globalForDrizzle.postgresClient, { schema });
@@ -250,5 +256,8 @@ export async function seedDatabase() {
   }
 }
 
-// Automatically seed on connection
-seedDatabase();
+// Automatically seed on connection (only once per process)
+if (!globalForDrizzle.seeded) {
+  globalForDrizzle.seeded = true;
+  seedDatabase();
+}
