@@ -10,6 +10,8 @@ import { db } from "@/lib/db";
 import { staticPages } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 
+export const dynamic = 'force-dynamic';
+
 // Dynamically generate homepage metadata from staticPages table in DB
 export async function generateMetadata(): Promise<Metadata> {
   const page = await db.query.staticPages.findFirst({
@@ -96,9 +98,13 @@ export default async function Home() {
     <main className="min-h-screen">
       <Header />
       <Hero />
-      <Services services={servicesList} categories={categoriesList} />
+      {servicesList.length > 0 && (
+        <Services services={servicesList} categories={categoriesList} />
+      )}
       <AboutPreview />
-      <Reviews reviews={testimonialsList} />
+      {testimonialsList.length > 0 && (
+        <Reviews reviews={testimonialsList} />
+      )}
       <CtaSection />
       <Footer />
     </main>
