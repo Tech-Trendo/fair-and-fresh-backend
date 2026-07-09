@@ -60,7 +60,7 @@ export default function LoginPage() {
           <p className="text-xs text-zinc-500">Enter your credentials to access the admin portal.</p>
         </div>
 
-        {/* Form */}
+        {/* ForM */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium text-zinc-500">Username</label>
