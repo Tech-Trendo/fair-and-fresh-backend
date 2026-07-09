@@ -96,11 +96,14 @@ export function Services({
           onSelect={setSelectedCategory}
         />
 
-        <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {filteredServices.map((service, index) => {
+        <StaggerContainer
+          key={selectedCategory}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+        >
+          {filteredServices.map((service) => {
             const IconComponent = getServiceIcon(service.slug, service.icon);
             return (
-              <StaggerItem key={index}>
+              <StaggerItem key={service.slug}>
                 <Card
                   className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 overflow-hidden group border border-border/40 bg-card rounded-2xl h-full flex flex-col"
                 >
