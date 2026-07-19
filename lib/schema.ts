@@ -102,6 +102,7 @@ export const services = pgTable('services', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   slug: text('slug').unique().notNull(),
   icon: text('icon'),
+  sortOrder: integer('sort_order').default(0).notNull(),
 
   // SEOMixin fields
   metaTitle: text('meta_title'),

@@ -77,7 +77,8 @@ export async function PUT(
       meta_robots,
       icon,
       categoryIds,
-      category
+      category,
+      sort_order,
     } = body;
 
     if (!name) {
@@ -115,7 +116,10 @@ export async function PUT(
         twitterCard: twitter_card || 'summary_large_image',
         canonicalUrl: canonical_url || '',
         metaRobots: meta_robots || '',
-        icon: icon || ''
+        icon: icon || '',
+        ...(sort_order !== undefined && sort_order !== null && !isNaN(Number(sort_order))
+          ? { sortOrder: Number(sort_order) }
+          : {}),
       })
       .where(eq(services.id, id));
 
@@ -250,6 +254,7 @@ export async function PATCH(
     if (body.twitter_image !== undefined) updateObj.twitterImage = body.twitter_image;
     if (body.twitter_card !== undefined) updateObj.twitterCard = body.twitter_card;
     if (body.canonical_url !== undefined) updateObj.canonicalUrl = body.canonical_url;
+    if (body.sort_order !== undefined && !isNaN(Number(body.sort_order))) updateObj.sortOrder = Number(body.sort_order);
 
     if (Object.keys(updateObj).length > 0) {
       await db.update(services).set(updateObj).where(eq(services.id, id));

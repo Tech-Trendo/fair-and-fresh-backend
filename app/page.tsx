@@ -56,7 +56,7 @@ export default async function Home() {
         },
       },
     },
-    orderBy: (services, { asc }) => [asc(services.name)],
+    orderBy: (services, { asc }) => [asc(services.sortOrder), asc(services.name)],
   });
 
   const servicesList = dbServices.map((s) => ({

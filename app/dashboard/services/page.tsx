@@ -15,6 +15,7 @@ interface Service {
   testimonials?: { id: string; author: string; content: string; rating: number }[];
   slug: string;
   icon?: string;
+  sort_order?: number;
   category?: { id: string; title: string; slug: string }[];
   // SEO Mixin fields
   meta_title?: string;
@@ -46,6 +47,7 @@ export default function ServicesPage() {
   const [longDescription, setLongDescription] = useState('');
   const [whatWeOfferText, setWhatWeOfferText] = useState('{"supplies_included": true}'); // JSONField
   const [icon, setIcon] = useState('Sparkles');
+  const [sortOrder, setSortOrder] = useState<number>(0);
 
   // Form Fields - Content lists (dynamic arrays)
   const [whatsIncludedList, setWhatsIncludedList] = useState<{ title: string; description: string }[]>([]);
@@ -137,6 +139,9 @@ export default function ServicesPage() {
     setMetaRobots('');
     setIcon('Sparkles');
     setSelectedCategoryIds([]);
+    // Auto-assign next order
+    const maxOrder = services.length > 0 ? Math.max(...services.map(s => s.sort_order ?? 0)) : 0;
+    setSortOrder(maxOrder + 1);
     
     setActiveTab('general');
     setModalOpen(true);
@@ -148,6 +153,7 @@ export default function ServicesPage() {
     setShortDescription(srv.short_description || '');
     setLongDescription(srv.long_description || '');
     setWhatWeOfferText(JSON.stringify(srv.what_we_offer || {}));
+    setSortOrder(srv.sort_order ?? 0);
     
     setWhatsIncludedList(
       (srv.whats_included || []).map((item) => ({
@@ -292,6 +298,7 @@ export default function ServicesPage() {
       images: imagesList,
       testimonials: testimonialsList.filter(item => item.author.trim()),
       slug: slug || null,
+      sort_order: sortOrder,
       meta_title: metaTitle,
       meta_description: metaDescription,
       meta_keywords: metaKeywords,
@@ -330,6 +337,53 @@ export default function ServicesPage() {
       alert('Network error occurred.');
     } finally {
       setSubmitLoading(false);
+    }
+  };
+
+  // Inline reorder: swap this service's sort_order with its neighbour
+  const handleReorder = async (id: string, direction: 'up' | 'down') => {
+    const idx = services.findIndex(s => s.id === id);
+    if (idx === -1) return;
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= services.length) return;
+
+    // Clone the list of services
+    const updatedServices = [...services];
+    
+    // Swap the two items in the array
+    const temp = updatedServices[idx];
+    updatedServices[idx] = updatedServices[targetIdx];
+    updatedServices[targetIdx] = temp;
+
+    // Assign new sort_order based on their new index in the list
+    const servicesWithNewOrder = updatedServices.map((srv, index) => ({
+      ...srv,
+      sort_order: index,
+    }));
+
+    // Update state optimistically
+    setServices(servicesWithNewOrder);
+
+    // Identify which ones actually changed their sort_order and need to be saved
+    const promises = [];
+    for (let i = 0; i < servicesWithNewOrder.length; i++) {
+      const original = services.find(s => s.id === servicesWithNewOrder[i].id);
+      if (original && original.sort_order !== servicesWithNewOrder[i].sort_order) {
+        promises.push(
+          apiFetch(`/api/services/${servicesWithNewOrder[i].id}/`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sort_order: servicesWithNewOrder[i].sort_order }),
+          })
+        );
+      }
+    }
+
+    try {
+      await Promise.all(promises);
+    } catch (err) {
+      console.error('Reorder failed', err);
+      fetchServices(); // rollback
     }
   };
 
@@ -398,6 +452,7 @@ export default function ServicesPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-[#E5E7EB] text-[9px] font-bold text-[#4B5563] uppercase tracking-wider bg-[#F9FAFB]">
+                  <th className="px-3 py-3 text-center w-20">Order</th>
                   <th className="px-5 py-3">Service Name</th>
                   <th className="px-5 py-3">Slug</th>
                   <th className="px-5 py-3 text-center">Whats Included</th>
@@ -407,8 +462,29 @@ export default function ServicesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F3F4F6]">
-                {services.map((srv) => (
+                {services.map((srv, idx) => (
                   <tr key={srv.id} className="text-xs hover:bg-[#F9FAFB]/50 transition-colors">
+                    <td className="px-3 py-3 w-20">
+                      <div className="flex flex-col items-center gap-0.5">
+                        <button
+                          onClick={() => handleReorder(srv.id, 'up')}
+                          disabled={idx === 0}
+                          title="Move up"
+                          className="text-[#9CA3AF] hover:text-[#2563EB] disabled:opacity-20 disabled:cursor-not-allowed transition-colors cursor-pointer leading-none"
+                        >
+                          ▲
+                        </button>
+                        <span className="text-[10px] font-mono font-bold text-[#6B7280] w-6 text-center">{srv.sort_order ?? idx}</span>
+                        <button
+                          onClick={() => handleReorder(srv.id, 'down')}
+                          disabled={idx === services.length - 1}
+                          title="Move down"
+                          className="text-[#9CA3AF] hover:text-[#2563EB] disabled:opacity-20 disabled:cursor-not-allowed transition-colors cursor-pointer leading-none"
+                        >
+                          ▼
+                        </button>
+                      </div>
+                    </td>
                     <td className="px-5 py-3 font-semibold text-[#111827]">{srv.name}</td>
                     <td className="px-5 py-3 text-[#4B5563]">{srv.slug}</td>
                     <td className="px-5 py-3 text-center text-[#4B5563]">{(srv.whats_included || []).length}</td>
@@ -548,6 +624,20 @@ export default function ServicesPage() {
                       <option value="Sun">Sun / Window Clean</option>
                       <option value="HelpCircle">Help / General</option>
                     </select>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Display Order</label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="number"
+                        min={0}
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(Number(e.target.value))}
+                        className="w-24 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                      />
+                      <p className="text-[10px] text-[#9CA3AF]">Lower numbers appear first on the frontend. You can also use the ▲▼ arrows in the table.</p>
+                    </div>
                   </div>
 
                   <div className="flex flex-col gap-1.5 mt-2">

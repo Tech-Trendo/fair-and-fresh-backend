@@ -106,7 +106,7 @@ export default async function ServicesPage() {
       images: { limit: 1 },
       whatsIncluded: true,
     },
-    orderBy: (services, { asc }) => [asc(services.name)],
+    orderBy: (services, { asc }) => [asc(services.sortOrder), asc(services.name)],
   });
 
   const services = dbServices.map((s) => ({

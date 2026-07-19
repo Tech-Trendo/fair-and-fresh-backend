@@ -3,7 +3,7 @@ import { db, slugify } from '@/lib/db';
 import { services, whatsIncluded, benefits, serviceImages, testimonials, servicesCategories } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 export function formatService(srv: any) {
   const resolvedCategories = srv.servicesCategories
@@ -19,6 +19,7 @@ export function formatService(srv: any) {
     created_at: srv.createdAt ? srv.createdAt.toISOString() : new Date().toISOString(),
     slug: srv.slug,
     icon: srv.icon || '',
+    sort_order: srv.sortOrder ?? 0,
     meta_title: srv.metaTitle || '',
     meta_description: srv.metaDescription || '',
     meta_keywords: srv.metaKeywords || '',
@@ -73,7 +74,8 @@ export async function GET(request: NextRequest) {
             category: true
           }
         }
-      }
+      },
+      orderBy: (services, { asc }) => [asc(services.sortOrder), asc(services.name)],
     });
 
     const formattedServices = servicesList.map(formatService);
@@ -121,7 +123,8 @@ export async function POST(request: NextRequest) {
       meta_robots,
       icon,
       categoryIds,
-      category
+      category,
+      sort_order,
     } = body;
 
     if (!name) {
@@ -133,6 +136,15 @@ export async function POST(request: NextRequest) {
 
     const serviceId = `srv-${Date.now()}`;
     const finalSlug = slug || slugify(name);
+
+    // Auto-assign sort order: find current max and increment
+    let resolvedSortOrder: number;
+    if (sort_order !== undefined && sort_order !== null && !isNaN(Number(sort_order))) {
+      resolvedSortOrder = Number(sort_order);
+    } else {
+      const maxResult = await db.select({ maxOrder: sql<number>`coalesce(max(sort_order), 0)` }).from(services);
+      resolvedSortOrder = (maxResult[0]?.maxOrder ?? 0) + 1;
+    }
 
     // 1. Insert Service row
     await db.insert(services).values({
@@ -156,6 +168,7 @@ export async function POST(request: NextRequest) {
       canonicalUrl: canonical_url || '',
       metaRobots: meta_robots || '',
       icon: icon || '',
+      sortOrder: resolvedSortOrder,
       createdAt: new Date()
     });
 
