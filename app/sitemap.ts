@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://www.fairandfreshcleaning.com.au");
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+const BASE_URL = "https://www.fairandfreshcleaning.com.au";
 
 function isIndexable(metaRobots: string | null | undefined): boolean {
   if (!metaRobots) return true;

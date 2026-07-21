@@ -34,9 +34,10 @@ export default function RootLayout({
         <Toaster />
         <Analytics />
         <SpeedInsights />
+
+        <GoogleAnalytics gaId="G-CDD5ZL527E" />
+        <GoogleTagManager gtmId="GTM-NXLBM7W4" />
       </body>
-      <GoogleAnalytics gaId="AW-17599498680" />
-      <GoogleTagManager gtmId="GTM-NXLBM7W4" />
     </html>
   );
 }
