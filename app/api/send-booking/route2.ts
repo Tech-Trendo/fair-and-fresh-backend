@@ -1,6 +1,48 @@
 // /app/api/send-booking/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
+import { db } from "@/lib/db";
+import { services as servicesTable } from "@/lib/schema";
+
+const STATIC_SERVICE_MAP: Record<string, string> = {
+  'bond-cleaning': 'Bond Cleaning',
+  'carpet-and-rug': 'Carpet and Rug Cleaning',
+  'upholstery-and-car-seats': 'Upholstery and Car Seat Cleaning',
+  'mattress': 'Mattress Cleaning',
+  'curtain': 'Curtain Cleaning',
+  'car-detailing': 'Car Detailing',
+  'lawn-mowing': 'Lawn Mowing',
+  'flood-damage': 'Flood Damage Restoration',
+};
+
+async function resolveServiceNames(serviceIdentifiers: any): Promise<string[]> {
+  if (!serviceIdentifiers) return [];
+  const list = Array.isArray(serviceIdentifiers) ? serviceIdentifiers : [serviceIdentifiers];
+
+  const map = new Map<string, string>();
+  for (const [key, value] of Object.entries(STATIC_SERVICE_MAP)) {
+    map.set(key.toLowerCase(), value);
+  }
+
+  try {
+    const dbServices = await db
+      .select({ id: servicesTable.id, name: servicesTable.name, slug: servicesTable.slug })
+      .from(servicesTable);
+
+    for (const srv of dbServices) {
+      if (srv.id) map.set(srv.id.toLowerCase(), srv.name);
+      if (srv.slug) map.set(srv.slug.toLowerCase(), srv.name);
+      if (srv.name) map.set(srv.name.toLowerCase(), srv.name);
+    }
+  } catch (err) {
+    console.error('Error fetching services for name mapping:', err);
+  }
+
+  return list.map((item) => {
+    if (!item || typeof item !== 'string') return String(item || '');
+    return map.get(item.toLowerCase()) || item;
+  });
+}
 
 // Initialize Twilio client
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
@@ -16,13 +58,15 @@ export async function POST(req: NextRequest) {
     const booking = await req.json();
 
     // Format created_at date
-    const clean_created_at = new Date(booking.created_at).toLocaleString("en-AU", {
+    const clean_created_at = new Date(booking.created_at || Date.now()).toLocaleString("en-AU", {
       day: "2-digit",
       month: "short",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
+
+    const resolvedServices = await resolveServiceNames(booking.services);
 
     // Fire-and-forget sending to all recipients
     // recipients.forEach(async (to) => {
@@ -37,7 +81,7 @@ ID: ${booking.id}
 Name: ${booking.name}
 Email: ${booking.email}
 Phone: ${booking.phone}
-Services: ${booking.services.join(", ")}
+Services: ${resolvedServices.join(", ")}
 City: ${booking.city}
 Street: ${booking.street}
 Preferred Date: ${booking.preferred_date}
@@ -59,3 +103,4 @@ Created At: ${clean_created_at}`,
     return NextResponse.json({ message: "Error sending booking", error }, { status: 500 });
   }
 }
+

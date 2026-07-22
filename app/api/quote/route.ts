@@ -1,9 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { quotationRequests } from '@/lib/schema';
+import { quotationRequests, services as servicesTable } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
 import { desc } from 'drizzle-orm';
+
+const STATIC_SERVICE_MAP: Record<string, string> = {
+  'bond-cleaning': 'Bond Cleaning',
+  'carpet-and-rug': 'Carpet and Rug Cleaning',
+  'upholstery-and-car-seats': 'Upholstery and Car Seat Cleaning',
+  'mattress': 'Mattress Cleaning',
+  'curtain': 'Curtain Cleaning',
+  'car-detailing': 'Car Detailing',
+  'lawn-mowing': 'Lawn Mowing',
+  'flood-damage': 'Flood Damage Restoration',
+};
+
+async function getServiceMap(): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  for (const [key, value] of Object.entries(STATIC_SERVICE_MAP)) {
+    map.set(key.toLowerCase(), value);
+  }
+
+  try {
+    const dbServices = await db
+      .select({ id: servicesTable.id, name: servicesTable.name, slug: servicesTable.slug })
+      .from(servicesTable);
+
+    for (const srv of dbServices) {
+      if (srv.id) map.set(srv.id.toLowerCase(), srv.name);
+      if (srv.slug) map.set(srv.slug.toLowerCase(), srv.name);
+      if (srv.name) map.set(srv.name.toLowerCase(), srv.name);
+    }
+  } catch (err) {
+    console.error('Error fetching services for name mapping:', err);
+  }
+
+  return map;
+}
+
+async function resolveServiceNames(serviceIdentifiers: string[]): Promise<string[]> {
+  if (!serviceIdentifiers || !Array.isArray(serviceIdentifiers) || serviceIdentifiers.length === 0) {
+    return [];
+  }
+
+  const map = await getServiceMap();
+  return serviceIdentifiers.map((item) => {
+    if (!item) return item;
+    const lower = item.toLowerCase();
+    return map.get(lower) || item;
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,10 +88,11 @@ export async function POST(request: NextRequest) {
     }
 
     const newId = `qte-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+    const resolvedServices = await resolveServiceNames(services);
 
     const newRecord = {
       id: newId,
-      services: services,
+      services: resolvedServices,
       preferredDate: preferred_date ? preferred_date.trim() : null,
       preferredTime: preferred_time ? preferred_time.trim() : null,
       name: name.trim(),
@@ -111,10 +159,24 @@ export async function GET(request: NextRequest) {
       .from(quotationRequests)
       .orderBy(desc(quotationRequests.createdAt));
 
-    const paginated = paginate(quotes, request.nextUrl);
+    const map = await getServiceMap();
+
+    const resolvedQuotes = quotes.map((q) => {
+      const resolvedServices = (q.services || []).map((s: string) => {
+        if (!s) return s;
+        return map.get(s.toLowerCase()) || s;
+      });
+      return {
+        ...q,
+        services: resolvedServices,
+      };
+    });
+
+    const paginated = paginate(resolvedQuotes, request.nextUrl);
     return NextResponse.json(paginated, { status: 200 });
   } catch (error) {
     console.error('Fetch quotation requests failed:', error);
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });
   }
 }
+

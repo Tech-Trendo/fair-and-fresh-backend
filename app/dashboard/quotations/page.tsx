@@ -279,7 +279,7 @@ export default function QuotationsPage() {
                         </div>
                         <div className="text-[11px] text-muted-foreground truncate mt-1 flex items-center gap-1.5 flex-wrap">
                           <span className="font-semibold text-primary">
-                            Services: {quote.services.join(', ')}
+                            Services: {Array.isArray(quote.services) ? quote.services.join(', ') : quote.services || 'None'}
                           </span>
                           <span className="text-[#9CA3AF]">•</span>
                           <span>{quote.city}</span>
