@@ -20,6 +20,7 @@ if (!globalForDrizzle.postgresClient) {
 }
 
 export const db = drizzle(globalForDrizzle.postgresClient, { schema });
+export const postgresClient = globalForDrizzle.postgresClient;
 
 // Re-export utility functions
 export function slugify(text: string): string {
@@ -67,6 +68,8 @@ export async function seedDatabase() {
         });
       
       console.log('🔒 Admin credentials successfully synchronized with environment variables.');
+    } else {
+      console.warn('⚠️ ADMIN_USERNAME or ADMIN_PASSWORD environment variable is missing. Skipping admin credential sync.');
     }
 
     // 2. Safely check if structural data (categories/services) is already seeded
