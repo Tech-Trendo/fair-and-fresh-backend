@@ -144,6 +144,14 @@ export const benefits = pgTable('benefits', {
   description: text('description'),
 });
 
+// Service Types Table (One-to-Many with Service)
+export const serviceTypes = pgTable('service_types', {
+  id: text('id').primaryKey(),
+  serviceId: text('service_id').references(() => services.id, { onDelete: 'cascade' }).notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+});
+
 // Service Images Table (One-to-Many with Service)
 export const serviceImages = pgTable('service_images', {
   id: text('id').primaryKey(),
@@ -200,6 +208,15 @@ export const contactMessages = pgTable('contact_messages', {
   isRead: boolean('is_read').default(false).notNull(),
 });
 
+// Before & After Images Table
+export const beforeAfterImages = pgTable('before_after_images', {
+  id: text('id').primaryKey(),
+  imageUrl: text('image_url').notNull(),
+  caption: text('caption'),
+  sortOrder: integer('sort_order').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Quotation Requests Table
 export const quotationRequests = pgTable('quotation_requests', {
   id: text('id').primaryKey(),
@@ -245,6 +262,7 @@ export const blogsCategoriesRelations = relations(blogsCategories, ({ one }) => 
 export const servicesRelations = relations(services, ({ many }) => ({
   whatsIncluded: many(whatsIncluded),
   benefits: many(benefits),
+  serviceTypes: many(serviceTypes),
   images: many(serviceImages),
   testimonials: many(testimonials),
   servicesCategories: many(servicesCategories),
@@ -271,6 +289,13 @@ export const whatsIncludedRelations = relations(whatsIncluded, ({ one }) => ({
 export const benefitsRelations = relations(benefits, ({ one }) => ({
   service: one(services, {
     fields: [benefits.serviceId],
+    references: [services.id],
+  }),
+}));
+
+export const serviceTypesRelations = relations(serviceTypes, ({ one }) => ({
+  service: one(services, {
+    fields: [serviceTypes.serviceId],
     references: [services.id],
   }),
 }));

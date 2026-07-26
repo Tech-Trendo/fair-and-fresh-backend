@@ -7,8 +7,9 @@ import { AboutPreview } from "@/components/about-preview";
 import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
 import { db } from "@/lib/db";
-import { staticPages } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { staticPages, beforeAfterImages } from "@/lib/schema";
+import { eq, asc } from "drizzle-orm";
+import { BeforeAfterSlider } from "@/components/before-after-slider";
 
 export const dynamic = 'force-dynamic';
 
@@ -79,6 +80,17 @@ export default async function Home() {
     slug: c.slug,
   }));
 
+  // Fetch before/after images
+  const dbBeforeAfter = await db
+    .select()
+    .from(beforeAfterImages)
+    .orderBy(asc(beforeAfterImages.sortOrder), asc(beforeAfterImages.createdAt));
+
+  const beforeAfterImagesData = dbBeforeAfter.map((img) => ({
+    image_url: img.imageUrl,
+    caption: img.caption || undefined,
+  }));
+
   // Fetch testimonials from database dynamically using Drizzle query
   const dbTestimonials = await db.query.testimonials.findMany({
     with: {
@@ -101,6 +113,7 @@ export default async function Home() {
       {servicesList.length > 0 && (
         <Services services={servicesList} categories={categoriesList} />
       )}
+      <BeforeAfterSlider images={beforeAfterImagesData} />
       <AboutPreview />
       {testimonialsList.length > 0 && (
         <Reviews reviews={testimonialsList} />

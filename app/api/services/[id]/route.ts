@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, slugify } from '@/lib/db';
-import { services, whatsIncluded, benefits, serviceImages, testimonials, servicesCategories } from '@/lib/schema';
+import { services, whatsIncluded, benefits, serviceTypes, serviceImages, testimonials, servicesCategories } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
 import { formatService } from '../route';
@@ -16,6 +16,7 @@ export async function GET(
       with: {
         whatsIncluded: true,
         benefits: true,
+        serviceTypes: true,
         images: true,
         testimonials: true,
         servicesCategories: {
@@ -59,6 +60,7 @@ export async function PUT(
       what_we_offer,
       whats_included,
       benefits: benefitsInput,
+      service_types: serviceTypesInput,
       images: imagesInput,
       testimonials: testimonialsInput,
       meta_title,
@@ -147,6 +149,18 @@ export async function PUT(
       await db.insert(benefits).values(values);
     }
 
+    // 3b. Sync service_types (clear and recreate)
+    await db.delete(serviceTypes).where(eq(serviceTypes.serviceId, id));
+    if (Array.isArray(serviceTypesInput) && serviceTypesInput.length > 0) {
+      const values = serviceTypesInput.map((item, idx: number) => ({
+        id: `typ-${Date.now()}-${idx}`,
+        serviceId: id,
+        title: typeof item === 'string' ? item : item.title,
+        description: typeof item === 'string' ? '' : (item.description || '')
+      }));
+      await db.insert(serviceTypes).values(values);
+    }
+
     // 4. Sync images (clear and recreate)
     await db.delete(serviceImages).where(eq(serviceImages.serviceId, id));
     if (Array.isArray(imagesInput) && imagesInput.length > 0) {
@@ -188,6 +202,7 @@ export async function PUT(
       with: {
         whatsIncluded: true,
         benefits: true,
+        serviceTypes: true,
         images: true,
         testimonials: true,
         servicesCategories: {
@@ -287,6 +302,19 @@ export async function PATCH(
       }
     }
 
+    if (body.service_types !== undefined && Array.isArray(body.service_types)) {
+      await db.delete(serviceTypes).where(eq(serviceTypes.serviceId, id));
+      if (body.service_types.length > 0) {
+        const values = body.service_types.map((item: any, idx: number) => ({
+          id: `typ-${Date.now()}-${idx}`,
+          serviceId: id,
+          title: typeof item === 'string' ? item : item.title,
+          description: typeof item === 'string' ? '' : (item.description || '')
+        }));
+        await db.insert(serviceTypes).values(values);
+      }
+    }
+
     if (body.images !== undefined && Array.isArray(body.images)) {
       await db.delete(serviceImages).where(eq(serviceImages.serviceId, id));
       if (body.images.length > 0) {
@@ -331,6 +359,7 @@ export async function PATCH(
       with: {
         whatsIncluded: true,
         benefits: true,
+        serviceTypes: true,
         images: true,
         testimonials: true,
         servicesCategories: {

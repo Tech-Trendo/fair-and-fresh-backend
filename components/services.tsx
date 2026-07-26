@@ -101,7 +101,6 @@ export function Services({
           className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
         >
           {filteredServices.map((service) => {
-            const IconComponent = getServiceIcon(service.slug, service.icon);
             return (
               <StaggerItem key={service.slug}>
                 <Card
@@ -119,11 +118,6 @@ export function Services({
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-550 ease-out"
                         />
                         <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300" />
-                        
-                        {/* Floating category icon */}
-                        <div className="absolute top-4 right-4 bg-white/95 p-2.5 rounded-xl backdrop-blur-xs shadow-md border border-border/20 group-hover:scale-110 transition-all duration-300">
-                          <IconComponent className="h-4.5 w-4.5 text-primary" />
-                        </div>
                       </div>
 
                       {/* Card Content body */}

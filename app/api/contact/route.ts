@@ -47,6 +47,26 @@ export async function POST(request: NextRequest) {
 
     await db.insert(contactMessages).values(newRecord);
 
+    try {
+      fetch("https://notify-booking-4603.twil.io/sender1", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: newRecord.id,
+          name: newRecord.name,
+          email: newRecord.email,
+          phone: newRecord.phone,
+          subject: newRecord.subject,
+          message: newRecord.message,
+          created_at: newRecord.createdAt.toISOString(),
+        }),
+      }).catch(err => {
+        console.error("WhatsApp notification request failed:", err);
+      });
+    } catch (e) {
+      console.error("Twilio send error:", e);
+    }
+
     return NextResponse.json(newRecord, { status: 201 });
   } catch (error) {
     console.error('Submit contact message failed:', error);

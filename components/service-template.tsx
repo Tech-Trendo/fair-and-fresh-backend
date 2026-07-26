@@ -328,30 +328,31 @@ export function ServiceTemplate({
         </div>
       </section>
 
-      {/* ─── Types/Checklist Section ─── */}
-      <section className="py-24 lg:py-32 bg-secondary/15">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <FadeIn>
-              <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-16 text-center leading-tight">
-                {typesTitle}
-              </h2>
-            </FadeIn>
-            <StaggerContainer className="grid md:grid-cols-2 gap-6">
-              {types.map((type, index) => (
-                <StaggerItem key={index}>
-                  <div className="flex items-center gap-5 bg-white/70 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-white hover:shadow-md hover:scale-[1.02] transition-all duration-300">
-                    <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
-                      <CheckCircle className="h-7 w-7 text-primary" />
+      {types.length > 0 && (
+        <section className="py-24 lg:py-32 bg-secondary/15">
+          <div className="container mx-auto px-4">
+            <div className="max-w-5xl mx-auto">
+              <FadeIn>
+                <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-16 text-center leading-tight">
+                  {typesTitle}
+                </h2>
+              </FadeIn>
+              <StaggerContainer className="grid md:grid-cols-2 gap-6">
+                {types.map((type, index) => (
+                  <StaggerItem key={index}>
+                    <div className="flex items-center gap-5 bg-white/70 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-white hover:shadow-md hover:scale-[1.02] transition-all duration-300">
+                      <div className="bg-primary/10 p-2 rounded-full flex-shrink-0">
+                        <CheckCircle className="h-7 w-7 text-primary" />
+                      </div>
+                      <span className="text-foreground text-lg font-semibold">{type}</span>
                     </div>
-                    <span className="text-foreground text-lg font-semibold">{type}</span>
-                  </div>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ─── Testimonials Section ─── */}
       <Reviews reviews={reviews} />

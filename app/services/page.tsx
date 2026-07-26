@@ -24,8 +24,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { staticPages } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { staticPages, beforeAfterImages } from "@/lib/schema";
+import { eq, asc } from "drizzle-orm";
+import { BeforeAfterSlider } from "@/components/before-after-slider";
 
 // Dynamically generate services catalog metadata from staticPages table in DB
 export async function generateMetadata(): Promise<Metadata> {
@@ -108,6 +109,16 @@ export default async function ServicesPage() {
     },
     orderBy: (services, { asc }) => [asc(services.sortOrder), asc(services.name)],
   });
+
+  const dbBeforeAfter = await db
+    .select()
+    .from(beforeAfterImages)
+    .orderBy(asc(beforeAfterImages.sortOrder), asc(beforeAfterImages.createdAt));
+
+  const beforeAfterImagesData = dbBeforeAfter.map((img) => ({
+    image_url: img.imageUrl,
+    caption: img.caption || undefined,
+  }));
 
   const services = dbServices.map((s) => ({
     title: s.name,
@@ -303,6 +314,8 @@ export default async function ServicesPage() {
           </div>
         </div>
       </section>
+
+      <BeforeAfterSlider images={beforeAfterImagesData} />
 
       <section className="py-20 lg:py-28 bg-gradient-to-br from-primary via-primary/95 to-primary/90 text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">

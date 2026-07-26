@@ -44,12 +44,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ServicePage({ params }: PageProps) {
   const { slug } = await params;
 
-  // Query service details including all related benefits, inclusions, images, and reviews
+  // Query service details including all related benefits, inclusions, types, images, and reviews
   const service = await db.query.services.findFirst({
     where: eq(services.slug, slug),
     with: {
       benefits: true,
       whatsIncluded: true,
+      serviceTypes: true,
       images: true,
       testimonials: true,
     },
@@ -106,12 +107,9 @@ export default async function ServicePage({ params }: PageProps) {
     }
   ];
 
-  const typesList = [
-    "Residential & Home Fabric Care",
-    "Commercial Office & Corporate Spaces",
-    "Delicate Fiber & Material Protections",
-    "Deep Stain Extractions & Odor Control",
-  ];
+  const typesList = service.serviceTypes
+    ? service.serviceTypes.map((t) => t.title)
+    : [];
 
   const testimonialsList = service.testimonials.map((t) => ({
     name: t.author,

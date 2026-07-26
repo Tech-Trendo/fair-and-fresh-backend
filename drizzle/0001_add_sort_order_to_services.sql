@@ -1,1 +1,1 @@
-ALTER TABLE "services" ADD COLUMN "sort_order" integer DEFAULT 0 NOT NULL;
+ALTER TABLE "services" ADD COLUMN IF NOT EXISTS "sort_order" integer DEFAULT 0 NOT NULL;

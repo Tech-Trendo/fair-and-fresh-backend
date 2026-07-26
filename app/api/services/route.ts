@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, slugify } from '@/lib/db';
-import { services, whatsIncluded, benefits, serviceImages, testimonials, servicesCategories } from '@/lib/schema';
+import { services, whatsIncluded, benefits, serviceTypes, serviceImages, testimonials, servicesCategories } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
 import { eq, sql } from 'drizzle-orm';
@@ -45,6 +45,12 @@ export function formatService(srv: any) {
       title: item.title,
       description: item.description || ''
     })),
+    service_types: (srv.serviceTypes || []).map((item: any) => ({
+      id: item.id,
+      service_id: item.serviceId,
+      title: item.title,
+      description: item.description || ''
+    })),
     images: (srv.images || []).map((item: any) => ({
       id: item.id,
       service_id: item.serviceId,
@@ -67,6 +73,7 @@ export async function GET(request: NextRequest) {
       with: {
         whatsIncluded: true,
         benefits: true,
+        serviceTypes: true,
         images: true,
         testimonials: true,
         servicesCategories: {
@@ -105,6 +112,7 @@ export async function POST(request: NextRequest) {
       what_we_offer,
       whats_included,
       benefits: benefitsInput,
+      service_types: serviceTypesInput,
       images: imagesInput,
       testimonials: testimonialsInput,
       meta_title,
@@ -194,6 +202,17 @@ export async function POST(request: NextRequest) {
       await db.insert(benefits).values(values);
     }
 
+    // 3b. Insert service_types
+    if (Array.isArray(serviceTypesInput) && serviceTypesInput.length > 0) {
+      const values = serviceTypesInput.map((item, idx) => ({
+        id: `typ-${Date.now()}-${idx}`,
+        serviceId,
+        title: typeof item === 'string' ? item : item.title,
+        description: typeof item === 'string' ? '' : (item.description || '')
+      }));
+      await db.insert(serviceTypes).values(values);
+    }
+
     // 4. Insert serviceImages
     if (Array.isArray(imagesInput) && imagesInput.length > 0) {
       const values = imagesInput.map((item, idx) => ({
@@ -232,6 +251,7 @@ export async function POST(request: NextRequest) {
       with: {
         whatsIncluded: true,
         benefits: true,
+        serviceTypes: true,
         images: true,
         testimonials: true,
         servicesCategories: {

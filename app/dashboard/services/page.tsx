@@ -13,6 +13,7 @@ interface Service {
   benefits?: { id: string; title: string; description?: string }[];
   images?: { id: string; image_url: string }[];
   testimonials?: { id: string; author: string; content: string; rating: number }[];
+  service_types?: { id: string; title: string; description?: string }[];
   slug: string;
   icon?: string;
   sort_order?: number;
@@ -53,6 +54,7 @@ export default function ServicesPage() {
   const [whatsIncludedList, setWhatsIncludedList] = useState<{ title: string; description: string }[]>([]);
   const [benefitsList, setBenefitsList] = useState<{ title: string; description: string }[]>([]);
   const [testimonialsList, setTestimonialsList] = useState<{ author: string; content: string; rating: number }[]>([]);
+  const [serviceTypesList, setServiceTypesList] = useState<{ title: string; description: string }[]>([]);
 
   // Form Fields - Images
   const [imagesList, setImagesList] = useState<string[]>([]);
@@ -122,6 +124,7 @@ export default function ServicesPage() {
     setWhatsIncludedList([]);
     setBenefitsList([]);
     setTestimonialsList([]);
+    setServiceTypesList([]);
     setImagesList([]);
     setSlug('');
     setMetaTitle('');
@@ -175,6 +178,12 @@ export default function ServicesPage() {
       }))
     );
     setImagesList((srv.images || []).map((img) => img.image_url));
+    setServiceTypesList(
+      (srv.service_types || []).map((item) => ({
+        title: item.title,
+        description: item.description || '',
+      }))
+    );
     
     // SEO fields
     setSlug(srv.slug || '');
@@ -268,6 +277,20 @@ export default function ServicesPage() {
     );
   };
 
+  const addServiceType = () => {
+    setServiceTypesList((prev) => [...prev, { title: '', description: '' }]);
+  };
+
+  const removeServiceType = (idx: number) => {
+    setServiceTypesList((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const updateServiceType = (idx: number, key: 'title' | 'description', val: string) => {
+    setServiceTypesList((prev) =>
+      prev.map((item, i) => (i === idx ? { ...item, [key]: val } : item))
+    );
+  };
+
   const removeImage = (idx: number) => {
     setImagesList((prev) => prev.filter((_, i) => i !== idx));
   };
@@ -297,6 +320,7 @@ export default function ServicesPage() {
       benefits: benefitsList.filter(item => item.title.trim()),
       images: imagesList,
       testimonials: testimonialsList.filter(item => item.author.trim()),
+      service_types: serviceTypesList.filter(item => item.title.trim()),
       slug: slug || null,
       sort_order: sortOrder,
       meta_title: metaTitle,
@@ -747,6 +771,49 @@ export default function ServicesPage() {
                           <button
                             type="button"
                             onClick={() => removeBenefit(idx)}
+                            className="text-[#DC2626] text-xs font-semibold px-2"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Service Types */}
+                  <div className="flex flex-col gap-3">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-xs font-bold text-[#111827] uppercase tracking-wider">Types of {name || 'Service'} We Masterfully Clean</h4>
+                      <button
+                        type="button"
+                        onClick={addServiceType}
+                        className="text-[10px] font-semibold text-[#2563EB] hover:text-[#1D4ED8]"
+                      >
+                        + Add Service Type
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      {serviceTypesList.map((item, idx) => (
+                        <div key={idx} className="flex gap-2 items-center bg-[#F9FAFB] p-2.5 rounded-lg border border-[#E5E7EB]">
+                          <input
+                            type="text"
+                            required
+                            placeholder="Type Title"
+                            value={item.title}
+                            onChange={(e) => updateServiceType(idx, 'title', e.target.value)}
+                            className="flex-1 rounded-md border border-[#E5E7EB] bg-white px-2.5 py-1 text-xs text-[#111827]"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Description (optional)"
+                            value={item.description}
+                            onChange={(e) => updateServiceType(idx, 'description', e.target.value)}
+                            className="flex-2 rounded-md border border-[#E5E7EB] bg-white px-2.5 py-1 text-xs text-[#111827]"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeServiceType(idx)}
                             className="text-[#DC2626] text-xs font-semibold px-2"
                           >
                             Remove
