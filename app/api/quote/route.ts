@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { quotationRequests } from '@/lib/schema';
+import { quotationRequests, services as servicesTable } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
-import { desc } from 'drizzle-orm';
+import { desc, inArray, or } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,34 +60,58 @@ export async function POST(request: NextRequest) {
     await db.insert(quotationRequests).values(newRecord);
 
     // Trigger WhatsApp notification asynchronously (fire-and-forget)
-    try {
-      const newbody = {
-        id: newRecord.id,
-        services: newRecord.services,
-        preferred_date: newRecord.preferredDate,
-        preferred_time: newRecord.preferredTime,
-        name: newRecord.name,
-        phone: newRecord.phone,
-        email: newRecord.email,
-        street: newRecord.street,
-        city: newRecord.city,
-        additional_notes: newRecord.additionalNotes,
-        status: newRecord.status,
-        created_at: newRecord.createdAt.toISOString(),
-      };
-      
-      fetch("https://notify-booking-4603.twil.io/sender1", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newbody),
-      }).catch(err => {
-        console.error("WhatsApp notification request failed:", err);
-      });
-    } catch (e) {
-      console.error("Twilio send error:", e);
-    }
+    (async () => {
+      try {
+        // Resolve service IDs/slugs -> human-readable names
+        let serviceNames: string[] = newRecord.services;
+        if (newRecord.services.length > 0) {
+          const rows = await db
+            .select({ id: servicesTable.id, slug: servicesTable.slug, name: servicesTable.name })
+            .from(servicesTable)
+            .where(
+              or(
+                inArray(servicesTable.id, newRecord.services),
+                inArray(servicesTable.slug, newRecord.services)
+              )
+            );
+
+          // Build a lookup: id -> name and slug -> name
+          const nameMap: Record<string, string> = {};
+          rows.forEach((r) => {
+            nameMap[r.id] = r.name;
+            nameMap[r.slug] = r.name;
+          });
+
+          // Map each stored value to its name, falling back to the raw value
+          serviceNames = newRecord.services.map((s) => nameMap[s] ?? s);
+        }
+
+        const newbody = {
+          id: newRecord.id,
+          services: serviceNames,
+          preferred_date: newRecord.preferredDate,
+          preferred_time: newRecord.preferredTime,
+          name: newRecord.name,
+          phone: newRecord.phone,
+          email: newRecord.email,
+          street: newRecord.street,
+          city: newRecord.city,
+          additional_notes: newRecord.additionalNotes,
+          status: newRecord.status,
+          created_at: newRecord.createdAt.toISOString(),
+        };
+
+        await fetch("https://notify-booking-4603.twil.io/sender1", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newbody),
+        });
+      } catch (e) {
+        console.error("WhatsApp notification / service lookup failed:", e);
+      }
+    })();
 
     return NextResponse.json(newRecord, { status: 201 });
   } catch (error) {

@@ -44,6 +44,9 @@ export default function QuotationsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  // Services map: id/slug -> name
+  const [serviceNameMap, setServiceNameMap] = useState<Record<string, string>>({});
+
   // Pagination states
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -72,9 +75,27 @@ export default function QuotationsPage() {
     }
   };
 
+  // Fetch services once to build id->name map
   useEffect(() => {
+    apiFetch('/api/services/?page_size=100')
+      .then((res) => res.json())
+      .then((data) => {
+        const results: { id: string; name: string; slug: string }[] = data.results || [];
+        const map: Record<string, string> = {};
+        results.forEach((s) => {
+          map[s.id] = s.name;
+          if (s.slug) map[s.slug] = s.name;
+        });
+        setServiceNameMap(map);
+      })
+      .catch(() => {/* silently ignore */});
+
     fetchQuotations();
   }, []);
+
+  /** Resolve a service id/slug to its display name */
+  const resolveServiceName = (idOrSlug: string): string =>
+    serviceNameMap[idOrSlug] ?? idOrSlug;
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
@@ -134,7 +155,13 @@ export default function QuotationsPage() {
       q.phone.includes(searchQuery) ||
       q.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
       q.street.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      q.services.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
+      q.services.some((s) => {
+        const name = resolveServiceName(s);
+        return (
+          s.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      });
 
     return matchesFilter && matchesSearch;
   });
@@ -279,7 +306,7 @@ export default function QuotationsPage() {
                         </div>
                         <div className="text-[11px] text-muted-foreground truncate mt-1 flex items-center gap-1.5 flex-wrap">
                           <span className="font-semibold text-primary">
-                            Services: {quote.services.join(', ')}
+                            Services: {quote.services.map(resolveServiceName).join(', ')}
                           </span>
                           <span className="text-[#9CA3AF]">•</span>
                           <span>{quote.city}</span>
