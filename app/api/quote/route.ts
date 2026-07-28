@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
           });
 
           // Map each stored value to its name, falling back to the raw value
-          serviceNames = newRecord.services.map((s) => nameMap[s] ?? s);
+          serviceNames = newRecord.services.map((s: string) => nameMap[s] ?? s);
         }
 
         const newbody = {
