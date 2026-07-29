@@ -7,10 +7,10 @@ interface BlogCategoryTabsProps {
 }
 
 function tabClass(isActive: boolean, interactive = true) {
-  return `px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+  return `px-4 py-1.5 rounded-full text-xs font-nav transition-all ${
     isActive
-      ? "bg-primary text-primary-foreground shadow-md"
-      : `bg-card text-muted-foreground hover:bg-muted border border-border${interactive ? " cursor-pointer" : ""}`
+      ? "bg-primary text-primary-foreground"
+      : `bg-white text-muted-foreground hover:text-foreground border border-border${interactive ? " cursor-pointer hover:border-primary/50" : ""}`
   }`;
 }
 
@@ -22,39 +22,24 @@ export function BlogCategoryTabs({ categories, activeSlug = "all", onSelect }: B
   return (
     <div className="flex flex-wrap gap-2 items-center">
       {isFilterMode ? (
-        <button
-          type="button"
-          onClick={() => onSelect!("all")}
-          className={tabClass(activeSlug === "all")}
-        >
+        <button type="button" onClick={() => onSelect!("all")} className={tabClass(activeSlug === "all")}>
           All Topics
         </button>
       ) : activeSlug === "all" ? (
         <span className={tabClass(true, false)}>All Topics</span>
       ) : (
-        <Link href="/blog" className={tabClass(false)}>
-          All Topics
-        </Link>
+        <Link href="/blog" className={tabClass(false)}>All Topics</Link>
       )}
 
       {categories.map((cat) =>
         isFilterMode ? (
-          <button
-            key={cat.id}
-            type="button"
-            onClick={() => onSelect!(cat.slug)}
-            className={tabClass(activeSlug === cat.slug)}
-          >
+          <button key={cat.id} type="button" onClick={() => onSelect!(cat.slug)} className={tabClass(activeSlug === cat.slug)}>
             {cat.title}
           </button>
         ) : activeSlug === cat.slug ? (
-          <span key={cat.id} className={tabClass(true, false)}>
-            {cat.title}
-          </span>
+          <span key={cat.id} className={tabClass(true, false)}>{cat.title}</span>
         ) : (
-          <Link key={cat.id} href={`/blog/category/${cat.slug}`} className={tabClass(false)}>
-            {cat.title}
-          </Link>
+          <Link key={cat.id} href={`/blog/category/${cat.slug}`} className={tabClass(false)}>{cat.title}</Link>
         )
       )}
     </div>

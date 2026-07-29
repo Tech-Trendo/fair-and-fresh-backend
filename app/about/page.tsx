@@ -4,19 +4,7 @@ import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Phone,
-  Mail,
-  CheckCircle2,
-  Award,
-  Users,
-  Heart,
-  Sparkles,
-  Shield,
-  Clock,
-  Star,
-  TrendingUp,
-} from "lucide-react";
+import { Phone, Mail, CheckCircle2, Award, Users, Heart, Sparkles, Shield, Clock, Star, TrendingUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, SlideIn, StaggerContainer, StaggerItem, CountUp } from "@/components/motion-wrapper";
@@ -25,34 +13,19 @@ import { staticPages } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { getContentGroup } from "@/lib/site-content";
 
-// Dynamically generate about page metadata from staticPages table in DB
 export async function generateMetadata(): Promise<Metadata> {
   const page = await db.query.staticPages.findFirst({
     where: eq(staticPages.slug, "about-us"),
   });
-
-  if (!page) {
-    return {
-      title: "About Us | Fair and Fresh Cleaning",
-    };
-  }
-
+  if (!page) return { title: "About Us | Fair and Fresh Cleaning" };
   return {
     title: page.metaTitle || "About Us | Fair and Fresh Cleaning",
     description: page.metaDescription || undefined,
     keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
-    alternates: {
-      canonical: page.canonicalUrl || undefined,
-    },
+    alternates: { canonical: page.canonicalUrl || undefined },
     robots: page.metaRobots || undefined,
-    other: page.metaRobots ? {
-      "x-robots-tag": page.metaRobots,
-    } : undefined,
-    openGraph: {
-      title: page.ogTitle || undefined,
-      description: page.ogDescription || undefined,
-      type: "website",
-    },
+    other: page.metaRobots ? { "x-robots-tag": page.metaRobots } : undefined,
+    openGraph: { title: page.ogTitle || undefined, description: page.ogDescription || undefined, type: "website" },
   };
 }
 
@@ -61,14 +34,14 @@ export default async function AboutPage() {
   const settings = await getContentGroup('site_settings');
 
   const badge = content.about_badge || "Brisbane's Trusted Fabric Care Experts";
-  const heroTitle = content.about_hero_title || "Where expertise meets\n<span class=\"block text-primary mt-2\">pristine perfection</span>";
+  const heroTitle = content.about_hero_title || `Where expertise meets <span class="block text-primary mt-2">pristine perfection</span>`;
   const heroDesc = content.about_hero_description || "For over 15 years, we've been transforming Brisbane homes and businesses with professional fabric cleaning that goes beyond surface deep.";
   const section1Title = content.about_section1_title || "Brisbane's fabric cleaning experts";
-  const section1Desc = content.about_section1_description || "Fair & Fresh Cleaning has been serving Brisbane families and businesses for over 15 years, specializing in comprehensive fabric care. From carpets and mattresses to upholstery and curtains, we bring new life to every fabric we touch.\n\nWhat sets us apart is our unwavering commitment to quality, reliability, and customer satisfaction.";
+  const section1Desc = content.about_section1_description || "Fair & Fresh Cleaning has been serving Brisbane families and businesses for over 15 years, specializing in comprehensive fabric care.\n\nWhat sets us apart is our unwavering commitment to quality, reliability, and customer satisfaction.";
   const missionTitle = content.about_mission_title || "Our Mission";
-  const missionDesc = content.about_mission_description || "To provide Brisbane with exceptional fabric cleaning services that restore, protect, and extend the life of your valued possessions using eco-friendly products and advanced techniques.";
+  const missionDesc = content.about_mission_description || "To provide Brisbane with exceptional fabric cleaning services that restore, protect, and extend the life of your valued possessions.";
   const visionTitle = content.about_vision_title || "Our Vision";
-  const visionDesc = content.about_vision_description || "To be recognized as Brisbane's most trusted and innovative fabric cleaning company, setting the standard for quality, customer service, and environmental responsibility.";
+  const visionDesc = content.about_vision_description || "To be recognized as Brisbane's most trusted and innovative fabric cleaning company, setting the standard for quality and service.";
   const valuesTitle = content.about_values_title || "What drives us every day";
   const valuesDesc = content.about_values_description || "Our core values guide everything we do, from the products we use to the service we provide";
   const ctaTitle = content.about_cta_title || "Ready to experience the difference?";
@@ -76,97 +49,47 @@ export default async function AboutPage() {
 
   const sitePhone = settings.site_phone || "0430 799 567";
   const siteEmail = settings.site_email || "support@fairandfreshcleaning.com.au";
-
   const section1Paragraphs = section1Desc.split('\n\n').filter(Boolean);
 
   return (
     <main className="min-h-screen bg-background">
       <Header />
 
-      <section className="relative py-12 md:py-16 lg:py-20 overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <FadeIn className="space-y-4 md:space-y-6">
-              <Badge variant="default" className="text-xs md:text-sm px-4 md:px-6 py-1.5 md:py-2">
-                {badge}
-              </Badge>
-
-              <h1
-                className="font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-balance leading-tight"
-                dangerouslySetInnerHTML={{ __html: heroTitle }}
-              />
-
-              <p className="text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-                {heroDesc}
-              </p>
-
-              <div className="grid grid-cols-3 gap-4 md:gap-6 lg:gap-8 py-6 md:py-8 max-w-2xl mx-auto">
-                <div>
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary mb-1">
-                    <CountUp end={2500} suffix="+" />
-                  </div>
-                  <div className="text-xs md:text-sm text-muted-foreground">Happy Clients</div>
-                </div>
-                <div>
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary mb-1">
-                    <CountUp end={15} suffix="+" />
-                  </div>
-                  <div className="text-xs md:text-sm text-muted-foreground">Years Experience</div>
-                </div>
-                <div>
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary mb-1">
-                    <CountUp end={98} suffix="%" />
-                  </div>
-                  <div className="text-xs md:text-sm text-muted-foreground">Satisfaction</div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/quote">
-                  <Button size="lg" className="group w-full sm:w-auto">
-                    Get Your Free Quote
-                    <CheckCircle2 className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                  </Button>
-                </Link>
-                <Link href="/services">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto bg-transparent">
-                    Explore Our Services
-                  </Button>
-                </Link>
-              </div>
-            </FadeIn>
-          </div>
+      {/* Hero */}
+      <section className="py-16 md:py-20 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="max-w-4xl mx-auto text-center">
+            <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-4 py-1.5 rounded-full mb-5">{badge}</span>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-heading-bold text-foreground leading-tight mb-5 text-balance" dangerouslySetInnerHTML={{ __html: heroTitle }} />
+            <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto font-body">{heroDesc}</p>
+            <div className="grid grid-cols-3 gap-6 py-8 max-w-md mx-auto">
+              <div><div className="text-2xl md:text-3xl font-heading-bold text-primary"><CountUp end={2500} suffix="+" /></div><div className="text-xs text-muted-foreground font-body">Happy Clients</div></div>
+              <div><div className="text-2xl md:text-3xl font-heading-bold text-primary"><CountUp end={15} suffix="+" /></div><div className="text-xs text-muted-foreground font-body">Years Experience</div></div>
+              <div><div className="text-2xl md:text-3xl font-heading-bold text-primary"><CountUp end={98} suffix="%" /></div><div className="text-xs text-muted-foreground font-body">Satisfaction</div></div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/quote"><Button size="lg" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-nav text-base">Get Your Free Quote</Button></Link>
+              <Link href="/services"><Button variant="outline" size="lg" className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground font-nav text-base bg-transparent">Explore Our Services</Button></Link>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
-      <section className="py-8 md:py-12 lg:py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
+      {/* Section 1: Image + Intro */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-10 items-center max-w-6xl mx-auto">
             <SlideIn direction="left">
-              <div className="relative aspect-[4/3] rounded-lg md:rounded-xl overflow-hidden shadow-xl">
-                <Image
-                  src="/professional-carpet-cleaning.png"
-                  alt="Professional cleaning team at work"
-                  fill
-                  className="object-cover"
-                />
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-sm">
+                <Image src="/professional-carpet-cleaning.png" alt="Professional cleaning team at work" fill className="object-cover" />
               </div>
             </SlideIn>
             <SlideIn direction="left">
-              <div className="space-y-3 md:space-y-4">
-                <div>
-                  <Badge variant="outline" className="mb-2 md:mb-3 text-xs">
-                    Who We Are
-                  </Badge>
-                  <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3 md:mb-4 leading-tight">
-                    {section1Title}
-                  </h2>
-                </div>
-                <div className="space-y-3 text-sm md:text-base text-muted-foreground leading-relaxed">
-                  {section1Paragraphs.map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
+              <div>
+                <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-3 py-1 rounded-full mb-3">Who We Are</span>
+                <h2 className="text-2xl md:text-3xl font-heading-bold text-foreground mb-4">{section1Title}</h2>
+                <div className="space-y-3 text-sm text-muted-foreground font-body leading-relaxed">
+                  {section1Paragraphs.map((p, i) => (<p key={i}>{p}</p>))}
                 </div>
               </div>
             </SlideIn>
@@ -174,129 +97,93 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="py-8 md:py-12 lg:py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <StaggerContainer className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
+      {/* Mission & Vision */}
+      <section className="py-16 md:py-20 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <StaggerContainer className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             <StaggerItem>
-              <Card className="border-primary/20 h-full">
-                <CardContent className="p-6 md:p-8">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <Award className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h2 className="font-serif text-xl md:text-2xl font-normal mb-2">{missionTitle}</h2>
-                      <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                        {missionDesc}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="bg-white rounded-xl border border-border p-7 shadow-sm h-full">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-accent-tint rounded-lg flex items-center justify-center flex-shrink-0"><Award className="h-6 w-6 text-primary" /></div>
+                  <div><h2 className="text-lg font-heading-bold text-foreground mb-2">{missionTitle}</h2><p className="text-sm text-muted-foreground font-body leading-relaxed">{missionDesc}</p></div>
+                </div>
+              </div>
             </StaggerItem>
-
             <StaggerItem>
-              <Card className="border-accent/20 h-full">
-                <CardContent className="p-6 md:p-8">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
-                      <Sparkles className="h-6 w-6 text-accent" />
-                    </div>
-                    <div>
-                      <h2 className="font-serif text-xl md:text-2xl font-normal mb-2">{visionTitle}</h2>
-                      <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                        {visionDesc}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="bg-white rounded-xl border border-border p-7 shadow-sm h-full">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-accent-tint rounded-lg flex items-center justify-center flex-shrink-0"><Sparkles className="h-6 w-6 text-primary" /></div>
+                  <div><h2 className="text-lg font-heading-bold text-foreground mb-2">{visionTitle}</h2><p className="text-sm text-muted-foreground font-body leading-relaxed">{visionDesc}</p></div>
+                </div>
+              </div>
             </StaggerItem>
           </StaggerContainer>
         </div>
       </section>
 
-      <section className="py-8 md:py-12 lg:py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-6 md:mb-8">
-            <FadeIn>
-              <Badge variant="outline" className="mb-2 md:mb-3 text-xs">
-                Our Values
-              </Badge>
-              <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3">
-                {valuesTitle}
-              </h2>
-              <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-                {valuesDesc}
-              </p>
-            </FadeIn>
-          </div>
-
-          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
+      {/* Core Values */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="text-center mb-10">
+            <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-3 py-1 rounded-full mb-3">Our Values</span>
+            <h2 className="text-2xl md:text-3xl font-heading-bold text-foreground mb-3">{valuesTitle}</h2>
+            <p className="text-sm text-muted-foreground max-w-2xl mx-auto font-body">{valuesDesc}</p>
+          </FadeIn>
+          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {[
-              { icon: Award, title: "Excellence", description: "We strive for perfection in every cleaning job, using the best techniques available.", color: "primary" },
-              { icon: Heart, title: "Care", description: "We treat your fabrics and home with the same care we'd give our own.", color: "accent" },
-              { icon: Shield, title: "Trust", description: "Building lasting relationships through honest communication and reliable service.", color: "primary" },
-              { icon: TrendingUp, title: "Innovation", description: "Continuously improving our methods and adopting eco-friendly solutions.", color: "accent" },
+              { icon: Award, title: "Excellence", description: "We strive for perfection in every cleaning job, using the best techniques available." },
+              { icon: Heart, title: "Care", description: "We treat your fabrics and home with the same care we'd give our own." },
+              { icon: Shield, title: "Trust", description: "Building lasting relationships through honest communication and reliable service." },
+              { icon: TrendingUp, title: "Innovation", description: "Continuously improving our methods and adopting eco-friendly solutions." },
             ].map((value, index) => (
               <StaggerItem key={index}>
-                <Card className="text-center group hover:shadow-lg hover:border-primary/30 transition-all duration-300 h-full">
-                  <CardContent className="p-4 md:p-6">
-                    <div className={`mb-3 md:mb-4 inline-flex items-center justify-center w-12 h-12 bg-${value.color}/10 rounded-lg group-hover:scale-110 transition-transform`}>
-                      <value.icon className={`h-6 w-6 text-${value.color}`} />
-                    </div>
-                    <h3 className="text-base md:text-lg font-semibold mb-2">{value.title}</h3>
-                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{value.description}</p>
-                  </CardContent>
-                </Card>
+                <div className="bg-white rounded-xl border border-border p-6 text-center shadow-sm h-full">
+                  <div className="w-12 h-12 bg-accent-tint rounded-lg flex items-center justify-center mx-auto mb-4"><value.icon className="h-6 w-6 text-primary" /></div>
+                  <h3 className="text-base font-heading-bold text-foreground mb-2">{value.title}</h3>
+                  <p className="text-sm text-muted-foreground font-body leading-relaxed">{value.description}</p>
+                </div>
               </StaggerItem>
             ))}
           </StaggerContainer>
         </div>
       </section>
 
-      <section className="py-8 md:py-12 lg:py-16 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-6 md:mb-8">
-            <FadeIn>
-              <Badge variant="secondary" className="mb-2 md:mb-3 bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 text-xs">
-                Why Choose Us
-              </Badge>
-              <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3">The Fair & Fresh difference</h2>
-            </FadeIn>
-          </div>
-          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+      {/* Dark Difference Section */}
+      <section className="py-16 md:py-20 bg-primary text-primary-foreground">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="text-center mb-10">
+            <span className="inline-block bg-primary-foreground/10 text-primary-foreground text-xs font-nav px-3 py-1 rounded-full border border-primary-foreground/20 mb-3">Why Choose Us</span>
+            <h2 className="text-2xl md:text-3xl font-heading-bold mb-3">The Fair & Fresh Difference</h2>
+          </FadeIn>
+          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {[
               { icon: Star, title: "15+ Years Experience", description: "Over a decade of expertise in fabric cleaning across Brisbane" },
               { icon: Shield, title: "Fully Insured", description: "Complete peace of mind with comprehensive insurance coverage" },
               { icon: Clock, title: "7 Days Service", description: "Flexible scheduling including weekends" },
               { icon: CheckCircle2, title: "Satisfaction Guaranteed", description: "We're not happy until you're thrilled with the results" },
-              { icon: Sparkles, title: "Eco-Friendly", description: "Safe, non-toxic cleaning solutions" },
-              { icon: Users, title: "Expert Team", description: "Highly trained professionals" },
+              { icon: Sparkles, title: "Eco-Friendly", description: "Safe, non-toxic cleaning solutions for your family" },
+              { icon: Users, title: "Expert Team", description: "Highly trained professionals dedicated to quality" },
             ].map((reason, index) => (
-              <StaggerItem key={index} className="text-center p-4 rounded-lg bg-primary-foreground/5 hover:bg-primary-foreground/10 transition-colors h-full">
-                <div className="mb-3 inline-flex items-center justify-center w-10 h-10 bg-primary-foreground/10 rounded-lg">
-                  <reason.icon className="h-5 w-5 text-primary-foreground" />
+              <StaggerItem key={index}>
+                <div className="text-center p-5 rounded-xl bg-primary-foreground/5 hover:bg-primary-foreground/10 transition-colors h-full">
+                  <div className="w-10 h-10 bg-primary-foreground/10 rounded-lg flex items-center justify-center mx-auto mb-3"><reason.icon className="h-5 w-5 text-primary-foreground" /></div>
+                  <h3 className="text-base font-heading-bold mb-1">{reason.title}</h3>
+                  <p className="text-xs text-primary-foreground/80 font-body leading-relaxed">{reason.description}</p>
                 </div>
-                <h3 className="text-base md:text-lg font-semibold mb-1">{reason.title}</h3>
-                <p className="text-xs md:text-sm text-primary-foreground/80 leading-relaxed">{reason.description}</p>
               </StaggerItem>
             ))}
           </StaggerContainer>
         </div>
       </section>
 
-      <section className="py-8 md:py-12 lg:py-16 bg-muted/20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-6 md:mb-8">
-            <FadeIn>
-              <Badge variant="outline" className="mb-2 md:mb-3 text-xs">
-                Our Expertise
-              </Badge>
-              <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-2">Comprehensive fabric care</h2>
-            </FadeIn>
-          </div>
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
+      {/* Expertise Grid */}
+      <section className="py-16 md:py-20 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="text-center mb-10">
+            <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-3 py-1 rounded-full mb-3">Our Expertise</span>
+            <h2 className="text-2xl md:text-3xl font-heading-bold text-foreground mb-2">Comprehensive Fabric Care</h2>
+          </FadeIn>
+          <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 max-w-6xl mx-auto">
             {[
               { title: "Carpet Cleaning", image: "/professional-carpet-cleaning.png" },
               { title: "Bond Cleaning", image: "/bond-cleaning-hero-image.png" },
@@ -309,49 +196,32 @@ export default async function AboutPage() {
               { title: "Flood Damage Restoration", image: "/flood-damage-restoration-water-extraction-emergenc.jpg" },
             ].map((service, index) => (
               <StaggerItem key={index}>
-                <Card className="overflow-hidden group hover:shadow-xl transition-all duration-300 h-full">
-                  <div className="relative w-full h-[240px] overflow-hidden">
-                    <Image src={service.image} alt={service.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-lg font-semibold text-white drop-shadow-lg">{service.title}</h3>
-                    </div>
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-border group h-full">
+                  <div className="relative w-full h-[200px] overflow-hidden">
+                    <Image src={service.image} alt={service.title} fill className="object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4"><h3 className="text-sm font-heading-bold text-white">{service.title}</h3></div>
                   </div>
-                </Card>
+                </div>
               </StaggerItem>
             ))}
           </StaggerContainer>
         </div>
       </section>
 
-      <section className="py-8 md:py-12 lg:py-16">
-        <div className="container mx-auto px-4">
+      {/* CTA */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="max-w-3xl mx-auto text-center">
-            <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3 md:mb-4">{ctaTitle}</h2>
-            <p className="text-sm md:text-base text-muted-foreground mb-6 md:mb-8">{ctaDesc}</p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-6">
-              <Link href="/quote">
-                <Button size="lg" className="group w-full sm:w-auto">
-                  Get Free Quote
-                  <CheckCircle2 className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                </Button>
-              </Link>
-              <Link href={`tel:${sitePhone.replace(/\s/g, '')}`}>
-                <Button variant="outline" size="lg" className="group w-full sm:w-auto bg-transparent">
-                  <Phone className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
-                  Call {sitePhone}
-                </Button>
-              </Link>
+            <h2 className="text-2xl md:text-3xl font-heading-bold text-foreground mb-3">{ctaTitle}</h2>
+            <p className="text-sm text-muted-foreground font-body mb-6 max-w-xl mx-auto">{ctaDesc}</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-5">
+              <Link href="/quote"><Button size="lg" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-nav text-base">Get Free Quote</Button></Link>
+              <Link href={`tel:${sitePhone.replace(/\s/g, '')}`}><Button variant="outline" size="lg" className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground font-nav text-base bg-transparent"><Phone className="mr-2 h-4 w-4" /> Call {sitePhone}</Button></Link>
             </div>
-            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 text-muted-foreground text-xs md:text-sm">
-              <div className="flex items-center justify-center gap-2">
-                <Mail className="h-4 w-4 text-primary" />
-                <span>{siteEmail}</span>
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <Clock className="h-4 w-4 text-primary" />
-                <span>7 Days a Week</span>
-              </div>
+            <div className="flex flex-col sm:flex-row justify-center gap-5 text-xs text-muted-foreground font-body">
+              <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-primary" /> {siteEmail}</span>
+              <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> 7 Days a Week</span>
             </div>
           </FadeIn>
         </div>

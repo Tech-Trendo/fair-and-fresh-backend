@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface SliderImage {
@@ -20,45 +20,42 @@ export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
   const activeImage = images[current];
 
   return (
-    <section className="py-16 md:py-24 bg-secondary/30 border-y border-border/40">
+    <section className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Proven Results</span>
-          </div>
-
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 tracking-tight leading-tight">
-            Real Transformations: <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent">Before & After</span>
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-4 py-1.5 rounded-full mb-4">
+            Proven Results
+          </span>
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3 text-balance">
+            Real Transformations: Before & After
           </h2>
-
-          <p className="text-base sm:text-lg text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto">
+          <p className="text-base text-muted-foreground font-body max-w-2xl mx-auto">
             See the remarkable difference our deep steam cleaning process brings to Brisbane carpets, tiles, and upholstery.
           </p>
         </div>
 
         {/* Main Showcase Container */}
-        <div className="max-w-6xl mx-auto relative">
-          <div className="relative rounded-2xl overflow-hidden shadow-xl bg-white border border-border/60">
-            <div className="relative min-h-[300px] sm:min-h-[400px] md:min-h-[500px] max-h-[650px] flex items-center justify-center bg-slate-900/5">
+        <div className="max-w-5xl mx-auto relative">
+          <div className="relative rounded-xl overflow-hidden shadow-sm bg-white border border-border">
+            <div className="relative min-h-[300px] sm:min-h-[400px] md:min-h-[500px] max-h-[600px] flex items-center justify-center bg-background">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={current}
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
                   src={activeImage.image_url}
                   alt={activeImage.caption || 'Before & After transformation'}
-                  className="w-full h-full object-cover max-h-[650px]"
+                  className="w-full h-full object-cover max-h-[600px]"
                 />
               </AnimatePresence>
 
-              {/* Caption Overlay */}
+              {/* Caption */}
               {activeImage.caption && (
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 pt-12">
-                  <p className="text-white text-base sm:text-lg font-medium drop-shadow-sm max-w-3xl">
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent p-6 pt-12">
+                  <p className="text-white text-sm md:text-base font-body">
                     {activeImage.caption}
                   </p>
                 </div>
@@ -71,28 +68,28 @@ export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
             <>
               <button
                 onClick={prev}
-                className="absolute left-3 sm:-left-6 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 text-foreground p-3 rounded-full shadow-lg border border-slate-200/80 transition-all hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary z-20"
+                className="absolute left-3 sm:-left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-accent-tint text-foreground p-2.5 rounded-full shadow-sm border border-border transition-colors focus:outline-none focus:ring-2 focus:ring-primary z-10"
                 aria-label="Previous image"
               >
-                <ChevronLeft className="h-6 w-6 text-slate-700" />
+                <ChevronLeft className="h-5 w-5 text-foreground" />
               </button>
 
               <button
                 onClick={next}
-                className="absolute right-3 sm:-right-6 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 text-foreground p-3 rounded-full shadow-lg border border-slate-200/80 transition-all hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary z-20"
+                className="absolute right-3 sm:-right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-accent-tint text-foreground p-2.5 rounded-full shadow-sm border border-border transition-colors focus:outline-none focus:ring-2 focus:ring-primary z-10"
                 aria-label="Next image"
               >
-                <ChevronRight className="h-6 w-6 text-slate-700" />
+                <ChevronRight className="h-5 w-5 text-foreground" />
               </button>
 
               {/* Indicator Dots */}
-              <div className="flex justify-center items-center gap-2 mt-6">
+              <div className="flex justify-center items-center gap-2 mt-5">
                 {images.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrent(idx)}
-                    className={`h-2.5 rounded-full transition-all duration-300 ${
-                      idx === current ? 'w-8 bg-primary' : 'w-2.5 bg-primary/25 hover:bg-primary/50'
+                    className={`h-2 rounded-full transition-all duration-200 ${
+                      idx === current ? 'w-6 bg-primary' : 'w-2 bg-border hover:bg-primary/50'
                     }`}
                     aria-label={`Go to slide ${idx + 1}`}
                   />

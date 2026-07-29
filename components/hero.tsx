@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
 export function Hero() {
   const [content, setContent] = useState({
-    title: 'Professional Fabric Cleaning in <em class="font-display italic">Brisbane</em>',
+    title: 'Professional Fabric Cleaning in <span class="text-primary">Brisbane</span>',
     description: "Carpet, mattress, rug, upholstery, and curtain cleaning across Brisbane. Straightforward pricing, thorough work, and results you can see — and feel.",
     promoText: "Same-day booking — 20% off",
     ratingText: "4.9/5 Rating",
@@ -20,16 +20,6 @@ export function Hero() {
     heroImage: "/professional-carpet-cleaning-service-in-modern-hom.jpg",
     phone: "0430 799 567",
   });
-
-  const [reducedMotion, setReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -66,68 +56,65 @@ export function Hero() {
     return () => { active = false; };
   }, []);
 
-  const { scrollYProgress } = useScroll();
-  const imageParallaxY = useTransform(scrollYProgress, [0, 0.2], [0, -20]);
-
   return (
-    <section className="bg-[#EDEFEC] py-12 md:py-20 overflow-hidden">
+    <section className="bg-background py-16 md:py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 md:gap-14 items-center">
           {/* Left text column */}
           <motion.div
             initial="hidden"
             animate="visible"
             variants={{
               hidden: {},
-              visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+              visible: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
             }}
           >
-            {/* Promo badge */}
+            {/* Eyebrow badge — light green tint pill */}
             <motion.div
               variants={{
-                hidden: { opacity: 0, x: -50 },
-                visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease } },
+                hidden: { opacity: 0, y: 10 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
               }}
-              className="mb-6"
+              className="mb-5"
             >
-              <div className="inline-flex items-center gap-2 border-l-2 border-[#B98A3D] bg-white/70 pl-3 pr-4 py-1.5 text-xs sm:text-sm text-[#16323A] font-sans-alt">
+              <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-4 py-1.5 rounded-full">
                 {content.promoText}
-              </div>
+              </span>
             </motion.div>
 
-            {/* Headline */}
+            {/* Headline — large bold Poppins */}
             <motion.h1
               variants={{
-                hidden: { opacity: 0, x: -50 },
-                visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease } },
+                hidden: { opacity: 0, y: 10 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease } },
               }}
-              className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#16323A] leading-tight text-balance font-display"
+              className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-heading-bold text-foreground leading-tight text-balance"
               dangerouslySetInnerHTML={{ __html: content.title }}
             />
 
-            {/* Description */}
+            {/* Description — grey */}
             <motion.p
               variants={{
-                hidden: { opacity: 0, x: -40 },
-                visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease } },
+                hidden: { opacity: 0, y: 10 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
               }}
-              className="text-base md:text-lg text-[#5B6B6A] mt-4 md:mt-6 text-pretty font-sans-alt"
+              className="text-base md:text-lg text-muted-foreground mt-4 md:mt-5 text-pretty font-body leading-relaxed"
             >
               {content.description}
             </motion.p>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons — pill shape */}
             <motion.div
               variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease } },
+                hidden: { opacity: 0, y: 10 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
               }}
-              className="flex flex-col sm:flex-row gap-4 mt-6 md:mt-8"
+              className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8"
             >
               <Link href="/quote">
                 <Button
                   size="lg"
-                  className="text-base md:text-lg px-6 md:px-8 transition-all duration-300 bg-[#16323A] hover:bg-[#1f4350] text-white w-full sm:w-auto cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B98A3D]"
+                  className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-7 font-nav text-base w-full sm:w-auto"
                 >
                   Get Free Quote
                 </Button>
@@ -136,71 +123,54 @@ export function Hero() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="text-base md:text-lg px-6 md:px-8 bg-transparent transition-all duration-300 border-[#16323A] text-[#16323A] hover:bg-[#16323A] hover:text-white w-full sm:w-auto cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B98A3D]"
+                  className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-7 font-nav text-base w-full sm:w-auto bg-transparent"
                 >
-                  <Phone className="mr-2 h-4 w-4 shrink-0" />
-                  <span className="font-mono-alt">{content.phone}</span>
+                  <Phone className="mr-2 h-4 w-4" />
+                  {content.phone}
                 </Button>
               </a>
             </motion.div>
 
-            {/* Trust strip */}
+            {/* Trust stats — inline text, no floating card */}
             <motion.div
               variants={{
-                hidden: { opacity: 0, y: 15 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease, delay: 0.3 } },
+                hidden: { opacity: 0, y: 8 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease, delay: 0.15 } },
               }}
-              className="mt-10 md:mt-14 border-t border-[#16323A]/10 pt-4"
+              className="mt-8 pt-6 border-t border-border"
             >
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-[#5B6B6A] font-sans-alt">
-                <span>
-                  <span className="text-[#B98A3D] font-sans-alt">★</span>{' '}
-                  <span className="font-mono-alt font-medium text-[#16323A]">{content.ratingText}</span>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground font-body">
+                <span className="flex items-center gap-1.5">
+                  <svg className="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <span className="font-heading text-foreground">{content.ratingText}</span>
                 </span>
                 <span>
-                  <span className="font-mono-alt font-medium text-[#16323A]">{content.statsValue}</span>{' '}
-                  {content.statsLabel}
+                  <span className="font-heading text-foreground">{content.statsValue}</span> {content.statsLabel}
                 </span>
                 <span>
-                  <span className="font-mono-alt font-medium text-[#16323A]">12+</span> Brisbane Suburbs
+                  <span className="font-heading text-foreground">12+</span> Brisbane Suburbs
                 </span>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Right image column */}
+          {/* Right image column — clean, no hover scale, no floating card */}
           <motion.div
             className="relative"
-            initial={{ opacity: 0, x: 60 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease }}
           >
-            <div className="relative overflow-hidden rounded-lg shadow-2xl">
-              <motion.div style={reducedMotion ? {} : { y: imageParallaxY }}>
-                <Image
-                  width={500}
-                  height={300}
-                  src={content.heroImage}
-                  alt="Professional carpet cleaning service showing the fresh difference"
-                  className="w-full h-auto"
-                />
-                {/* Diagonal wipe overlay */}
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(22,50,58,0.35) 0%, rgba(22,50,58,0.35) 45%, transparent 48%, transparent 100%)',
-                  }}
-                  aria-hidden="true"
-                />
-                {/* Diagonal accent line */}
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background: 'linear-gradient(135deg, transparent 47%, rgba(185,138,61,0.25) 49%, transparent 51%)',
-                  }}
-                  aria-hidden="true"
-                />
-              </motion.div>
+            <div className="relative overflow-hidden rounded-xl shadow-sm">
+              <Image
+                width={600}
+                height={400}
+                src={content.heroImage}
+                alt="Professional carpet cleaning service showing the fresh difference"
+                className="w-full h-auto"
+              />
             </div>
           </motion.div>
         </div>

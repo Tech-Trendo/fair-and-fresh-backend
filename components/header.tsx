@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const servicesMenu = [
@@ -28,7 +28,6 @@ export function Header() {
 
   useEffect(() => {
     let active = true;
-    // Fetch site settings for phone number
     fetch("/api/site-content?group=site_settings")
       .then((res) => res.json())
       .then((data) => {
@@ -59,16 +58,12 @@ export function Header() {
   }, []);
 
   return (
-    <motion.header
-      className="bg-card shadow-sm sticky top-0 z-50 border-b border-border"
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.4, 0, 1] }}
-    >
+    <header className="bg-white sticky top-0 z-50 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          {/* Logo */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-3">
               <Image
                 src="/fair-fresh-logo.svg"
                 alt="Fair and Fresh Cleaning"
@@ -77,56 +72,47 @@ export function Header() {
                 className="h-10 w-auto"
               />
               <div className="hidden sm:block h-8 w-px bg-border" />
-              <span className="hidden sm:inline text-lg font-semibold text-foreground/90 tracking-tight group-hover:text-primary transition-colors duration-200">
+              <span className="hidden sm:inline text-lg font-heading text-foreground/90 tracking-tight">
                 Fair & Fresh Cleaning
               </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="/" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
               Home
             </Link>
             <div
-              className="relative group"
+              className="relative"
               onMouseEnter={() => setIsServicesOpen(true)}
               onMouseLeave={() => setIsServicesOpen(false)}
             >
-              <button className="text-foreground hover:text-primary transition-colors font-medium flex items-center gap-1 bg-transparent border-0 cursor-pointer">
+              <button className="text-foreground hover:text-primary transition-colors font-nav text-sm flex items-center gap-1 bg-transparent border-0 cursor-pointer">
                 Services
                 <ChevronDown
-                  className={`h-4 w-4 transition-transform duration-300 ${isServicesOpen ? "rotate-180" : ""
-                    }`}
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${isServicesOpen ? "rotate-180" : ""}`}
                 />
               </button>
-
-              {/* Animated Dropdown Menu */}
               <AnimatePresence>
                 {isServicesOpen && (
                   <motion.div
-                    className="absolute top-full left-0 w-64 pt-2"
-                    initial={{ opacity: 0, y: -8 }}
+                    className="absolute top-full left-0 w-56 pt-2"
+                    initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.2, ease: [0.25, 0.4, 0, 1] }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.15 }}
                   >
-                    <div className="bg-card shadow-lg rounded-lg border border-border overflow-hidden">
-                      <div className="py-2">
-                        {menuItems.map((service, index) => (
-                          <motion.div
+                    <div className="bg-white shadow-lg rounded-xl border border-border overflow-hidden">
+                      <div className="py-1">
+                        {menuItems.map((service) => (
+                          <Link
                             key={service.name}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.2, delay: index * 0.03 }}
+                            href={service.href}
+                            className="block px-4 py-2 text-sm text-foreground hover:text-primary hover:bg-accent-tint/50 transition-colors font-body"
                           >
-                            <Link
-                              href={service.href}
-                              className="block px-4 py-2.5 text-sm text-foreground hover:bg-primary/10 hover:text-primary transition-all duration-200"
-                            >
-                              {service.name}
-                            </Link>
-                          </motion.div>
+                            {service.name}
+                          </Link>
                         ))}
                       </div>
                     </div>
@@ -134,48 +120,41 @@ export function Header() {
                 )}
               </AnimatePresence>
             </div>
-            <Link
-              href="/brisbane"
-              className="text-foreground hover:text-primary transition-colors font-medium"
-            >
+            <Link href="/brisbane" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
               Service Areas
             </Link>
-            <Link href="/about" className="text-foreground hover:text-primary transition-colors font-medium">
+            <Link href="/about" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
               About
             </Link>
-            <Link href="/blog" className="text-foreground hover:text-primary transition-colors font-medium">
+            <Link href="/blog" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
               Blog
             </Link>
-            <Link
-              href="/contact"
-              className="text-foreground hover:text-primary transition-colors font-medium"
-            >
+            <Link href="/contact" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
               Contact
             </Link>
           </nav>
 
-          <div className="hidden md:flex items-center space-x-4">
-            <div className="flex items-center text-primary">
-              <Phone className="h-4 w-4 mr-2" />
-              <span className="font-semibold">{phone}</span>
-            </div>
-            <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href="/quote">Get Quote</Link>
+          {/* Desktop CTA */}
+          <div className="hidden md:flex items-center">
+            <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6 font-nav text-sm">
+              <Link href="/quote">Get Free Quote</Link>
             </Button>
           </div>
 
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
-            <a href={`tel:${phone.replace(/\s/g, '')}`}>
-              <Phone className=" md:hidden h-7 w-7 mr-4 inline-block text-primary" />
+            <a href={`tel:${phone.replace(/\s/g, '')}`} className="mr-3">
+              <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+              </svg>
             </a>
-            <button className="md:hidden text-primary bg-transparent border-0 cursor-pointer" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+            <button className="text-primary bg-transparent border-0 cursor-pointer" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation — AnimatePresence for smooth slide */}
+        {/* Mobile Navigation */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -183,37 +162,35 @@ export function Header() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.25, 0.4, 0, 1] }}
+              transition={{ duration: 0.2 }}
             >
-              <nav className="flex flex-col space-y-4">
-                <Link href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+              <nav className="flex flex-col space-y-3">
+                <Link href="/" className="text-foreground hover:text-primary transition-colors font-nav text-sm" onClick={() => setIsMenuOpen(false)}>
                   Home
                 </Link>
                 <div>
                   <button
                     onClick={() => setIsServicesOpen(!isServicesOpen)}
-                    className="text-foreground hover:text-primary transition-colors font-medium flex items-center justify-between w-full bg-transparent border-0 cursor-pointer"
+                    className="text-foreground hover:text-primary transition-colors font-nav text-sm flex items-center justify-between w-full bg-transparent border-0 cursor-pointer"
                   >
                     Services
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform duration-300 ${isServicesOpen ? "rotate-180" : ""
-                        }`}
-                    />
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isServicesOpen ? "rotate-180" : ""}`} />
                   </button>
                   <AnimatePresence>
                     {isServicesOpen && (
                       <motion.div
-                        className="mt-2 ml-4 space-y-2 overflow-hidden"
+                        className="mt-2 ml-4 space-y-1 overflow-hidden"
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: [0.25, 0.4, 0, 1] }}
+                        transition={{ duration: 0.15 }}
                       >
                         {menuItems.map((service) => (
                           <Link
                             key={service.name}
                             href={service.href}
-                            className="block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                            className="block py-1.5 text-sm text-muted-foreground hover:text-primary transition-colors font-body"
+                            onClick={() => setIsMenuOpen(false)}
                           >
                             {service.name}
                           </Link>
@@ -222,42 +199,34 @@ export function Header() {
                     )}
                   </AnimatePresence>
                 </div>
-                <Link
-                  href="/brisbane"
-                  className="text-foreground hover:text-primary transition-colors font-medium"
-                >
+                <Link href="/brisbane" className="text-foreground hover:text-primary transition-colors font-nav text-sm" onClick={() => setIsMenuOpen(false)}>
                   Service Areas
                 </Link>
-                <Link
-                  href="/about"
-                  className="text-foreground hover:text-primary transition-colors font-medium"
-                >
+                <Link href="/about" className="text-foreground hover:text-primary transition-colors font-nav text-sm" onClick={() => setIsMenuOpen(false)}>
                   About
                 </Link>
-                <Link
-                  href="/blog"
-                  className="text-foreground hover:text-primary transition-colors font-medium"
-                >
+                <Link href="/blog" className="text-foreground hover:text-primary transition-colors font-nav text-sm" onClick={() => setIsMenuOpen(false)}>
                   Blog
                 </Link>
-                <Link
-                  href="/contact"
-                  className="text-foreground hover:text-primary transition-colors font-medium"
-                >
+                <Link href="/contact" className="text-foreground hover:text-primary transition-colors font-nav text-sm" onClick={() => setIsMenuOpen(false)}>
                   Contact
                 </Link>
-                <div className="flex items-center text-primary pt-2">
-                  <Phone className="h-4 w-4 mr-2" />
-                  <span className="font-semibold">{phone}</span>
+                <div className="pt-2 space-y-2">
+                  <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-primary font-nav text-sm">
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                    </svg>
+                    {phone}
+                  </a>
+                  <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-nav">
+                    <Link href="/quote" onClick={() => setIsMenuOpen(false)}>Get Free Quote</Link>
+                  </Button>
                 </div>
-                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <Link href="/quote">Get Quote</Link>
-                </Button>
               </nav>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-    </motion.header>
+    </header>
   );
 }

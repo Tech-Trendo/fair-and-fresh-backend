@@ -1,54 +1,11 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sofa, Car, Bed, Home, Shirt, Sparkles, Droplets, Scissors, HelpCircle, Brush, Trash2, Wind, ShieldCheck, Leaf, Utensils, Key, Sun } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
 import { CategoryTabs } from "@/components/category-tabs";
 import { useState } from "react";
-
-// Map slugs to appropriate Lucide icons
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  "carpet-cleaning": Home,
-  "mattress-cleaning": Bed,
-  "rug-cleaning": Sparkles,
-  "upholstery-cleaning": Sofa,
-  "curtain-cleaning": Shirt,
-  "car-seat-cleaning": Car,
-  "car-detailing": Car,
-  "bond-cleaning": Home,
-  "lawn-mowing": Scissors,
-  "flood-damage-restoration": Droplets,
-};
-
-const lucideIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Home,
-  Sofa,
-  Bed,
-  Car,
-  Shirt,
-  Sparkles,
-  Droplets,
-  Scissors,
-  HelpCircle,
-  Brush,
-  Trash2,
-  Wind,
-  ShieldCheck,
-  Leaf,
-  Utensils,
-  Key,
-  Sun
-};
-
-function getServiceIcon(slug: string, customIcon?: string) {
-  if (customIcon && lucideIconMap[customIcon]) {
-    return lucideIconMap[customIcon];
-  }
-  return iconMap[slug] || HelpCircle;
-}
 
 export interface ServiceData {
   name: string;
@@ -74,18 +31,17 @@ export function Services({
   });
 
   return (
-    <section id="services" className="py-12 md:py-20 bg-white">
+    <section id="services" className="py-16 md:py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <FadeIn>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 text-balance">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground text-balance">
               Our Professional Cleaning Services
             </h2>
           </FadeIn>
-          <FadeIn delay={0.2}>
-            <p className="text-lg md:text-xl text-gray-600 mt-4 max-w-3xl mx-auto text-pretty">
-              We specialize in fabric cleaning with state-of-the-art equipment and eco-friendly solutions. Every
-              service comes with our satisfaction guarantee.
+          <FadeIn delay={0.1}>
+            <p className="text-base md:text-lg text-muted-foreground mt-3 max-w-2xl mx-auto text-pretty font-body">
+              We specialize in fabric cleaning with state-of-the-art equipment and eco-friendly solutions.
             </p>
           </FadeIn>
         </div>
@@ -98,73 +54,48 @@ export function Services({
 
         <StaggerContainer
           key={selectedCategory}
-          className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+          className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
           {filteredServices.map((service) => {
             return (
               <StaggerItem key={service.slug}>
-                <Card
-                  className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 overflow-hidden group border border-border/40 bg-card rounded-2xl h-full flex flex-col"
-                >
-                  <CardContent className="p-0 h-full flex flex-col flex-grow">
-                    <Link href={`/services/${service.slug}`} className="block flex-grow">
-                      {/* Image aspect-video */}
-                      <div className="relative overflow-hidden aspect-video bg-muted">
-                        <Image
-                          src={service.image || "/placeholder.svg"}
-                          alt={service.name}
-                          width={400}
-                          height={250}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-550 ease-out"
-                        />
-                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300" />
-                      </div>
-
-                      {/* Card Content body */}
-                      <div className="p-5 space-y-2.5">
-                        <h3 className="text-lg md:text-xl font-extrabold text-gray-900 group-hover:text-primary transition-colors duration-300 leading-snug">
-                          {service.name}
-                        </h3>
-                        {service.shortDescription && (
-                          <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
-                            {service.shortDescription}
-                          </p>
-                        )}
-                      </div>
-                    </Link>
-
-                    {/* Learn More link */}
-                    <div className="p-5 pt-0 mt-auto">
-                      <Link
-                        href={`/services/${service.slug}`}
-                        className="text-xs font-bold text-primary group-hover:text-accent flex items-center gap-1 transition-colors w-fit"
-                      >
-                        Learn More
-                        <svg
-                          className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                      </Link>
+                <Link href={`/services/${service.slug}`} className="block h-full group">
+                  <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden h-full flex flex-col border border-border">
+                    {/* Photo at the top */}
+                    <div className="relative aspect-video overflow-hidden bg-muted">
+                      <Image
+                        src={service.image || "/placeholder.svg"}
+                        alt={service.name}
+                        width={400}
+                        height={250}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  </CardContent>
-                </Card>
+                    {/* Content below */}
+                    <div className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-base font-heading-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                        {service.name}
+                      </h3>
+                      {service.shortDescription && (
+                        <p className="text-sm text-muted-foreground font-body leading-relaxed line-clamp-2 flex-grow">
+                          {service.shortDescription}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </Link>
               </StaggerItem>
             );
           })}
         </StaggerContainer>
 
-        <FadeIn y={20} delay={0.4} className="text-center mt-12">
-          <Link href="/services">
+        <FadeIn y={12} delay={0.2} className="text-center mt-10">
+          <Link href="/quote">
             <Button
               size="lg"
-              className="text-base md:text-lg px-6 md:px-8 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-8 font-nav text-base"
             >
-              Get Free Quote for All Services
+              Get Free Quote
             </Button>
           </Link>
         </FadeIn>
@@ -172,4 +103,3 @@ export function Services({
     </section>
   );
 }
-

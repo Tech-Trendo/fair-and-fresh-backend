@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, Tag, ArrowRight } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 interface BlogPostCardProps {
   slug: string;
@@ -10,6 +10,7 @@ interface BlogPostCardProps {
   createdAt: Date | string;
   categoryTitle?: string;
   categorySlug?: string;
+  readTime?: string;
 }
 
 export function BlogPostCard({
@@ -20,6 +21,7 @@ export function BlogPostCard({
   createdAt,
   categoryTitle,
   categorySlug,
+  readTime,
 }: BlogPostCardProps) {
   const formattedDate = new Date(createdAt).toLocaleDateString("en-AU", {
     day: "2-digit",
@@ -29,54 +31,52 @@ export function BlogPostCard({
 
   const plainDescription = description.replace(/<[^>]*>/g, "");
 
+  // Estimate read time if not provided
+  const minsRead = readTime || `${Math.max(1, Math.ceil(plainDescription.split(/\s+/).length / 200))} min read`;
+
   return (
-    <article className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+    <article className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col h-full border border-border">
       <Link href={`/blog/${slug}`} className="relative block aspect-video overflow-hidden bg-muted">
         <Image
           src={featuredImage || "/uploads/blog_workspace.jpg"}
           alt={title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover group-hover:scale-105 transition-transform duration-550 ease-out"
+          className="object-cover"
         />
       </Link>
 
-      <div className="p-6 flex flex-col flex-grow">
-        <div className="flex items-center gap-3 mb-4 text-[10px] uppercase font-bold tracking-wider text-primary">
+      <div className="p-5 flex flex-col flex-grow">
+        {/* Meta row */}
+        <div className="flex items-center gap-2 mb-3">
           {categorySlug ? (
-            <Link href={`/blog/category/${categorySlug}`} className="flex items-center gap-1 hover:underline">
-              <Tag className="w-3 h-3" />
+            <span className="bg-accent-tint text-primary text-[10px] font-nav px-2.5 py-1 rounded-full">
               {categoryTitle || "General"}
-            </Link>
+            </span>
           ) : (
-            <span className="flex items-center gap-1">
-              <Tag className="w-3 h-3" />
+            <span className="bg-accent-tint text-primary text-[10px] font-nav px-2.5 py-1 rounded-full">
               {categoryTitle || "General"}
             </span>
           )}
-          <span className="text-border">•</span>
-          <span className="flex items-center gap-1 text-muted-foreground font-semibold">
-            <Calendar className="w-3 h-3" />
-            {formattedDate}
+          <span className="text-[10px] text-muted-foreground font-body">
+            · {minsRead}
           </span>
         </div>
 
-        <h2 className="text-xl font-bold leading-snug group-hover:text-primary transition-colors mb-3">
+        {/* Title */}
+        <h2 className="text-base font-heading-bold text-foreground leading-snug mb-2 group-hover:text-primary transition-colors">
           <Link href={`/blog/${slug}`}>{title}</Link>
         </h2>
 
-        <p className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-3">
+        {/* Excerpt */}
+        <p className="text-sm text-muted-foreground font-body leading-relaxed line-clamp-3 flex-grow">
           {plainDescription}
         </p>
 
-        <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
-          <Link
-            href={`/blog/${slug}`}
-            className="text-xs font-bold text-primary group-hover:text-accent flex items-center gap-1 transition-colors"
-          >
-            Read Article
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-          </Link>
+        {/* Date */}
+        <div className="mt-4 pt-3 border-t border-border flex items-center gap-1.5 text-xs text-muted-foreground font-body">
+          <Calendar className="w-3 h-3" />
+          {formattedDate}
         </div>
       </div>
     </article>

@@ -5,21 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Sofa,
-  Car,
-  Bed,
-  Home,
-  Sparkles,
   Shield,
   Clock,
   Award,
+  Sparkles,
   CheckCircle,
   Phone,
-  Shirt,
-  Droplets,
   ArrowRight,
-  HelpCircle,
-  Scissors,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,8 +20,8 @@ import { staticPages, beforeAfterImages } from "@/lib/schema";
 import { eq, asc } from "drizzle-orm";
 import { BeforeAfterSlider } from "@/components/before-after-slider";
 import { getContentGroup } from "@/lib/site-content";
+import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
 
-// Dynamically generate services catalog metadata from staticPages table in DB
 export async function generateMetadata(): Promise<Metadata> {
   const page = await db.query.staticPages.findFirst({
     where: eq(staticPages.slug, "services"),
@@ -45,13 +37,9 @@ export async function generateMetadata(): Promise<Metadata> {
     title: page.metaTitle || "Our Professional Services | Fair and Fresh Cleaning",
     description: page.metaDescription || undefined,
     keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
-    alternates: {
-      canonical: page.canonicalUrl || undefined,
-    },
+    alternates: { canonical: page.canonicalUrl || undefined },
     robots: page.metaRobots || undefined,
-    other: page.metaRobots ? {
-      "x-robots-tag": page.metaRobots,
-    } : undefined,
+    other: page.metaRobots ? { "x-robots-tag": page.metaRobots } : undefined,
     openGraph: {
       title: page.ogTitle || undefined,
       description: page.ogDescription || undefined,
@@ -61,45 +49,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const benefits = [
-  {
-    icon: Shield,
-    title: "Eco-Friendly Products",
-    description: "Safe for your family and pets",
-  },
-  {
-    icon: Award,
-    title: "Certified Professionals",
-    description: "Trained and experienced technicians",
-  },
-  {
-    icon: Clock,
-    title: "Fast Service",
-    description: "Quick turnaround times",
-  },
-  {
-    icon: Sparkles,
-    title: "Satisfaction Guaranteed",
-    description: "100% satisfaction or we return",
-  },
+  { icon: Shield, title: "Eco-Friendly Products", description: "Safe for your family and pets" },
+  { icon: Award, title: "Certified Professionals", description: "Trained and experienced technicians" },
+  { icon: Clock, title: "Fast Service", description: "Quick turnaround times" },
+  { icon: Sparkles, title: "Satisfaction Guaranteed", description: "100% satisfaction or we return" },
 ];
-
-// Map slugs to appropriate Lucide icons
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  "carpet-cleaning": Home,
-  "mattress-cleaning": Bed,
-  "rug-cleaning": Sparkles,
-  "upholstery-cleaning": Sofa,
-  "curtain-cleaning": Shirt,
-  "car-seat-cleaning": Car,
-  "car-detailing": Car,
-  "bond-cleaning": Home,
-  "lawn-mowing": Scissors,
-  "flood-damage-restoration": Droplets,
-};
-
-function getServiceIcon(slug: string) {
-  return iconMap[slug] || HelpCircle;
-}
 
 export default async function ServicesPage() {
   const servicesContent = await getContentGroup('services');
@@ -114,12 +68,8 @@ export default async function ServicesPage() {
   const ctaTitle = servicesContent.services_cta_title || "Ready to Experience the Difference?";
   const ctaDesc = servicesContent.services_cta_description || "Get a free, no-obligation quote today and discover why Brisbane trusts Fair and Fresh Cleaning.";
 
-  // Query all services along with their relations dynamically
   const dbServices = await db.query.services.findMany({
-    with: {
-      images: { limit: 1 },
-      whatsIncluded: true,
-    },
+    with: { images: { limit: 1 }, whatsIncluded: true },
     orderBy: (services, { asc }) => [asc(services.sortOrder), asc(services.name)],
   });
 
@@ -145,224 +95,150 @@ export default async function ServicesPage() {
     <main className="min-h-screen bg-background">
       <Header />
 
-      <section className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-6 bg-primary text-primary-foreground border-0 animate-fade-in px-4 py-2 text-sm">
+      {/* Hero */}
+      <section className="py-20 md:py-28 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="max-w-4xl mx-auto text-center">
+            <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-4 py-1.5 rounded-full mb-5">
               {badgeText}
-            </Badge>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-foreground mb-6 animate-fade-in animation-delay-200 text-balance leading-tight">
+            </span>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-heading-bold text-foreground mb-5 text-balance leading-tight">
               {heroTitle}
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-10 animate-fade-in animation-delay-400 text-pretty max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty font-body">
               {heroDesc}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in animation-delay-600">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/quote">
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  Get Free Quote
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                <Button size="lg" className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-8 font-nav text-base">
+                  Get Free Quote <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="tel:0430799567">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg font-semibold transition-all duration-300 bg-transparent"
-                >
-                  <Phone className="mr-2 h-5 w-5" />
-                  0430 799 567
+                <Button size="lg" variant="outline" className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 font-nav text-base bg-transparent">
+                  <Phone className="mr-2 h-4 w-4" /> 0430 799 567
                 </Button>
               </Link>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
 
-      <section className="py-20 lg:py-28">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 text-balance">
-              Our Specialized Services
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-              Each service is tailored to deliver exceptional results with care and precision
-            </p>
-          </div>
+      {/* Service Grid */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3">Our Specialized Services</h2>
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto font-body">Each service is tailored to deliver exceptional results with care and precision</p>
+          </FadeIn>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {services.map((service, index) => {
-              const IconComponent = getServiceIcon(service.slug);
-              return (
-                <Card
-                  key={service.title}
-                  className="border-0 shadow-lg hover:shadow-2xl transition-all duration-500 group animate-fade-in-up overflow-hidden bg-white"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <CardContent className="p-0">
-                    <div className="relative overflow-hidden">
-                      <Image
-                        src={service.image || "/placeholder.svg"}
-                        alt={service.title}
-                        width={400}
-                        height={300}
-                        className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      <div className="absolute top-4 right-4 bg-white p-3 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <IconComponent className="h-6 w-6 text-primary" />
-                      </div>
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service, index) => (
+              <StaggerItem key={service.slug}>
+                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden h-full flex flex-col border border-border">
+                  <Link href={`/services/${service.slug}`} className="block">
+                    <div className="relative aspect-video overflow-hidden bg-muted">
+                      <Image src={service.image || "/placeholder.svg"} alt={service.title} width={400} height={250} className="w-full h-full object-cover" />
                     </div>
-
-                    <div className="p-6">
-                      <h3 className="text-2xl font-serif font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
-                        {service.title}
-                      </h3>
-                      <p className="text-muted-foreground mb-6 text-pretty leading-relaxed">
-                        {service.description}
-                      </p>
-
-                      <div className="space-y-3 mb-6">
-                        {service.features.map((feature) => (
-                          <div key={feature} className="flex items-center gap-3">
-                            <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                            <span className="text-sm text-foreground font-medium">{feature}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <Link href={`/services/${service.slug}`}>
-                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 group-hover:shadow-lg font-semibold py-6">
-                          Learn More
-                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                      </Link>
+                  </Link>
+                  <div className="p-5 flex flex-col flex-grow">
+                    <h3 className="text-lg font-heading-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      <Link href={`/services/${service.slug}`}>{service.title}</Link>
+                    </h3>
+                    <p className="text-sm text-muted-foreground font-body leading-relaxed mb-4 flex-grow">{service.description}</p>
+                    <div className="space-y-2 mb-4">
+                      {service.features.slice(0, 3).map((feature) => (
+                        <div key={feature} className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                          <span className="text-xs text-muted-foreground font-body">{feature}</span>
+                        </div>
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                    <Link href={`/services/${service.slug}`}>
+                      <Button className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-nav text-sm">
+                        Learn More <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
         </div>
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-16 lg:py-24 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 animate-fade-in text-balance">
-              {whyTitle}
-            </h2>
-            <p className="text-lg text-muted-foreground animate-fade-in animation-delay-200 text-pretty">
-              {whyDesc}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+      <section className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3">{whyTitle}</h2>
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto font-body">{whyDesc}</p>
+          </FadeIn>
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {benefits.map((benefit, index) => (
-              <Card
-                key={benefit.title}
-                className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 text-center animate-fade-in-up"
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                <CardContent className="p-6">
-                  <div className="bg-primary/10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <benefit.icon className="h-8 w-8 text-primary" />
+              <StaggerItem key={benefit.title}>
+                <div className="bg-white rounded-xl border border-border p-6 text-center h-full shadow-sm">
+                  <div className="w-12 h-12 bg-accent-tint rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <benefit.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">{benefit.title}</h3>
-                  <p className="text-muted-foreground text-sm">{benefit.description}</p>
-                </CardContent>
-              </Card>
+                  <h3 className="text-base font-heading-bold text-foreground mb-2">{benefit.title}</h3>
+                  <p className="text-sm text-muted-foreground font-body">{benefit.description}</p>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
-      {/* Process Section */}
-      <section className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 animate-fade-in text-balance">
-              {processTitle}
-            </h2>
-            <p className="text-lg text-muted-foreground animate-fade-in animation-delay-200 text-pretty">
-              {processDesc}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      {/* Process */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3">{processTitle}</h2>
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto font-body">{processDesc}</p>
+          </FadeIn>
+          <StaggerContainer className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
-              {
-                step: "01",
-                title: "Assessment & Quote",
-                description: "We evaluate your cleaning needs and provide a transparent, upfront quote.",
-              },
-              {
-                step: "02",
-                title: "Professional Cleaning",
-                description: "Our certified technicians use eco-friendly products and advanced techniques.",
-              },
-              {
-                step: "03",
-                title: "Quality Check",
-                description: "We inspect our work to ensure it meets our high standards before completion.",
-              },
+              { step: "01", title: "Assessment & Quote", description: "We evaluate your cleaning needs and provide a transparent, upfront quote." },
+              { step: "02", title: "Professional Cleaning", description: "Our certified technicians use eco-friendly products and advanced techniques." },
+              { step: "03", title: "Quality Check", description: "We inspect our work to ensure it meets our high standards before completion." },
             ].map((process, index) => (
-              <div
-                key={process.step}
-                className="text-center animate-fade-in-up"
-                style={{ animationDelay: `${index * 200}ms` }}
-              >
-                <div className="bg-primary text-primary-foreground text-2xl font-bold w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                  {process.step}
+              <StaggerItem key={process.step}>
+                <div className="text-center">
+                  <div className="bg-primary text-primary-foreground text-xl font-heading-bold w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4">{process.step}</div>
+                  <h3 className="text-base font-heading-bold text-foreground mb-2">{process.title}</h3>
+                  <p className="text-sm text-muted-foreground font-body">{process.description}</p>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-4">{process.title}</h3>
-                <p className="text-muted-foreground text-pretty">{process.description}</p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
       <BeforeAfterSlider images={beforeAfterImagesData} />
 
-      <section className="py-20 lg:py-28 bg-gradient-to-br from-primary via-primary/95 to-primary/90 text-primary-foreground relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl" />
-        </div>
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="max-w-3xl mx-auto animate-fade-in-up">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-balance">
-              {ctaTitle}
-            </h2>
-            <p className="text-xl mb-10 opacity-95 text-pretty leading-relaxed">
-              {ctaDesc}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="tel:0430799567">
-                <Button
-                  size="lg"
-                  className="bg-white text-primary hover:bg-white/90 font-semibold px-10 py-7 text-lg transition-all duration-300 hover:shadow-2xl shadow-xl"
-                >
-                  <Phone className="mr-2 h-5 w-5" />
-                  Call: 0430 799 567
-                </Button>
-              </Link>
+      {/* CTA */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-primary rounded-xl px-8 py-14 md:px-16 md:py-20 text-center">
+            <FadeIn>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-primary-foreground mb-4 text-balance">{ctaTitle}</h2>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <p className="text-base md:text-lg text-primary-foreground/85 max-w-xl mx-auto font-body mb-8">{ctaDesc}</p>
+            </FadeIn>
+            <FadeIn delay={0.2} className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/quote">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-white text-white hover:bg-white hover:text-primary font-semibold px-10 py-7 text-lg transition-all duration-300 bg-transparent"
-                >
-                  Get Free Quote
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                <Button size="lg" className="rounded-full bg-white text-primary hover:bg-white/90 font-nav text-base px-8">
+                  Get Free Quote <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-            </div>
+              <a href="tel:0430799567">
+                <Button size="lg" variant="outline" className="rounded-full border-white/40 text-white hover:bg-white/10 font-nav text-base px-8 bg-transparent">
+                  <Phone className="mr-2 h-4 w-4" /> 0430 799 567
+                </Button>
+              </a>
+            </FadeIn>
           </div>
         </div>
       </section>
