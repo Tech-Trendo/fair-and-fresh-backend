@@ -217,6 +217,18 @@ export const beforeAfterImages = pgTable('before_after_images', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// Site Content Table (CMS - editable content for pages and global settings)
+export const siteContent = pgTable('site_content', {
+  id: text('id').primaryKey(),
+  key: text('key').unique().notNull(),
+  value: text('value').notNull(),
+  label: text('label').notNull(),
+  group: text('group').notNull(),
+  type: text('type').default('text').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Quotation Requests Table
 export const quotationRequests = pgTable('quotation_requests', {
   id: text('id').primaryKey(),

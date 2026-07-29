@@ -20,6 +20,7 @@ import { FadeIn, SlideIn, StaggerContainer, StaggerItem, CountUp, ScaleIn } from
 import { db } from "@/lib/db";
 import { staticPages } from "@/lib/schema";
 import { eq } from "drizzle-orm";
+import { getContentGroup } from "@/lib/site-content";
 import { ContactForm } from "@/components/contact-form";
 
 // Dynamically generate contact page metadata from staticPages table in DB
@@ -53,7 +54,13 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const content = await getContentGroup('contact');
+
+  const badgeText = content.contact_badge || "Available 7 Days a Week";
+  const heroTitle = content.contact_hero_title || "Ready to Transform Your Fabrics?";
+  const heroDesc = content.contact_hero_description || "Get in touch with Brisbane's most trusted fabric cleaning specialists.";
+
   return (
     <main className="min-h-screen bg-background overflow-hidden">
       <Header />
@@ -66,16 +73,15 @@ export default function ContactPage() {
             <FadeIn>
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium mb-4 md:mb-6">
                 <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4" />
-                <span>Available 7 Days a Week</span>
+                <span>{badgeText}</span>
               </div>
 
               <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-4 md:mb-6 text-balance">
-                Ready to Transform Your Fabrics?
+                {heroTitle}
               </h1>
 
               <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 text-pretty leading-relaxed">
-                Get in touch with Brisbane&apos;s most trusted fabric cleaning specialists. Whether you need a
-                quick quote, expert advice, or want to book a service, we&apos;re here to help.
+                {heroDesc}
               </p>
 
               {/* Trust Indicators */}
@@ -329,7 +335,7 @@ export default function ContactPage() {
         <div className="container mx-auto px-4">
           <FadeIn className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-6">
-              Why Brisbane Trusts Us
+              {content.contact_why_title || "Why Brisbane Trusts Us"}
             </h2>
             <div className="grid grid-cols-3 gap-4 md:gap-8 mt-8 md:mt-12">
               <div className="text-center">

@@ -24,9 +24,21 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [menuItems, setMenuItems] = useState(servicesMenu);
+  const [phone, setPhone] = useState("0430 799 567");
 
   useEffect(() => {
     let active = true;
+    // Fetch site settings for phone number
+    fetch("/api/site-content?group=site_settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          const phoneSetting = data.results.find((s: any) => s.key === "site_phone");
+          if (phoneSetting) setPhone(phoneSetting.value);
+        }
+      })
+      .catch(() => {});
+
     fetch("/api/services")
       .then((res) => res.json())
       .then((data) => {
@@ -55,8 +67,8 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link href="/">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3 group">
               <Image
                 src="/fair-fresh-logo.svg"
                 alt="Fair and Fresh Cleaning"
@@ -64,6 +76,10 @@ export function Header() {
                 height={40}
                 className="h-10 w-auto"
               />
+              <div className="hidden sm:block h-8 w-px bg-border" />
+              <span className="hidden sm:inline text-lg font-semibold text-foreground/90 tracking-tight group-hover:text-primary transition-colors duration-200">
+                Fair & Fresh Cleaning
+              </span>
             </Link>
           </div>
 
@@ -141,7 +157,7 @@ export function Header() {
           <div className="hidden md:flex items-center space-x-4">
             <div className="flex items-center text-primary">
               <Phone className="h-4 w-4 mr-2" />
-              <span className="font-semibold">0430 799 567</span>
+              <span className="font-semibold">{phone}</span>
             </div>
             <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Link href="/quote">Get Quote</Link>
@@ -150,7 +166,7 @@ export function Header() {
 
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
-            <a href="tel:0430799567">
+            <a href={`tel:${phone.replace(/\s/g, '')}`}>
               <Phone className=" md:hidden h-7 w-7 mr-4 inline-block text-primary" />
             </a>
             <button className="md:hidden text-primary bg-transparent border-0 cursor-pointer" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -232,7 +248,7 @@ export function Header() {
                 </Link>
                 <div className="flex items-center text-primary pt-2">
                   <Phone className="h-4 w-4 mr-2" />
-                  <span className="font-semibold">0430 799 567</span>
+                  <span className="font-semibold">{phone}</span>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                   <Link href="/quote">Get Quote</Link>

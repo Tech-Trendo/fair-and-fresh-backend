@@ -27,6 +27,7 @@ import { db } from "@/lib/db";
 import { staticPages, beforeAfterImages } from "@/lib/schema";
 import { eq, asc } from "drizzle-orm";
 import { BeforeAfterSlider } from "@/components/before-after-slider";
+import { getContentGroup } from "@/lib/site-content";
 
 // Dynamically generate services catalog metadata from staticPages table in DB
 export async function generateMetadata(): Promise<Metadata> {
@@ -101,6 +102,18 @@ function getServiceIcon(slug: string) {
 }
 
 export default async function ServicesPage() {
+  const servicesContent = await getContentGroup('services');
+
+  const badgeText = servicesContent.services_badge || "Professional Fabric Cleaning Services";
+  const heroTitle = servicesContent.services_hero_title || "Transform Your Space with Expert Care";
+  const heroDesc = servicesContent.services_hero_description || "Brisbane's most trusted fabric cleaning specialists. From carpets to curtains, we bring new life to every surface.";
+  const whyTitle = servicesContent.services_why_title || "Why Choose Fair and Fresh?";
+  const whyDesc = servicesContent.services_why_description || "We're committed to delivering exceptional results with every cleaning service.";
+  const processTitle = servicesContent.services_process_title || "Our Cleaning Process";
+  const processDesc = servicesContent.services_process_description || "A systematic approach that ensures consistent, high-quality results every time.";
+  const ctaTitle = servicesContent.services_cta_title || "Ready to Experience the Difference?";
+  const ctaDesc = servicesContent.services_cta_description || "Get a free, no-obligation quote today and discover why Brisbane trusts Fair and Fresh Cleaning.";
+
   // Query all services along with their relations dynamically
   const dbServices = await db.query.services.findMany({
     with: {
@@ -136,14 +149,13 @@ export default async function ServicesPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-primary text-primary-foreground border-0 animate-fade-in px-4 py-2 text-sm">
-              Professional Fabric Cleaning Services
+              {badgeText}
             </Badge>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-foreground mb-6 animate-fade-in animation-delay-200 text-balance leading-tight">
-              Transform Your Space with Expert Care
+              {heroTitle}
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-10 animate-fade-in animation-delay-400 text-pretty max-w-3xl mx-auto leading-relaxed">
-              Brisbane&apos;s most trusted fabric cleaning specialists. From carpets to curtains, we bring new
-              life to every surface.
+              {heroDesc}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in animation-delay-600">
               <Link href="/quote">
@@ -242,10 +254,10 @@ export default async function ServicesPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 animate-fade-in text-balance">
-              Why Choose Fair and Fresh?
+              {whyTitle}
             </h2>
             <p className="text-lg text-muted-foreground animate-fade-in animation-delay-200 text-pretty">
-              We&apos;re committed to delivering exceptional results with every cleaning service.
+              {whyDesc}
             </p>
           </div>
 
@@ -274,10 +286,10 @@ export default async function ServicesPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 animate-fade-in text-balance">
-              Our Cleaning Process
+              {processTitle}
             </h2>
             <p className="text-lg text-muted-foreground animate-fade-in animation-delay-200 text-pretty">
-              A systematic approach that ensures consistent, high-quality results every time.
+              {processDesc}
             </p>
           </div>
 
@@ -325,10 +337,10 @@ export default async function ServicesPage() {
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="max-w-3xl mx-auto animate-fade-in-up">
             <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-balance">
-              Ready to Experience the Difference?
+              {ctaTitle}
             </h2>
             <p className="text-xl mb-10 opacity-95 text-pretty leading-relaxed">
-              Get a free, no-obligation quote today and discover why Brisbane trusts Fair and Fresh Cleaning.
+              {ctaDesc}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="tel:0430799567">

@@ -20,9 +20,60 @@ const fallbackServices = [
 
 export function Footer() {
   const [services, setServices] = useState(fallbackServices);
+  const [settings, setSettings] = useState({
+    phone: "0430 799 567",
+    email: "support@fairandfreshcleaning.com.au",
+    address: "Brisbane and Surrounding Areas",
+    whatsapp: "+610430799567",
+    facebook: "#",
+    instagram: "#",
+    twitter: "#",
+    businessHours: "Monday - Sunday: 7AM - 7PM",
+    aboutText: "Brisbane's trusted fabric cleaning specialists. Fair pricing, fresh results, guaranteed satisfaction.",
+    copyrightText: "Fair and Fresh Cleaning. All rights reserved.",
+    brandName: "Fair & Fresh Cleaning",
+  });
 
   useEffect(() => {
     let active = true;
+
+    fetch("/api/site-content?group=site_settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          const map: Record<string, string> = {};
+          data.results.forEach((item: any) => { map[item.key] = item.value; });
+          setSettings((prev) => ({
+            ...prev,
+            phone: map.site_phone || prev.phone,
+            email: map.site_email || prev.email,
+            address: map.site_address || prev.address,
+            whatsapp: map.site_whatsapp || prev.whatsapp,
+            facebook: map.site_facebook || prev.facebook,
+            instagram: map.site_instagram || prev.instagram,
+            twitter: map.site_twitter || prev.twitter,
+            businessHours: map.site_business_hours || prev.businessHours,
+            brandName: map.site_brand_name || prev.brandName,
+          }));
+        }
+      })
+      .catch(() => {});
+
+    fetch("/api/site-content?group=footer")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          const map: Record<string, string> = {};
+          data.results.forEach((item: any) => { map[item.key] = item.value; });
+          setSettings((prev) => ({
+            ...prev,
+            aboutText: map.footer_about_text || prev.aboutText,
+            copyrightText: map.footer_copyright_text || prev.copyrightText,
+          }));
+        }
+      })
+      .catch(() => {});
+
     fetch("/api/services")
       .then((res) => res.json())
       .then((data) => {
@@ -35,12 +86,9 @@ export function Footer() {
           );
         }
       })
-      .catch((err) => {
-        console.error("Failed to fetch footer services:", err);
-      });
-    return () => {
-      active = false;
-    };
+      .catch(() => {});
+
+    return () => { active = false; };
   }, []);
 
   const currentYear = new Date().getFullYear();
@@ -52,26 +100,31 @@ export function Footer() {
           <StaggerItem>
             <Image
               src="/fair-fresh-logo.svg"
-              alt="Fair and Fresh Cleaning"
+              alt={settings.brandName}
               width={150}
               height={50}
               className="h-12 w-auto mb-4"
             />
             <p className="text-background/80 mb-4 text-pretty">
-              Brisbane&apos;s trusted fabric cleaning specialists. Fair pricing, fresh results, guaranteed
-              satisfaction.
+              {settings.aboutText}
             </p>
             <div className="flex space-x-4">
               <a
-                href="mailto:support@fairandfreshcleaning.com.au"
+                href={`mailto:${settings.email}`}
                 aria-label="Email us"
                 className="text-background/60 hover:text-background transition-colors"
               >
                 <Mail className="h-5 w-5" />
               </a>
-              <Facebook className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
-              <Instagram className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
-              <Twitter className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
+              <a href={settings.facebook} aria-label="Facebook">
+                <Facebook className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
+              </a>
+              <a href={settings.instagram} aria-label="Instagram">
+                <Instagram className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
+              </a>
+              <a href={settings.twitter} aria-label="Twitter">
+                <Twitter className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
+              </a>
             </div>
           </StaggerItem>
 
@@ -137,22 +190,21 @@ export function Footer() {
             <div className="space-y-3 text-background/80">
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4 shrink-0" />
-                <a href="tel:+61430799567" className="hover:text-background transition-colors">
-                  0430 799 567
+                <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="hover:text-background transition-colors">
+                  {settings.phone}
                 </a>
               </div>
               <a
-                href="mailto:support@fairandfreshcleaning.com.au"
+                href={`mailto:${settings.email}`}
                 className="flex items-center gap-3 hover:text-background transition-colors"
               >
                 <FaEnvelope className="h-4 w-4 shrink-0" />
-                <span className="break-all">support@fairandfreshcleaning.com.au</span>
+                <span className="break-all">{settings.email}</span>
               </a>
               <div className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 shrink-0 mt-1" />
                 <div>
-                  <div>Brisbane and Surrounding Areas</div>
-                  <div className="text-sm">Gold Coast and Sunshine Coast</div>
+                  <div>{settings.address}</div>
                 </div>
               </div>
             </div>
@@ -160,7 +212,7 @@ export function Footer() {
             <div className="mt-6 p-4 bg-background/10 rounded-lg">
               <div className="text-sm font-semibold text-primary">Business Hours</div>
               <div className="text-sm text-background/80 mt-1">
-                <div>Monday - Sunday: 7AM - 7PM</div>
+                <div>{settings.businessHours}</div>
               </div>
             </div>
           </StaggerItem>
@@ -175,7 +227,7 @@ export function Footer() {
         >
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-background/60 text-sm">
-              © {currentYear} Fair and Fresh Cleaning. All rights reserved.
+              © {currentYear} {settings.copyrightText}
             </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-background/60 hover:text-background text-sm transition-colors">
@@ -189,7 +241,7 @@ export function Footer() {
         </motion.div>
 
         <motion.a
-          href="https://wa.me/+610430799567?text=Hello%20Fair%20and%20Fresh%20Cleaning%2C%20I%20would%20like%20to%20inquire%20about%20your%20services."
+          href={`https://wa.me/${settings.whatsapp}?text=Hello%20Fair%20and%20Fresh%20Cleaning%2C%20I%20would%20like%20to%20inquire%20about%20your%20services.`}
           target="_blank"
           rel="noopener noreferrer"
           className="fixed bottom-6 right-6 overflow-hidden bg-[#25D366] text-white flex items-center justify-center shadow-lg transition-colors duration-600 z-50 rounded-full group"

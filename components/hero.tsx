@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Star, Shield, Clock, Phone, Sparkles, Tag } from "lucide-react";
+import { Star, Phone, Sparkles, Tag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -10,6 +11,52 @@ import { ScaleIn } from "@/components/motion-wrapper";
 const ease = [0.25, 0.4, 0, 1] as const;
 
 export function Hero() {
+  const [content, setContent] = useState({
+    title: 'Professional Fabric Cleaning in <span className="text-primary">Brisbane</span>',
+    description: "Expert cleaning services for carpets, mattresses, rugs, upholstery, curtains, and car seats in Brisbane. Fair pricing, fresh results, guaranteed satisfaction.",
+    promoText: "Get 20% OFF on same day booking!",
+    ratingText: "4.9/5 Rating",
+    statsLabel: "Happy Customers",
+    statsValue: "500+",
+    heroImage: "/professional-carpet-cleaning-service-in-modern-hom.jpg",
+    phone: "0430 799 567",
+  });
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/site-content?group=home")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          const map: Record<string, string> = {};
+          data.results.forEach((item: any) => { map[item.key] = item.value; });
+          setContent((prev) => ({
+            ...prev,
+            title: map.home_hero_title || prev.title,
+            description: map.home_hero_description || prev.description,
+            promoText: map.home_promo_text || prev.promoText,
+            ratingText: map.home_rating_text || prev.ratingText,
+            statsLabel: map.home_stats_label || prev.statsLabel,
+            statsValue: map.home_stats_value || prev.statsValue,
+            heroImage: map.home_hero_image || prev.heroImage,
+          }));
+        }
+      })
+      .catch(() => {});
+
+    fetch("/api/site-content?group=site_settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          const phoneSetting = data.results.find((s: any) => s.key === "site_phone");
+          if (phoneSetting) setContent((prev) => ({ ...prev, phone: phoneSetting.value }));
+        }
+      })
+      .catch(() => {});
+
+    return () => { active = false; };
+  }, []);
+
   return (
     <section className="bg-gradient-to-br from-secondary/30 to-background py-12 md:py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,7 +88,7 @@ export function Hero() {
                     <Tag className="w-4 h-4 sm:w-5 sm:h-5 text-primary fill-primary/20 shrink-0" />
                   </motion.div>
                   <p className="text-xs sm:text-sm md:text-base font-medium text-foreground pr-1">
-                    Get <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">20% OFF</span> on same day booking!
+                    {content.promoText}
                   </p>
                   <motion.div
                     animate={{ 
@@ -62,9 +109,8 @@ export function Hero() {
                 visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease } },
               }}
               className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight text-balance"
-            >
-              Professional Fabric Cleaning in <span className="text-primary">Brisbane</span>
-            </motion.h1>
+              dangerouslySetInnerHTML={{ __html: content.title }}
+            />
 
             <motion.p
               variants={{
@@ -73,8 +119,7 @@ export function Hero() {
               }}
               className="text-lg md:text-xl text-muted-foreground mt-4 md:mt-6 text-pretty"
             >
-              Expert cleaning services for carpets, mattresses, rugs, upholstery, curtains, and car seats in
-              Brisbane. Fair pricing, fresh results, guaranteed satisfaction.
+              {content.description}
             </motion.p>
 
             <motion.div
@@ -92,14 +137,14 @@ export function Hero() {
                   Get Free Quote
                 </Button>
               </Link>
-              <a href="tel:0430799567">
+              <a href={`tel:${content.phone.replace(/\s/g, '')}`}>
                 <Button
                   variant="outline"
                   size="lg"
                   className="text-base md:text-lg px-6 md:px-8 bg-transparent transition-all duration-300 hover:scale-105 hover:shadow-lg border-primary text-primary hover:bg-primary hover:text-primary-foreground w-full sm:w-auto"
                 >
                   <Phone className="mr-2 h-4 w-4" />
-                  Call: 0430 799 567
+                  Call: {content.phone}
                 </Button>
               </a>
             </motion.div>
@@ -117,15 +162,7 @@ export function Hero() {
                     <Star key={i} className="h-4 md:h-5 w-4 md:w-5 fill-current" />
                   ))}
                 </div>
-                <span className="text-sm md:text-base text-muted-foreground">4.9/5 Rating</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 md:h-5 w-4 md:w-5 text-primary" />
-                <span className="text-sm md:text-base text-muted-foreground">Fully Insured</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 md:h-5 w-4 md:w-5 text-primary" />
-                <span className="text-sm md:text-base text-muted-foreground">Same Day Service</span>
+                <span className="text-sm md:text-base text-muted-foreground">{content.ratingText}</span>
               </div>
             </motion.div>
           </motion.div>
@@ -140,15 +177,15 @@ export function Hero() {
             <Image
               width={500}
               height={300}
-              src="/professional-carpet-cleaning-service-in-modern-hom.jpg"
+              src={content.heroImage}
               alt="Professional carpet cleaning service"
               className="rounded-lg shadow-2xl transition-transform duration-500 hover:scale-105"
             />
-            {/* Floating "500+" badge with spring scale-in */}
+            {/* Floating badge with spring scale-in */}
             <ScaleIn delay={0.9} className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6">
               <div className="bg-card p-4 md:p-6 rounded-lg shadow-lg border border-border">
-                <div className="text-2xl md:text-3xl font-bold text-primary">500+</div>
-                <div className="text-sm md:text-base text-muted-foreground">Happy Customers</div>
+                <div className="text-2xl md:text-3xl font-bold text-primary">{content.statsValue}</div>
+                <div className="text-sm md:text-base text-muted-foreground">{content.statsLabel}</div>
               </div>
             </ScaleIn>
           </motion.div>

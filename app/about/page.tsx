@@ -23,6 +23,7 @@ import { FadeIn, SlideIn, StaggerContainer, StaggerItem, CountUp } from "@/compo
 import { db } from "@/lib/db";
 import { staticPages } from "@/lib/schema";
 import { eq } from "drizzle-orm";
+import { getContentGroup } from "@/lib/site-content";
 
 // Dynamically generate about page metadata from staticPages table in DB
 export async function generateMetadata(): Promise<Metadata> {
@@ -55,7 +56,29 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const content = await getContentGroup('about');
+  const settings = await getContentGroup('site_settings');
+
+  const badge = content.about_badge || "Brisbane's Trusted Fabric Care Experts";
+  const heroTitle = content.about_hero_title || "Where expertise meets\n<span class=\"block text-primary mt-2\">pristine perfection</span>";
+  const heroDesc = content.about_hero_description || "For over 15 years, we've been transforming Brisbane homes and businesses with professional fabric cleaning that goes beyond surface deep.";
+  const section1Title = content.about_section1_title || "Brisbane's fabric cleaning experts";
+  const section1Desc = content.about_section1_description || "Fair & Fresh Cleaning has been serving Brisbane families and businesses for over 15 years, specializing in comprehensive fabric care. From carpets and mattresses to upholstery and curtains, we bring new life to every fabric we touch.\n\nWhat sets us apart is our unwavering commitment to quality, reliability, and customer satisfaction.";
+  const missionTitle = content.about_mission_title || "Our Mission";
+  const missionDesc = content.about_mission_description || "To provide Brisbane with exceptional fabric cleaning services that restore, protect, and extend the life of your valued possessions using eco-friendly products and advanced techniques.";
+  const visionTitle = content.about_vision_title || "Our Vision";
+  const visionDesc = content.about_vision_description || "To be recognized as Brisbane's most trusted and innovative fabric cleaning company, setting the standard for quality, customer service, and environmental responsibility.";
+  const valuesTitle = content.about_values_title || "What drives us every day";
+  const valuesDesc = content.about_values_description || "Our core values guide everything we do, from the products we use to the service we provide";
+  const ctaTitle = content.about_cta_title || "Ready to experience the difference?";
+  const ctaDesc = content.about_cta_description || "Contact us today for a free quote and discover why Brisbane trusts us with their most valued fabrics";
+
+  const sitePhone = settings.site_phone || "0430 799 567";
+  const siteEmail = settings.site_email || "support@fairandfreshcleaning.com.au";
+
+  const section1Paragraphs = section1Desc.split('\n\n').filter(Boolean);
+
   return (
     <main className="min-h-screen bg-background">
       <Header />
@@ -66,17 +89,16 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto text-center">
             <FadeIn className="space-y-4 md:space-y-6">
               <Badge variant="default" className="text-xs md:text-sm px-4 md:px-6 py-1.5 md:py-2">
-                Brisbane&apos;s Trusted Fabric Care Experts
+                {badge}
               </Badge>
 
-              <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-balance leading-tight">
-                Where expertise meets
-                <span className="block text-primary mt-2">pristine perfection</span>
-              </h1>
+              <h1
+                className="font-serif text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-balance leading-tight"
+                dangerouslySetInnerHTML={{ __html: heroTitle }}
+              />
 
               <p className="text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-                For over 15 years, we&apos;ve been transforming Brisbane homes and businesses with
-                professional fabric cleaning that goes beyond surface deep.
+                {heroDesc}
               </p>
 
               <div className="grid grid-cols-3 gap-4 md:gap-6 lg:gap-8 py-6 md:py-8 max-w-2xl mx-auto">
@@ -138,20 +160,13 @@ export default function AboutPage() {
                     Who We Are
                   </Badge>
                   <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3 md:mb-4 leading-tight">
-                    Brisbane&apos;s fabric cleaning experts
+                    {section1Title}
                   </h2>
                 </div>
                 <div className="space-y-3 text-sm md:text-base text-muted-foreground leading-relaxed">
-                  <p>
-                    Fair & Fresh Cleaning has been serving Brisbane families and businesses for over 15 years,
-                    specializing in comprehensive fabric care. From carpets and mattresses to upholstery and
-                    curtains, we bring new life to every fabric we touch.
-                  </p>
-                  <p>
-                    What sets us apart is our unwavering commitment to quality, reliability, and customer
-                    satisfaction. We treat every home and business as if it were our own, ensuring meticulous
-                    attention to detail.
-                  </p>
+                  {section1Paragraphs.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
                 </div>
               </div>
             </SlideIn>
@@ -162,7 +177,6 @@ export default function AboutPage() {
       <section className="py-8 md:py-12 lg:py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <StaggerContainer className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
-            {/* Mission */}
             <StaggerItem>
               <Card className="border-primary/20 h-full">
                 <CardContent className="p-6 md:p-8">
@@ -171,11 +185,9 @@ export default function AboutPage() {
                       <Award className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h2 className="font-serif text-xl md:text-2xl font-normal mb-2">Our Mission</h2>
+                      <h2 className="font-serif text-xl md:text-2xl font-normal mb-2">{missionTitle}</h2>
                       <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                        To provide Brisbane with exceptional fabric cleaning services that restore, protect,
-                        and extend the life of your valued possessions using eco-friendly products and
-                        advanced techniques.
+                        {missionDesc}
                       </p>
                     </div>
                   </div>
@@ -183,7 +195,6 @@ export default function AboutPage() {
               </Card>
             </StaggerItem>
 
-            {/* Vision */}
             <StaggerItem>
               <Card className="border-accent/20 h-full">
                 <CardContent className="p-6 md:p-8">
@@ -192,11 +203,9 @@ export default function AboutPage() {
                       <Sparkles className="h-6 w-6 text-accent" />
                     </div>
                     <div>
-                      <h2 className="font-serif text-xl md:text-2xl font-normal mb-2">Our Vision</h2>
+                      <h2 className="font-serif text-xl md:text-2xl font-normal mb-2">{visionTitle}</h2>
                       <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                        To be recognized as Brisbane&apos;s most trusted and innovative fabric cleaning
-                        company, setting the standard for quality, customer service, and environmental
-                        responsibility.
+                        {visionDesc}
                       </p>
                     </div>
                   </div>
@@ -215,55 +224,29 @@ export default function AboutPage() {
                 Our Values
               </Badge>
               <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3">
-                What drives us every day
+                {valuesTitle}
               </h2>
               <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-                Our core values guide everything we do, from the products we use to the service we provide
+                {valuesDesc}
               </p>
             </FadeIn>
           </div>
 
           <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
             {[
-              {
-                icon: Award,
-                title: "Excellence",
-                description:
-                  "We strive for perfection in every cleaning job, using the best techniques available.",
-                color: "primary",
-              },
-              {
-                icon: Heart,
-                title: "Care",
-                description: "We treat your fabrics and home with the same care we'd give our own.",
-                color: "accent",
-              },
-              {
-                icon: Shield,
-                title: "Trust",
-                description:
-                  "Building lasting relationships through honest communication and reliable service.",
-                color: "primary",
-              },
-              {
-                icon: TrendingUp,
-                title: "Innovation",
-                description: "Continuously improving our methods and adopting eco-friendly solutions.",
-                color: "accent",
-              },
+              { icon: Award, title: "Excellence", description: "We strive for perfection in every cleaning job, using the best techniques available.", color: "primary" },
+              { icon: Heart, title: "Care", description: "We treat your fabrics and home with the same care we'd give our own.", color: "accent" },
+              { icon: Shield, title: "Trust", description: "Building lasting relationships through honest communication and reliable service.", color: "primary" },
+              { icon: TrendingUp, title: "Innovation", description: "Continuously improving our methods and adopting eco-friendly solutions.", color: "accent" },
             ].map((value, index) => (
               <StaggerItem key={index}>
                 <Card className="text-center group hover:shadow-lg hover:border-primary/30 transition-all duration-300 h-full">
                   <CardContent className="p-4 md:p-6">
-                    <div
-                      className={`mb-3 md:mb-4 inline-flex items-center justify-center w-12 h-12 bg-${value.color}/10 rounded-lg group-hover:scale-110 transition-transform`}
-                    >
+                    <div className={`mb-3 md:mb-4 inline-flex items-center justify-center w-12 h-12 bg-${value.color}/10 rounded-lg group-hover:scale-110 transition-transform`}>
                       <value.icon className={`h-6 w-6 text-${value.color}`} />
                     </div>
                     <h3 className="text-base md:text-lg font-semibold mb-2">{value.title}</h3>
-                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-                      {value.description}
-                    </p>
+                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{value.description}</p>
                   </CardContent>
                 </Card>
               </StaggerItem>
@@ -276,62 +259,27 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-6 md:mb-8">
             <FadeIn>
-              <Badge
-                variant="secondary"
-                className="mb-2 md:mb-3 bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 text-xs"
-              >
+              <Badge variant="secondary" className="mb-2 md:mb-3 bg-primary-foreground/10 text-primary-foreground border-primary-foreground/20 text-xs">
                 Why Choose Us
               </Badge>
-              <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3">
-                The Fair & Fresh difference
-              </h2>
+              <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3">The Fair & Fresh difference</h2>
             </FadeIn>
           </div>
-
           <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
             {[
-              {
-                icon: Star,
-                title: "15+ Years Experience",
-                description: "Over a decade of expertise in fabric cleaning across Brisbane",
-              },
-              {
-                icon: Shield,
-                title: "Fully Insured",
-                description: "Complete peace of mind with comprehensive insurance coverage",
-              },
-              {
-                icon: Clock,
-                title: "7 Days Service",
-                description: "Flexible scheduling including weekends",
-              },
-              {
-                icon: CheckCircle2,
-                title: "Satisfaction Guaranteed",
-                description: "We're not happy until you're thrilled with the results",
-              },
-              {
-                icon: Sparkles,
-                title: "Eco-Friendly",
-                description: "Safe, non-toxic cleaning solutions",
-              },
-              {
-                icon: Users,
-                title: "Expert Team",
-                description: "Highly trained professionals",
-              },
+              { icon: Star, title: "15+ Years Experience", description: "Over a decade of expertise in fabric cleaning across Brisbane" },
+              { icon: Shield, title: "Fully Insured", description: "Complete peace of mind with comprehensive insurance coverage" },
+              { icon: Clock, title: "7 Days Service", description: "Flexible scheduling including weekends" },
+              { icon: CheckCircle2, title: "Satisfaction Guaranteed", description: "We're not happy until you're thrilled with the results" },
+              { icon: Sparkles, title: "Eco-Friendly", description: "Safe, non-toxic cleaning solutions" },
+              { icon: Users, title: "Expert Team", description: "Highly trained professionals" },
             ].map((reason, index) => (
-              <StaggerItem
-                key={index}
-                className="text-center p-4 rounded-lg bg-primary-foreground/5 hover:bg-primary-foreground/10 transition-colors h-full"
-              >
+              <StaggerItem key={index} className="text-center p-4 rounded-lg bg-primary-foreground/5 hover:bg-primary-foreground/10 transition-colors h-full">
                 <div className="mb-3 inline-flex items-center justify-center w-10 h-10 bg-primary-foreground/10 rounded-lg">
                   <reason.icon className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <h3 className="text-base md:text-lg font-semibold mb-1">{reason.title}</h3>
-                <p className="text-xs md:text-sm text-primary-foreground/80 leading-relaxed">
-                  {reason.description}
-                </p>
+                <p className="text-xs md:text-sm text-primary-foreground/80 leading-relaxed">{reason.description}</p>
               </StaggerItem>
             ))}
           </StaggerContainer>
@@ -345,12 +293,9 @@ export default function AboutPage() {
               <Badge variant="outline" className="mb-2 md:mb-3 text-xs">
                 Our Expertise
               </Badge>
-              <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-2">
-                Comprehensive fabric care
-              </h2>
+              <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-2">Comprehensive fabric care</h2>
             </FadeIn>
           </div>
-
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
             {[
               { title: "Carpet Cleaning", image: "/professional-carpet-cleaning.png" },
@@ -361,20 +306,12 @@ export default function AboutPage() {
               { title: "Upholstery Cleaning", image: "/upholstery-cleaning-photo.jpg" },
               { title: "Curtain Cleaning", image: "/curtain-cleaning-photo.jpg" },
               { title: "Car Detailing", image: "/car-detailing-hero-image.jpg" },
-              {
-                title: "Flood Damage Restoration",
-                image: "/flood-damage-restoration-water-extraction-emergenc.jpg",
-              },
+              { title: "Flood Damage Restoration", image: "/flood-damage-restoration-water-extraction-emergenc.jpg" },
             ].map((service, index) => (
               <StaggerItem key={index}>
                 <Card className="overflow-hidden group hover:shadow-xl transition-all duration-300 h-full">
                   <div className="relative w-full h-[240px] overflow-hidden">
-                    <Image
-                      src={service.image}
-                      alt={service.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
+                    <Image src={service.image} alt={service.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
                       <h3 className="text-lg font-semibold text-white drop-shadow-lg">{service.title}</h3>
@@ -390,14 +327,8 @@ export default function AboutPage() {
       <section className="py-8 md:py-12 lg:py-16">
         <div className="container mx-auto px-4">
           <FadeIn className="max-w-3xl mx-auto text-center">
-            <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3 md:mb-4">
-              Ready to experience the difference?
-            </h2>
-            <p className="text-sm md:text-base text-muted-foreground mb-6 md:mb-8">
-              Contact us today for a free quote and discover why Brisbane trusts us with their most valued
-              fabrics
-            </p>
-
+            <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal mb-3 md:mb-4">{ctaTitle}</h2>
+            <p className="text-sm md:text-base text-muted-foreground mb-6 md:mb-8">{ctaDesc}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-6">
               <Link href="/quote">
                 <Button size="lg" className="group w-full sm:w-auto">
@@ -405,18 +336,17 @@ export default function AboutPage() {
                   <CheckCircle2 className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
                 </Button>
               </Link>
-              <Link href="tel:0430799567">
+              <Link href={`tel:${sitePhone.replace(/\s/g, '')}`}>
                 <Button variant="outline" size="lg" className="group w-full sm:w-auto bg-transparent">
                   <Phone className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
-                  Call 0430 799 567
+                  Call {sitePhone}
                 </Button>
               </Link>
             </div>
-
             <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 text-muted-foreground text-xs md:text-sm">
               <div className="flex items-center justify-center gap-2">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>support@fairandfreshcleaning.com.au</span>
+                <span>{siteEmail}</span>
               </div>
               <div className="flex items-center justify-center gap-2">
                 <Clock className="h-4 w-4 text-primary" />
