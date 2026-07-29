@@ -229,6 +229,17 @@ export const siteContent = pgTable('site_content', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// Availability Table (closed dates & unavailable time slots)
+export const availability = pgTable('availability', {
+  id: text('id').primaryKey(),
+  date: text('date'), // YYYY-MM-DD, null for recurring
+  startTime: text('start_time'), // HH:mm
+  endTime: text('end_time'), // HH:mm
+  type: text('type').notNull(), // 'closed_date', 'unavailable_slot'
+  reason: text('reason'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Quotation Requests Table
 export const quotationRequests = pgTable('quotation_requests', {
   id: text('id').primaryKey(),

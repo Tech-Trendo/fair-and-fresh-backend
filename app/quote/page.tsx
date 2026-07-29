@@ -11,7 +11,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation"; // Add this import
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 const getIcon = (slug: string) => {
@@ -38,19 +38,48 @@ const initialServices = [
   { id: "flood-damage", name: "Flood Damage Restoration", icon: "💧" },
 ];
 
-// Controlled Date + Time picker (adapted)
+// Convert 24-hour number to 12-hour AM/PM string
+const to12Hour = (hour: number): string => {
+  const period = hour < 12 ? 'AM' : 'PM';
+  const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return `${h12}:00 ${period}`;
+};
+
+// Generate 1-hour time slots from working hours (12-hour format)
+function generateTimeSlots(start: string, end: string): string[] {
+  const startHour = parseInt(start.split(':')[0]);
+  const endHour = parseInt(end.split(':')[0]);
+  const slots: string[] = [];
+  for (let h = startHour; h < endHour; h++) {
+    slots.push(`${to12Hour(h)} - ${to12Hour(h + 1)}`);
+  }
+  return slots;
+}
+
+// Controlled Date + Time picker (restored original logic + availability features)
 function DateTimePicker({
   date,
   time,
   onDateChange,
   onTimeChange,
+  closedDates = [],
+  unavailableSlots = [],
+  workingStart = '07:00',
+  workingEnd = '19:00',
 }: {
   date?: string | null;
   time?: string | null;
   onDateChange: (d: Date | undefined) => void;
   onTimeChange: (t: string) => void;
+  closedDates?: string[];
+  unavailableSlots?: { date: string; startTime: string | null }[];
+  workingStart?: string;
+  workingEnd?: string;
 }) {
   const [open, setOpen] = useState(false);
+
+  // Generate time slots from working hours
+  const allSlots = generateTimeSlots(workingStart, workingEnd);
 
   // Build a local Date object from YYYY-MM-DD to avoid timezone/UTC shifts.
   const parsedDate: Date | undefined = date
@@ -64,7 +93,12 @@ function DateTimePicker({
     })()
     : undefined;
 
-  // helper to enforce minimum date (today)
+  // Check if a date is closed
+  const isDateClosed = (dateStr: string): boolean => {
+    return closedDates.includes(dateStr);
+  };
+
+  // RESTORED original handleSelect logic — this is what works in production
   const handleSelect = (d?: Date) => {
     if (!d) {
       onDateChange(undefined);
@@ -77,6 +111,66 @@ function DateTimePicker({
     setOpen(false);
   };
 
+  // Parse a 12-hour slot string like "7:00 AM - 8:00 AM" back to start hour (0-23)
+  const parseSlotStartHour = (slot: string): number => {
+    const startPart = slot.split(' - ')[0];
+    const match = startPart.match(/(\d+):00\s*(AM|PM)/i);
+    if (!match) return 0;
+    let hour = parseInt(match[1]);
+    const period = match[2].toUpperCase();
+    if (period === 'PM' && hour !== 12) hour += 12;
+    if (period === 'AM' && hour === 12) hour = 0;
+    return hour;
+  };
+
+  // Get Brisbane time info for filtering past slots
+  const getBrisbaneTime = () => {
+    const now = new Date();
+    const dateStr = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Australia/Brisbane',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(now); // Returns "2026-07-29"
+    const hour = parseInt(
+      new Intl.DateTimeFormat('en-AU', {
+        timeZone: 'Australia/Brisbane',
+        hour: 'numeric',
+        hour12: false,
+      }).format(now)
+    );
+    return { dateStr, hour };
+  };
+
+  // Filter available slots for the selected date
+  const getAvailableSlots = (): string[] => {
+    if (!date) return allSlots;
+    
+    // Build list of admin-blocked slots
+    const blockedSlots = unavailableSlots
+      .filter((s) => s.date === date && s.startTime)
+      .map((s) => {
+        const hour = parseInt(s.startTime!.split(':')[0]);
+        return `${to12Hour(hour)} - ${to12Hour(hour + 1)}`;
+      });
+    
+    // Filter out both blocked slots AND past slots when it's today
+    const brisbane = getBrisbaneTime();
+    const isToday = date === brisbane.dateStr;
+    
+    return allSlots.filter((slot) => {
+      // Remove admin-blocked slots
+      if (blockedSlots.includes(slot)) return false;
+      // For today, remove slots that have already passed (Brisbane time)
+      if (isToday && parseSlotStartHour(slot) < brisbane.hour) return false;
+      return true;
+    });
+  };
+
+  const availableSlots = getAvailableSlots();
+  const dateStr = date || '';
+  const isSelectedDateClosed = isDateClosed(dateStr);
+
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       <div className="flex-1 min-w-0">
@@ -88,9 +182,9 @@ function DateTimePicker({
             <Button
               variant="outline"
               id="date-picker"
-              className="w-full mt-2 justify-between font-normal h-12"
+              className={`w-full mt-2 justify-between font-normal h-12 ${isSelectedDateClosed ? 'border-red-300 text-red-500' : ''}`}
             >
-              {parsedDate ? parsedDate.toLocaleDateString() : "Select date"}
+              {isSelectedDateClosed ? 'Company Closed' : parsedDate ? parsedDate.toLocaleDateString() : "Select date"}
               <ChevronDownIcon />
             </Button>
           </PopoverTrigger>
@@ -101,36 +195,70 @@ function DateTimePicker({
               captionLayout="dropdown"
               endMonth={new Date(2029, 0)}
               startMonth={new Date(2025, 0)}
+              disabled={(date) => {
+                const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const dateStr = `${y}-${m}-${day}`;
+                return d < today || isDateClosed(dateStr);
+              }}
               onSelect={(d: Date | undefined) => handleSelect(d)}
             />
           </PopoverContent>
         </Popover>
+        {isSelectedDateClosed && (
+          <p className="text-xs text-red-500 mt-1">This date is not available — the company is closed.</p>
+        )}
       </div>
 
       <div className="flex-1 min-w-0">
         <Label htmlFor="time-picker" className="px-1">
           Time
         </Label>
-        <Input
-          type="time"
-          id="time-picker"
-          step="1"
-          value={time ?? ""}
-          onChange={(e) => onTimeChange(e.target.value)}
-          className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none h-12 mt-2 w-full"
-        />
+        {date && !isSelectedDateClosed ? (
+          <div className="relative">
+            <select
+              id="time-picker"
+              value={time || ''}
+              onChange={(e) => onTimeChange(e.target.value)}
+              className="w-full mt-2 px-3 py-3 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary h-12 appearance-none"
+            >
+              <option value="">Select a time slot</option>
+              {availableSlots.map((slot) => (
+                <option key={slot} value={slot}>{slot}</option>
+              ))}
+            </select>
+            <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none mt-1" />
+            {availableSlots.length === 0 && (
+              <p className="text-xs text-amber-500 mt-1">No available time slots for this date.</p>
+            )}
+          </div>
+        ) : (
+          <div className="w-full mt-2 px-3 py-3 text-sm border border-border rounded-lg bg-muted/30 h-12 flex items-center text-muted-foreground">
+            {!date ? 'Select a date first' : 'Company closed this day'}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 export default function QuotePage() {
-  const router = useRouter(); // Add this
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [activeServices, setActiveServices] = useState(initialServices);
+  const [closedDates, setClosedDates] = useState<string[]>([]);
+  const [unavailableSlots, setUnavailableSlots] = useState<{ date: string; startTime: string | null }[]>([]);
+  const [workingStart, setWorkingStart] = useState('07:00');
+  const [workingEnd, setWorkingEnd] = useState('19:00');
 
   useEffect(() => {
     let active = true;
+
+    // Fetch services
     fetch("/api/services")
       .then((res) => res.json())
       .then((data) => {
@@ -146,6 +274,37 @@ export default function QuotePage() {
       .catch((err) => {
         console.error("Failed to fetch quote services:", err);
       });
+
+    // Fetch closed dates & unavailable slots
+    fetch("/api/availability")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          const closed = data.results
+            .filter((item: any) => item.type === 'closed_date' && item.date)
+            .map((item: any) => item.date);
+          const unavail = data.results
+            .filter((item: any) => item.type === 'unavailable_slot' && item.date)
+            .map((item: any) => ({ date: item.date, startTime: item.startTime }));
+          setClosedDates(closed);
+          setUnavailableSlots(unavail);
+        }
+      })
+      .catch(() => {});
+
+    // Fetch working hours from site content
+    fetch("/api/site-content?group=site_settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.results)) {
+          const start = data.results.find((s: any) => s.key === 'working_hours_start');
+          const end = data.results.find((s: any) => s.key === 'working_hours_end');
+          if (start) setWorkingStart(start.value);
+          if (end) setWorkingEnd(end.value);
+        }
+      })
+      .catch(() => {});
+
     return () => {
       active = false;
     };
@@ -402,11 +561,15 @@ export default function QuotePage() {
                       date={formData.date || undefined}
                       time={formData.time || undefined}
                       onDateChange={(d) => {
+                        // RESTORED original parent callback — works in production
                         if (!d) return updateFormData("date", "");
-                        // use local components to create YYYY-MM-DD (avoid toISOString)
                         updateFormData("date", dateToLocalIso(d));
                       }}
                       onTimeChange={(t) => updateFormData("time", t)}
+                      closedDates={closedDates}
+                      unavailableSlots={unavailableSlots}
+                      workingStart={workingStart}
+                      workingEnd={workingEnd}
                     />
                     {errors.date && <p className="text-destructive text-sm mt-1">{errors.date}</p>}
                     {errors.time && <p className="text-destructive text-sm mt-1">{errors.time}</p>}
