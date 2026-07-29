@@ -130,6 +130,9 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-serif: var(--v0-font-source-serif-4);
+  --font-display: var(--font-fraunces);
+  --font-sans-alt: var(--font-public-sans);
+  --font-mono-alt: var(--font-ibm-plex-mono);
   /* computed shadow variables below - do not modify */
   --shadow-2xs: var(--shadow-x) var(--shadow-y)
     color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
