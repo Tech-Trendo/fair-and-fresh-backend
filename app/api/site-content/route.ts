@@ -78,6 +78,16 @@ export async function PUT(request: NextRequest) {
           .update(siteContent)
           .set({ value, updatedAt: new Date() })
           .where(eq(siteContent.key, key));
+      } else {
+        const id = `sc-${crypto.randomBytes(12).toString('hex')}`;
+        await db.insert(siteContent).values({
+          id,
+          key,
+          value,
+          label: key,
+          group: 'site_settings',
+          type: 'text',
+        });
       }
 
       results.push({ key, value });
@@ -151,12 +161,21 @@ export async function DELETE(request: NextRequest) {
     const key = searchParams.get('key');
     const id = searchParams.get('id');
 
+    const protectedKeys = ['working_hours_start', 'working_hours_end'];
+
     if (key) {
+      if (protectedKeys.includes(key)) {
+        return NextResponse.json({ error: 'Cannot delete protected system key' }, { status: 403 });
+      }
       await db.delete(siteContent).where(eq(siteContent.key, key));
       return NextResponse.json({ success: true });
     }
 
     if (id) {
+      const item = await db.select().from(siteContent).where(eq(siteContent.id, id)).limit(1);
+      if (item.length > 0 && protectedKeys.includes(item[0].key)) {
+        return NextResponse.json({ error: 'Cannot delete protected system key' }, { status: 403 });
+      }
       await db.delete(siteContent).where(eq(siteContent.id, id));
       return NextResponse.json({ success: true });
     }

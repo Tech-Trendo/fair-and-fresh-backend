@@ -25,6 +25,15 @@ export default function AvailabilityPage() {
   const [newSlotEnd, setNewSlotEnd] = useState('');
   const [newSlotReason, setNewSlotReason] = useState('');
 
+  const formatTime12 = (time: string): string => {
+    if (!time) return '';
+    const [h, m] = time.split(':');
+    const hour = parseInt(h);
+    const period = hour < 12 ? 'AM' : 'PM';
+    const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${h12}:${m} ${period}`;
+  };
+
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -67,6 +76,7 @@ export default function AvailabilityPage() {
       });
       if (res.ok) {
         toast.success('Working hours updated!');
+        fetchData();
       } else {
         toast.error('Failed to update working hours');
       }
@@ -318,7 +328,7 @@ export default function AvailabilityPage() {
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-amber-500" />
                   <span className="text-sm font-medium text-gray-900">
-                    {item.date} — {item.startTime}{item.endTime ? ` - ${item.endTime}` : ''}
+                    {item.date} — {formatTime12(item.startTime)}{item.endTime ? ` - ${formatTime12(item.endTime)}` : ''}
                   </span>
                   {item.reason && (
                     <span className="text-xs text-gray-500">({item.reason})</span>
