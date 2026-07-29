@@ -98,13 +98,19 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           <StaggerItem>
-            <Image
-              src="/fair-fresh-logo.svg"
-              alt={settings.brandName}
-              width={150}
-              height={50}
-              className="h-12 w-auto mb-4"
-            />
+            <div className="flex items-center gap-3 mb-4">
+              <Image
+                src="/fair-fresh-logo.svg"
+                alt={settings.brandName}
+                width={150}
+                height={50}
+                className="h-12 w-auto"
+              />
+              <div className="h-8 w-px bg-background/20" />
+              <span className="text-lg font-semibold text-background/90 tracking-tight">
+                Fair & Fresh Cleaning
+              </span>
+            </div>
             <p className="text-background/80 mb-4 text-pretty">
               {settings.aboutText}
             </p>
