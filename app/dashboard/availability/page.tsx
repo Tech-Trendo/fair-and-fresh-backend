@@ -328,7 +328,7 @@ export default function AvailabilityPage() {
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-amber-500" />
                   <span className="text-sm font-medium text-gray-900">
-                    {item.date} — {formatTime12(item.startTime)}{item.endTime ? ` - ${formatTime12(item.endTime)}` : ''}
+                    {item.date} — {item.startTime ? formatTime12(item.startTime) : ''}{item.endTime ? ` - ${formatTime12(item.endTime)}` : ''}
                   </span>
                   {item.reason && (
                     <span className="text-xs text-gray-500">({item.reason})</span>
