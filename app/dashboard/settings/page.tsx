@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '@/lib/auth';
 import { toast } from 'sonner';
-import { Save, RefreshCw, Check, X, Eye, Edit3, Plus, Trash2 } from 'lucide-react';
+import { Save, RefreshCw, Check, X, Eye, Edit3, Plus, Trash2, Upload, ImageIcon } from 'lucide-react';
 
 interface SiteContentItem {
   id: string;
@@ -233,36 +233,67 @@ export default function SettingsPage() {
             className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white transition-colors resize-y"
           />
         ) : item.type === 'image' ? (
-          <div className="mt-1 space-y-2">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={editingValues[item.key] || ''}
-                onChange={(e) => handleValueChange(item.key, e.target.value)}
-                className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white transition-colors"
-                placeholder="Image URL"
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e, item.key)}
-                className="hidden"
-                id={`img-${item.key}`}
-              />
+          <div className="mt-1">
+            {editingValues[item.key] ? (
+              /* Current image preview with hover overlay */
+              <div className="relative group">
+                <img
+                  src={editingValues[item.key]}
+                  alt={item.label}
+                  className="w-full h-48 rounded-lg border border-gray-200 object-cover"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all rounded-lg flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+                  <label
+                    htmlFor={`img-${item.key}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-white rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-100 cursor-pointer transition-all shadow-md"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    Replace
+                  </label>
+                  <button
+                    onClick={() => handleValueChange(item.key, '')}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-500 rounded-lg text-xs font-semibold text-white hover:bg-red-600 cursor-pointer transition-all shadow-md"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Upload zone when no image */
               <label
                 htmlFor={`img-${item.key}`}
-                className="inline-flex h-9 items-center justify-center rounded-md border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-600 hover:bg-gray-50 cursor-pointer transition-colors whitespace-nowrap"
+                className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                  imageUploading === item.key
+                    ? 'border-blue-400 bg-blue-50'
+                    : 'border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-gray-400'
+                }`}
               >
-                {imageUploading === item.key ? '...' : 'Upload'}
+                {imageUploading === item.key ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+                    <span className="text-xs text-blue-600 font-medium">Uploading to blob storage...</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <ImageIcon className="h-8 w-8 text-gray-400" />
+                    <span className="text-xs font-semibold text-gray-600">Click to upload image</span>
+                    <span className="text-[10px] text-gray-400">PNG, JPG, WebP up to 10MB</span>
+                  </div>
+                )}
               </label>
-            </div>
-            {editingValues[item.key] && (
-              <img
-                src={editingValues[item.key]}
-                alt={item.label}
-                className="h-16 w-28 rounded border border-gray-200 object-cover"
-              />
             )}
+            {/* Hidden file input */}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                handleImageUpload(e, item.key);
+                e.target.value = '';
+              }}
+              className="hidden"
+              id={`img-${item.key}`}
+            />
           </div>
         ) : (
           <input
