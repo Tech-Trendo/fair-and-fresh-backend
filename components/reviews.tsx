@@ -27,7 +27,7 @@ const reviews = [
     name: "Emma Thompson",
     location: "Paddington, Brisbane",
     rating: 5,
-    text: "Professional mattress cleaning service. My allergies have improved significantly since the cleaning. Highly recommend Fair and Fresh!",
+    text: "Professional mattress cleaning service. My allergies have improved significantly since the cleaning. Highly recommend!",
     service: "Mattress Cleaning",
   },
   {
@@ -197,7 +197,7 @@ export function Reviews({ reviews: customReviews, services: customServicesOption
           <FadeIn className="bg-white rounded-xl border border-border p-8 max-w-md mx-auto">
             <h3 className="text-lg font-heading-bold text-foreground mb-2">Share Your Experience</h3>
             <p className="text-sm text-muted-foreground font-body mb-5">
-              We&apos;d love to hear about your experience with Fair and Fresh Cleaning.
+              We&apos;d love to hear about your experience.
             </p>
             <Button
               size="lg"

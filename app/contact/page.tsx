@@ -14,9 +14,9 @@ import { ContactForm } from "@/components/contact-form";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await db.query.staticPages.findFirst({ where: eq(staticPages.slug, "contact-us") });
-  if (!page) return { title: "Contact Us | Fair and Fresh Cleaning" };
+  if (!page) return { title: "Contact Us" };
   return {
-    title: page.metaTitle || "Contact Us | Fair and Fresh Cleaning",
+    title: page.metaTitle || "Contact Us",
     description: page.metaDescription || undefined,
     keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
     alternates: { canonical: page.canonicalUrl || undefined },
@@ -68,7 +68,7 @@ export default async function ContactPage() {
             </FadeIn>
             <SlideIn direction="right">
               <div className="relative rounded-xl overflow-hidden shadow-sm">
-                <Image src="/professional-cleaning-team-with-equipment-ready-to.jpg" alt="Fair and Fresh Cleaning Team" width={600} height={600} className="w-full h-auto" />
+                <Image src="/professional-cleaning-team-with-equipment-ready-to.jpg" alt="Cleaning Team" width={600} height={600} className="w-full h-auto" />
                 <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 bg-white/95 p-4 md:p-5 rounded-xl border border-border shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="bg-accent-tint p-2.5 rounded-full flex-shrink-0"><Phone className="h-4 w-4 md:h-5 md:w-5 text-primary" /></div>

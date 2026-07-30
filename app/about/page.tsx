@@ -17,9 +17,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = await db.query.staticPages.findFirst({
     where: eq(staticPages.slug, "about-us"),
   });
-  if (!page) return { title: "About Us | Fair and Fresh Cleaning" };
+  if (!page) return { title: "About Us" };
   return {
-    title: page.metaTitle || "About Us | Fair and Fresh Cleaning",
+    title: page.metaTitle || "About Us",
     description: page.metaDescription || undefined,
     keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
     alternates: { canonical: page.canonicalUrl || undefined },
@@ -37,7 +37,7 @@ export default async function AboutPage() {
   const heroTitle = content.about_hero_title || `Where expertise meets <span class="block text-primary mt-2">pristine perfection</span>`;
   const heroDesc = content.about_hero_description || "For over 15 years, we've been transforming Brisbane homes and businesses with professional fabric cleaning that goes beyond surface deep.";
   const section1Title = content.about_section1_title || "Brisbane's fabric cleaning experts";
-  const section1Desc = content.about_section1_description || "Fair & Fresh Cleaning has been serving Brisbane families and businesses for over 15 years, specializing in comprehensive fabric care.\n\nWhat sets us apart is our unwavering commitment to quality, reliability, and customer satisfaction.";
+  const section1Desc = content.about_section1_description || "Serving Brisbane families and businesses for over 15 years, specializing in comprehensive fabric care.\n\nWhat sets us apart is our unwavering commitment to quality, reliability, and customer satisfaction.";
   const missionTitle = content.about_mission_title || "Our Mission";
   const missionDesc = content.about_mission_description || "To provide Brisbane with exceptional fabric cleaning services that restore, protect, and extend the life of your valued possessions.";
   const visionTitle = content.about_vision_title || "Our Vision";
@@ -153,7 +153,7 @@ export default async function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-10">
             <span className="inline-block bg-primary-foreground/10 text-primary-foreground text-xs font-nav px-3 py-1 rounded-full border border-primary-foreground/20 mb-3">Why Choose Us</span>
-            <h2 className="text-2xl md:text-3xl font-heading-bold mb-3">The Fair & Fresh Difference</h2>
+            <h2 className="text-2xl md:text-3xl font-heading-bold mb-3">The Difference</h2>
           </FadeIn>
           <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {[

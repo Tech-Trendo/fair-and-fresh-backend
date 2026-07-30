@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 const openApiSchema = {
   openapi: '3.0.3',
   info: {
-    title: 'Fair and Fresh Cleaning API',
+    title: 'Cleaning Services API',
     version: '1.0.0',
-    description: 'REST API powering the Fair and Fresh cleaning-service marketplace.'
+    description: 'REST API powering the cleaning-service marketplace.'
   },
   servers: [
     {

@@ -28,7 +28,7 @@ export function Footer() {
     twitter: "#",
     businessHours: "Monday - Sunday: 7AM - 7PM",
     aboutText: "Brisbane's trusted fabric cleaning specialists. Fair pricing, fresh results, guaranteed satisfaction.",
-    copyrightText: "Fair and Fresh Cleaning. All rights reserved.",
+    copyrightText: "All rights reserved.",
     logoUrl: "/fair-fresh-logo.svg",
   });
 
@@ -100,7 +100,7 @@ export function Footer() {
               <Link href="/" className="inline-block group">
                 <Image
                   src={settings.logoUrl}
-                  alt="Fair & Fresh Cleaning"
+                  alt="Cleaning Services"
                   width={360}
                   height={78}
                   className="h-10 sm:h-12 md:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-105"

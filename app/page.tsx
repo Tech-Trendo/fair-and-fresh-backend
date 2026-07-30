@@ -22,12 +22,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (!page) {
     return {
-      title: "Fair and Fresh Cleaning",
+      title: "Professional Cleaning Services",
     };
   }
 
   return {
-    title: page.metaTitle || "Fair and Fresh Cleaning",
+    title: page.metaTitle || "Professional Cleaning Services",
     description: page.metaDescription || undefined,
     keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
     alternates: {
@@ -112,7 +112,7 @@ export default async function Home() {
   const aboutSection = {
     image: homeContent.home_about_image || '/professional-cleaning-team-with-equipment-in-brisb.jpg',
     heading: homeContent.home_about_heading || "Brisbane's Most Trusted Fabric Cleaning Specialists",
-    description: homeContent.home_about_description || 'For over 15 years, Fair and Fresh Cleaning has been transforming homes and businesses across Brisbane with our professional fabric cleaning services.',
+    description: homeContent.home_about_description || 'For over 15 years, we have been transforming homes and businesses across Brisbane with our professional fabric cleaning services.',
     ctaText: homeContent.home_about_cta_text || 'Learn More About Us',
     stats: [
       { value: Number(homeContent.home_about_years_value) || 15, suffix: '+', label: homeContent.home_about_years_label || 'Years' },

@@ -23,9 +23,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: service.metaTitle || `Professional ${service.name} Brisbane | Fair & Fresh`,
+    title: service.metaTitle || `Professional ${service.name} Brisbane`,
     description: service.metaDescription || `Brisbane's top-rated ${service.name.toLowerCase()} service. We provide premium cleaning using eco-friendly solutions. Get a free quote today!`,
-    keywords: service.metaKeywords ? service.metaKeywords.split(",").map(k => k.trim()) : [service.name.toLowerCase(), "Brisbane", "cleaning", "Fair and Fresh"],
+    keywords: service.metaKeywords ? service.metaKeywords.split(",").map(k => k.trim()) : [service.name.toLowerCase(), "Brisbane", "cleaning"],
     alternates: {
       canonical: service.canonicalUrl || undefined,
     },

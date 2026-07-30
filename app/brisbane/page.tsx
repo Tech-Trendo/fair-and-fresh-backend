@@ -60,7 +60,7 @@ export default function BrisbanePage() {
         <section className="py-16 md:py-24 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <FadeIn className="text-center mb-12">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3">Why Brisbane Chooses Fair & Fresh</h2>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3">Why Brisbane Chooses Us</h2>
               <p className="text-base text-muted-foreground max-w-2xl mx-auto font-body">We&apos;re not just another cleaning company — we&apos;re your local Brisbane fabric care specialists</p>
             </FadeIn>
             <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
@@ -84,7 +84,7 @@ export default function BrisbanePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <FadeIn className="text-center mb-12">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3">Areas We Service Across Brisbane & Queensland</h2>
-              <p className="text-base text-muted-foreground max-w-3xl mx-auto font-body">Fair & Fresh Cleaning proudly serves homes and businesses throughout Brisbane, Gold Coast, Sunshine Coast, Ipswich, Logan, and surrounding Queensland regions.</p>
+              <p className="text-base text-muted-foreground max-w-3xl mx-auto font-body">Proudly serving homes and businesses throughout Brisbane, Gold Coast, Sunshine Coast, Ipswich, Logan, and surrounding Queensland regions.</p>
             </FadeIn>
 
             <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -138,7 +138,7 @@ export default function BrisbanePage() {
             <FadeIn className="max-w-4xl mx-auto">
               <h2 className="text-xl md:text-2xl lg:text-3xl font-heading-bold text-foreground mb-6">Professional Fabric Cleaning Services Throughout Brisbane & Queensland</h2>
               <div className="space-y-5 text-sm text-muted-foreground font-body leading-relaxed">
-                <p>Fair & Fresh Cleaning has been Brisbane&apos;s trusted choice for professional fabric cleaning services for over 15 years. We specialize in carpet cleaning, mattress cleaning, upholstery cleaning, rug cleaning, curtain cleaning, car seat cleaning, and flood damage restoration across all Brisbane suburbs, Gold Coast, Sunshine Coast, and throughout Queensland.</p>
+                <p>We have been Brisbane&apos;s trusted choice for professional fabric cleaning services for over 15 years. We specialize in carpet cleaning, mattress cleaning, upholstery cleaning, rug cleaning, curtain cleaning, car seat cleaning, and flood damage restoration across all Brisbane suburbs, Gold Coast, Sunshine Coast, and throughout Queensland.</p>
                 <h3 className="text-lg font-heading-bold text-foreground mt-8 mb-3">Why Choose Local Brisbane Cleaners?</h3>
                 <p>As a locally owned and operated Brisbane business, we understand the unique challenges that Queensland&apos;s subtropical climate presents for fabric care. Our team is trained to handle Brisbane&apos;s specific environmental conditions, ensuring your carpets, mattresses, and upholstery receive the care they need.</p>
                 <h3 className="text-lg font-heading-bold text-foreground mt-8 mb-3">Same-Day Service Available</h3>

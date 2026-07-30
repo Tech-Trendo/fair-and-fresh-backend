@@ -31,15 +31,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!category) {
     return {
-      title: "Category Not Found | Fair and Fresh Cleaning",
+      title: "Category Not Found",
     };
   }
 
-  const title = category.metaTitle || `${category.title} | Fair and Fresh Blog`;
+  const title = category.metaTitle || `${category.title} | Blog`;
   const description =
     category.metaDescription ||
     category.description ||
-    `Read expert ${category.title.toLowerCase()} articles from Fair and Fresh Cleaning.`;
+    `Read expert ${category.title.toLowerCase()} articles.`;
 
   return {
     title,

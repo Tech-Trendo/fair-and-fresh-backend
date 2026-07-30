@@ -61,7 +61,7 @@ export default function DashboardLayout({
         <div>
           {/* Brand Header */}
           <div className="flex h-14 items-center gap-2.5 px-6 border-b border-[#E5E7EB]">
-            <span className="font-bold text-sm tracking-tight text-[#111827]">Fair & Fresh Console</span>
+            <span className="font-bold text-sm tracking-tight text-[#111827]">Console</span>
           </div>
 
           {/* Navigation Links */}

@@ -69,7 +69,7 @@ export function Header() {
             <Link href="/" className="flex items-center group">
               <Image
                 src={logoUrl}
-                alt="Fair & Fresh Cleaning"
+                alt="Cleaning Services"
                 width={360}
                 height={78}
                 className="h-10 sm:h-12 md:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-105"

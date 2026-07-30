@@ -105,7 +105,7 @@ export default function BlogIndexPage() {
             >
               <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
                 <BookOpen className="w-3.5 h-3.5" />
-                Fair & Fresh Guide
+                Cleaning Guide
               </span>
             </motion.div>
             

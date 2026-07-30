@@ -14,7 +14,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Fair and Fresh Cleaning",
+  title: "Professional Cleaning Services",
   description: "Professional cleaning services for your home and office",
 };
 

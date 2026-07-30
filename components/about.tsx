@@ -9,10 +9,10 @@ export function About() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-balance">
-              About Fair and Fresh Cleaning
+              About Us
             </h2>
             <p className="text-lg text-gray-600 mb-6 text-pretty">
-              Based in Brisbane, Fair and Fresh Cleaning has been providing exceptional fabric cleaning
+              Based in Brisbane, we have been providing exceptional fabric cleaning
               services to homes and businesses across Queensland for over 10 years. We specialize in
               professional cleaning of carpets, mattresses, rugs, upholstery, curtains, and car seats.
             </p>
@@ -91,7 +91,7 @@ export function About() {
 
             <Image
               src="/professional-cleaning-team-with-equipment-in-brisb.jpg"
-              alt="Fair and Fresh Cleaning team"
+              alt="Cleaning team"
               className="rounded-lg shadow-lg w-full"
               width={800}
               height={600}

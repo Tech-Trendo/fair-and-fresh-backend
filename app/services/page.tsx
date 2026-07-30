@@ -29,12 +29,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (!page) {
     return {
-      title: "Our Professional Services | Fair and Fresh Cleaning",
+      title: "Our Professional Services",
     };
   }
 
   return {
-    title: page.metaTitle || "Our Professional Services | Fair and Fresh Cleaning",
+    title: page.metaTitle || "Our Professional Services",
     description: page.metaDescription || undefined,
     keywords: page.metaKeywords ? page.metaKeywords.split(",").map((k) => k.trim()) : undefined,
     alternates: { canonical: page.canonicalUrl || undefined },
@@ -61,12 +61,12 @@ export default async function ServicesPage() {
   const badgeText = servicesContent.services_badge || "Professional Fabric Cleaning Services";
   const heroTitle = servicesContent.services_hero_title || "Transform Your Space with Expert Care";
   const heroDesc = servicesContent.services_hero_description || "Brisbane's most trusted fabric cleaning specialists. From carpets to curtains, we bring new life to every surface.";
-  const whyTitle = servicesContent.services_why_title || "Why Choose Fair and Fresh?";
+  const whyTitle = servicesContent.services_why_title || "Why Choose Us?";
   const whyDesc = servicesContent.services_why_description || "We're committed to delivering exceptional results with every cleaning service.";
   const processTitle = servicesContent.services_process_title || "Our Cleaning Process";
   const processDesc = servicesContent.services_process_description || "A systematic approach that ensures consistent, high-quality results every time.";
   const ctaTitle = servicesContent.services_cta_title || "Ready to Experience the Difference?";
-  const ctaDesc = servicesContent.services_cta_description || "Get a free, no-obligation quote today and discover why Brisbane trusts Fair and Fresh Cleaning.";
+  const ctaDesc = servicesContent.services_cta_description || "Get a free, no-obligation quote today and discover why Brisbane trusts us.";
 
   const dbServices = await db.query.services.findMany({
     with: { images: { limit: 1 }, whatsIncluded: true },

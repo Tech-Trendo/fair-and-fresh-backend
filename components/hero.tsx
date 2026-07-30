@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Phone } from "lucide-react";
+import { Phone, Star, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -11,7 +11,7 @@ const ease = [0.25, 0.4, 0, 1] as const;
 
 export function Hero() {
   const [content, setContent] = useState({
-    title: 'Professional Fabric Cleaning in <span class="text-primary">Brisbane</span>',
+    title: 'Professional Fabric Cleaning in <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Brisbane</span>',
     description: "Carpet, mattress, rug, upholstery, and curtain cleaning across Brisbane. Straightforward pricing, thorough work, and results you can see — and feel.",
     promoText: "Same-day booking — 20% off",
     ratingText: "4.9/5 Rating",
@@ -57,9 +57,14 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="bg-background py-16 md:py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-10 md:gap-14 items-center">
+    <section className="relative bg-gradient-to-b from-blue-50/60 via-slate-50/40 to-background py-16 md:py-24 overflow-hidden border-b border-border/40">
+      {/* Decorative ambient background glows */}
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 -left-24 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
+          
           {/* Left text column */}
           <motion.div
             initial="hidden"
@@ -69,150 +74,183 @@ export function Hero() {
               visible: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
             }}
           >
-            {/* Eyebrow badge — light green tint pill */}
+            {/* Eyebrow badge */}
             <motion.div
               variants={{
                 hidden: { opacity: 0, y: 10 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
               }}
-              className="mb-5"
+              className="mb-6"
             >
-              <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-4 py-1.5 rounded-full">
-                {content.promoText}
-              </span>
+              <div className="inline-flex items-center bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-blue-600/10 border border-blue-500/20 text-blue-700 text-xs sm:text-sm font-semibold px-4 py-2 rounded-full shadow-xs backdrop-blur-xs">
+                <span>{content.promoText}</span>
+              </div>
             </motion.div>
 
-            {/* Headline — large bold Poppins */}
+            {/* Headline */}
             <motion.h1
               variants={{
                 hidden: { opacity: 0, y: 10 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease } },
               }}
-              className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-heading-bold text-foreground leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-heading-bold text-slate-900 leading-[1.15] tracking-tight text-balance"
               dangerouslySetInnerHTML={{ __html: content.title }}
             />
 
-            {/* Description — grey */}
+            {/* Description */}
             <motion.p
               variants={{
                 hidden: { opacity: 0, y: 10 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
               }}
-              className="text-base md:text-lg text-muted-foreground mt-4 md:mt-5 text-pretty font-body leading-relaxed"
+              className="text-base sm:text-lg text-slate-600 mt-5 md:mt-6 text-pretty font-body leading-relaxed max-w-xl"
             >
               {content.description}
             </motion.p>
 
-            {/* CTA Buttons — pill shape */}
+            {/* CTA Buttons */}
             <motion.div
               variants={{
                 hidden: { opacity: 0, y: 10 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
               }}
-              className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8"
+              className="flex flex-col sm:flex-row gap-4 mt-8 md:mt-10"
             >
               <Link href="/quote">
                 <Button
                   size="lg"
-                  className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-7 font-nav text-base w-full sm:w-auto"
+                  className="rounded-full bg-primary hover:bg-primary/95 text-primary-foreground px-8 py-6 font-nav text-base w-full sm:w-auto shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 transition-all duration-300 group"
                 >
-                  Get Free Quote
+                  <span>Get Free Quote</span>
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
               <a href={`tel:${content.phone.replace(/\s/g, '')}`}>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground px-7 font-nav text-base w-full sm:w-auto bg-transparent"
+                  className="rounded-full border-2 border-slate-200 hover:border-primary bg-white/80 hover:bg-primary/5 text-slate-800 hover:text-primary px-8 py-6 font-nav text-base w-full sm:w-auto shadow-xs hover:shadow-md transition-all duration-300"
                 >
-                  <Phone className="mr-2 h-4 w-4" />
-                  {content.phone}
+                  <Phone className="mr-2.5 h-4 w-4 text-primary" />
+                  <span>{content.phone}</span>
                 </Button>
               </a>
             </motion.div>
-
-
           </motion.div>
 
           {/* Right image column — with floating trust badges */}
           <motion.div
-            className="relative"
+            className="relative lg:pl-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease }}
           >
-            <div className="relative overflow-hidden rounded-xl shadow-sm">
+            {/* Background card glow aura */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/15 to-indigo-600/15 rounded-3xl transform rotate-1 scale-105 blur-xl pointer-events-none" />
+
+            {/* Hero image card */}
+            <div className="relative overflow-hidden rounded-3xl shadow-2xl shadow-slate-900/10 border-4 border-white bg-white">
               <Image
-                width={600}
-                height={400}
+                width={700}
+                height={480}
                 src={content.heroImage}
-                alt="Professional carpet cleaning service showing the fresh difference"
-                className="w-full h-auto"
+                alt="Professional carpet cleaning service in Brisbane"
+                className="w-full h-auto object-cover transform transition-transform duration-700 hover:scale-105"
                 priority
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
 
-            {/* Floating trust badges — three corners of the image */}
+            {/* FLOATING TRUST BADGES */}
 
-            {/* Top-right: Rating badge */}
+            {/* Top-Right Badge: Rating */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease, delay: 0.3 }}
-              className="absolute top-4 right-4 lg:-top-5 lg:-right-5 bg-gradient-to-br from-white via-white to-amber-50/80 rounded-xl shadow-lg shadow-black/5 border border-amber-100/50 backdrop-blur-sm px-4 py-3 z-10"
+              initial={{ opacity: 0, scale: 0.85, y: 10 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                y: [0, -6, 0]
+              }}
+              transition={{
+                opacity: { duration: 0.4, delay: 0.3 },
+                scale: { duration: 0.4, delay: 0.3 },
+                y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+              }}
+              className="absolute -top-4 -right-2 sm:-top-6 sm:-right-4 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 shadow-xl shadow-slate-900/10 border border-slate-100 z-20"
             >
-              <div className="flex items-center gap-2 min-w-[125px]">
-                {/* Star cluster */}
-                <div className="flex items-center -space-x-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="h-3.5 w-3.5 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
+                  <Star className="w-5 h-5 fill-amber-400 text-amber-500" />
                 </div>
-                <span className="font-heading font-bold text-sm text-foreground tracking-tight">{content.ratingText}</span>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1">
+                    <span className="font-heading-bold text-slate-900 text-base leading-none">4.9</span>
+                    <span className="text-xs text-slate-400 font-medium">/ 5.0</span>
+                  </div>
+                  <div className="flex items-center gap-0.5 mt-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400 shrink-0" />
+                    ))}
+                    <span className="text-[10px] font-semibold text-slate-500 ml-1">Rating</span>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
-            {/* Left-middle: Happy Customers badge */}
+            {/* Left-Middle Badge: Happy Customers */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease, delay: 0.4 }}
-              className="absolute top-1/2 -translate-y-1/2 left-4 lg:-left-5 bg-gradient-to-br from-white via-white to-emerald-50/80 rounded-xl shadow-lg shadow-black/5 border border-emerald-100/50 backdrop-blur-sm px-4 py-3 z-10"
+              initial={{ opacity: 0, scale: 0.85, y: 10 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                y: [0, 6, 0]
+              }}
+              transition={{
+                opacity: { duration: 0.4, delay: 0.4 },
+                scale: { duration: 0.4, delay: 0.4 },
+                y: { duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
+              }}
+              className="absolute top-1/2 -translate-y-1/2 -left-3 sm:-left-6 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 shadow-xl shadow-slate-900/10 border border-slate-100 z-20"
             >
-              <div className="flex flex-col min-w-[110px]">
-                <div className="flex items-center gap-2 mb-0.5">
-                  {/* Checkmark icon */}
-                  <svg className="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="font-heading font-bold text-foreground text-sm leading-tight">{content.statsValue}</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 shrink-0">
+                  <CheckCircle2 className="w-5 h-5" />
                 </div>
-                <span className="text-[11px] font-medium text-emerald-700/70 font-body tracking-wide uppercase ml-6">{content.statsLabel}</span>
+                <div className="flex flex-col">
+                  <span className="font-heading-bold text-slate-900 text-lg leading-none">{content.statsValue}</span>
+                  <span className="text-xs font-semibold text-slate-500 mt-0.5">{content.statsLabel}</span>
+                </div>
               </div>
             </motion.div>
 
-            {/* Bottom-right: Brisbane Suburbs badge */}
+            {/* Bottom-Right Badge: Brisbane Suburbs */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease, delay: 0.5 }}
-              className="absolute bottom-4 right-4 lg:-bottom-5 lg:-right-5 bg-gradient-to-br from-white via-white to-sky-50/80 rounded-xl shadow-lg shadow-black/5 border border-sky-100/50 backdrop-blur-sm px-4 py-3 z-10"
+              initial={{ opacity: 0, scale: 0.85, y: 10 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                y: [0, -6, 0]
+              }}
+              transition={{
+                opacity: { duration: 0.4, delay: 0.5 },
+                scale: { duration: 0.4, delay: 0.5 },
+                y: { duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1 }
+              }}
+              className="absolute -bottom-4 -right-2 sm:-bottom-6 sm:-right-4 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 shadow-xl shadow-slate-900/10 border border-slate-100 z-20"
             >
-              <div className="flex flex-col min-w-[110px]">
-                <div className="flex items-center gap-2 mb-0.5">
-                  {/* Map pin icon */}
-                  <svg className="h-4 w-4 text-sky-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <span className="font-heading font-bold text-foreground text-sm leading-tight">12+</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 shrink-0">
+                  <MapPin className="w-5 h-5" />
                 </div>
-                <span className="text-[11px] font-medium text-sky-700/70 font-body tracking-wide uppercase ml-6">Brisbane Suburbs</span>
+                <div className="flex flex-col">
+                  <span className="font-heading-bold text-slate-900 text-lg leading-none">12+</span>
+                  <span className="text-xs font-semibold text-slate-500 mt-0.5">Brisbane Suburbs</span>
+                </div>
               </div>
             </motion.div>
+            
           </motion.div>
+
         </div>
       </div>
     </section>

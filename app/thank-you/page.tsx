@@ -56,7 +56,7 @@ export default function ThankYouPage() {
             </div>
             <h2 className="text-2xl font-heading-bold text-foreground">Quote Request Submitted!</h2>
             <p className="text-sm text-muted-foreground font-body max-w-sm mx-auto">
-              Thank you for choosing Fair & Fresh Cleaning! We&apos;ve received your quote request and will get back to you within 2 hours.
+              Thank you for choosing us! We&apos;ve received your quote request and will get back to you within 2 hours.
             </p>
 
             {/* Details card */}

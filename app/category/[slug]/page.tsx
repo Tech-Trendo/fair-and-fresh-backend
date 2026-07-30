@@ -30,10 +30,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 
   if (!category) {
-    return { title: "Category Not Found | Fair and Fresh Cleaning" };
+    return { title: "Category Not Found" };
   }
 
-  const title = category.metaTitle || `${category.title} Cleaning Services | Fair and Fresh`;
+  const title = category.metaTitle || `${category.title} Cleaning Services`;
   const description = category.metaDescription || category.description || "Brisbane's trusted cleaning services.";
 
   return {

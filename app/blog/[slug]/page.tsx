@@ -24,12 +24,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!post) {
     return {
-      title: "Article Not Found | Fair and Fresh Cleaning",
+      title: "Article Not Found",
     };
   }
 
-  const title = post.metaTitle || `${post.title} | Fair and Fresh Cleaning`;
-  const description = post.metaDescription || "Read the latest cleaning advice and guides from Fair and Fresh specialists.";
+  const title = post.metaTitle || post.title;
+  const description = post.metaDescription || "Read the latest cleaning advice and guides from our specialists.";
 
   return {
     title,
@@ -141,7 +141,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                     <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
                       FF
                     </div>
-                    <span className="font-semibold text-foreground">Fair & Fresh Team</span>
+                    <span className="font-semibold text-foreground">Team</span>
                   </div>
                   <span className="text-border hidden sm:inline">•</span>
                   <div className="flex items-center gap-1.5">

@@ -33,7 +33,7 @@ const iconMap = [Shield, Award, Users, null];
 
 export function AboutPreview({
   image,
-  imageAlt = "Fair and Fresh Cleaning team",
+  imageAlt = "Cleaning team",
   stats,
   heading,
   description,
