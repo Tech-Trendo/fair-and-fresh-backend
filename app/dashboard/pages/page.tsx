@@ -47,7 +47,55 @@ export default function PagesSeoPage() {
   const [canonicalUrl, setCanonicalUrl] = useState('');
   const [metaRobots, setMetaRobots] = useState('');
 
+  const [ogImageUploading, setOgImageUploading] = useState(false);
+  const [twitterImageUploading, setTwitterImageUploading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+
+  const handleOgImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setOgImageUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'cms');
+    try {
+      const res = await apiFetch('/api/upload/', { method: 'POST', body: formData });
+      if (res.status === 201) {
+        const data = await res.json();
+        setOgImage(data.image_url);
+      } else {
+        alert('Upload failed.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error uploading image.');
+    } finally {
+      setOgImageUploading(false);
+    }
+  };
+
+  const handleTwitterImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setTwitterImageUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'cms');
+    try {
+      const res = await apiFetch('/api/upload/', { method: 'POST', body: formData });
+      if (res.status === 201) {
+        const data = await res.json();
+        setTwitterImage(data.image_url);
+      } else {
+        alert('Upload failed.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error uploading image.');
+    } finally {
+      setTwitterImageUploading(false);
+    }
+  };
 
   const fetchPages = async () => {
     try {
@@ -388,12 +436,24 @@ export default function PagesSeoPage() {
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">OG Image URL</label>
-                  <input
-                    type="text"
-                    value={ogImage}
-                    onChange={(e) => setOgImage(e.target.value)}
-                    className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-none focus:border-zinc-400 focus:bg-white"
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={ogImage}
+                      onChange={(e) => setOgImage(e.target.value)}
+                      className="flex-1 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-none focus:border-zinc-400 focus:bg-white"
+                    />
+                    <input type="file" accept="image/*" onChange={handleOgImageUpload} className="hidden" id="og-image-file" />
+                    <label
+                      htmlFor="og-image-file"
+                      className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-3 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors whitespace-nowrap"
+                    >
+                      {ogImageUploading ? '...' : 'Upload'}
+                    </label>
+                  </div>
+                  {ogImage && (
+                    <img src={ogImage} alt="OG preview" className="h-12 w-20 rounded border border-[#E5E7EB] object-cover mt-1" />
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -435,6 +495,28 @@ export default function PagesSeoPage() {
                     onChange={(e) => setTwitterCard(e.target.value)}
                     className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-none focus:border-zinc-400 focus:bg-white"
                   />
+                </div>
+
+                <div className="flex flex-col gap-1.5 col-span-2">
+                  <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Twitter Image URL</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={twitterImage}
+                      onChange={(e) => setTwitterImage(e.target.value)}
+                      className="flex-1 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-none focus:border-zinc-400 focus:bg-white"
+                    />
+                    <input type="file" accept="image/*" onChange={handleTwitterImageUpload} className="hidden" id="twitter-image-file" />
+                    <label
+                      htmlFor="twitter-image-file"
+                      className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-3 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors whitespace-nowrap"
+                    >
+                      {twitterImageUploading ? '...' : 'Upload'}
+                    </label>
+                  </div>
+                  {twitterImage && (
+                    <img src={twitterImage} alt="Twitter preview" className="h-12 w-20 rounded border border-[#E5E7EB] object-cover mt-1" />
+                  )}
                 </div>
               </div>
 

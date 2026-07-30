@@ -9,6 +9,7 @@ import { Footer } from "@/components/footer";
 import { db } from "@/lib/db";
 import { staticPages, beforeAfterImages } from "@/lib/schema";
 import { eq, asc } from "drizzle-orm";
+import { getContentGroup } from "@/lib/site-content";
 import { BeforeAfterSlider } from "@/components/before-after-slider";
 
 export const dynamic = 'force-dynamic';
@@ -106,6 +107,26 @@ export default async function Home() {
     service: t.service?.name || "Cleaning Service",
   }));
 
+  // Fetch homepage about section content from site_content table
+  const homeContent = await getContentGroup('home');
+  const aboutSection = {
+    image: homeContent.home_about_image || '/professional-cleaning-team-with-equipment-in-brisb.jpg',
+    heading: homeContent.home_about_heading || "Brisbane's Most Trusted Fabric Cleaning Specialists",
+    description: homeContent.home_about_description || 'For over 15 years, Fair and Fresh Cleaning has been transforming homes and businesses across Brisbane with our professional fabric cleaning services.',
+    ctaText: homeContent.home_about_cta_text || 'Learn More About Us',
+    stats: [
+      { value: Number(homeContent.home_about_years_value) || 15, suffix: '+', label: homeContent.home_about_years_label || 'Years' },
+      { value: Number(homeContent.home_about_clients_value) || 2.5, suffix: 'K+', label: homeContent.home_about_clients_label || 'Clients', decimals: 1 as const },
+      { value: Number(homeContent.home_about_satisfaction_value) || 98, suffix: '%', label: homeContent.home_about_satisfaction_label || 'Satisfaction' },
+    ],
+    features: [
+      { title: homeContent.home_about_feature_1_title || 'Fully Insured', description: homeContent.home_about_feature_1_desc || 'Complete protection' },
+      { title: homeContent.home_about_feature_2_title || 'Certified Experts', description: homeContent.home_about_feature_2_desc || 'Professional training' },
+      { title: homeContent.home_about_feature_3_title || '2,500+ Happy Clients', description: homeContent.home_about_feature_3_desc || 'Proven track record' },
+      { title: homeContent.home_about_feature_4_title || '100% Guarantee', description: homeContent.home_about_feature_4_desc || 'Satisfaction guaranteed' },
+    ],
+  };
+
   return (
     <main className="min-h-screen">
       <Header />
@@ -114,7 +135,14 @@ export default async function Home() {
         <Services services={servicesList} categories={categoriesList} />
       )}
       <BeforeAfterSlider images={beforeAfterImagesData} />
-      <AboutPreview />
+      <AboutPreview
+        image={aboutSection.image}
+        heading={aboutSection.heading}
+        description={aboutSection.description}
+        stats={aboutSection.stats}
+        features={aboutSection.features}
+        ctaText={aboutSection.ctaText}
+      />
       {testimonialsList.length > 0 && (
         <Reviews reviews={testimonialsList} />
       )}

@@ -33,6 +33,29 @@ export default function SettingsPage() {
   const [changedKeys, setChangedKeys] = useState<Set<string>>(new Set());
   const [showNewForm, setShowNewForm] = useState(false);
   const [newItem, setNewItem] = useState({ key: '', value: '', label: '', group: '', type: 'text' });
+  const [imageUploading, setImageUploading] = useState<string | null>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageUploading(key);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'cms');
+    try {
+      const res = await apiFetch('/api/upload/', { method: 'POST', body: formData });
+      if (res.status === 201) {
+        const data = await res.json();
+        handleValueChange(key, data.image_url);
+      } else {
+        toast.error('Upload failed.');
+      }
+    } catch (err) {
+      toast.error('Error uploading image.');
+    } finally {
+      setImageUploading(null);
+    }
+  };
 
   const fetchContent = useCallback(async () => {
     try {
@@ -209,6 +232,38 @@ export default function SettingsPage() {
             rows={4}
             className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white transition-colors resize-y"
           />
+        ) : item.type === 'image' ? (
+          <div className="mt-1 space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={editingValues[item.key] || ''}
+                onChange={(e) => handleValueChange(item.key, e.target.value)}
+                className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white transition-colors"
+                placeholder="Image URL"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, item.key)}
+                className="hidden"
+                id={`img-${item.key}`}
+              />
+              <label
+                htmlFor={`img-${item.key}`}
+                className="inline-flex h-9 items-center justify-center rounded-md border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-600 hover:bg-gray-50 cursor-pointer transition-colors whitespace-nowrap"
+              >
+                {imageUploading === item.key ? '...' : 'Upload'}
+              </label>
+            </div>
+            {editingValues[item.key] && (
+              <img
+                src={editingValues[item.key]}
+                alt={item.label}
+                className="h-16 w-28 rounded border border-gray-200 object-cover"
+              />
+            )}
+          </div>
         ) : (
           <input
             type={item.type === 'number' ? 'number' : 'text'}
