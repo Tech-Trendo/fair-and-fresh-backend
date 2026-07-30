@@ -26,7 +26,6 @@ export function Header() {
   const [menuItems, setMenuItems] = useState(servicesMenu);
   const [phone, setPhone] = useState("0430 799 567");
   const [logoUrl, setLogoUrl] = useState("/fair-fresh-logo.svg");
-  const [brandName, setBrandName] = useState("Fair & Fresh Cleaning");
 
   useEffect(() => {
     let active = true;
@@ -38,8 +37,6 @@ export function Header() {
           if (phoneSetting) setPhone(phoneSetting.value);
           const logoSetting = data.results.find((s: any) => s.key === "site_logo");
           if (logoSetting) setLogoUrl(logoSetting.value);
-          const brandSetting = data.results.find((s: any) => s.key === "site_brand_name");
-          if (brandSetting) setBrandName(brandSetting.value);
         }
       })
       .catch(() => {});
@@ -66,35 +63,32 @@ export function Header() {
   return (
     <header className="bg-white sticky top-0 z-50 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3">
+          <div className="flex items-center py-2">
+            <Link href="/" className="flex items-center group">
               <Image
                 src={logoUrl}
-                alt={brandName}
-                width={120}
-                height={40}
-                className="h-10 w-auto"
+                alt="Fair & Fresh Cleaning"
+                width={360}
+                height={78}
+                className="h-10 sm:h-12 md:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+                priority
               />
-              <div className="hidden sm:block h-8 w-px bg-border" />
-              <span className="hidden sm:inline text-lg font-heading text-foreground/90 tracking-tight">
-                {brandName}
-              </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
+          <nav className="hidden md:flex items-center gap-8">
+            <Link href="/" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
               Home
             </Link>
             <div
-              className="relative"
+              className="relative inline-flex items-center"
               onMouseEnter={() => setIsServicesOpen(true)}
               onMouseLeave={() => setIsServicesOpen(false)}
             >
-              <button className="text-foreground hover:text-primary transition-colors font-nav text-sm flex items-center gap-1 bg-transparent border-0 cursor-pointer">
+              <button className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors font-nav text-sm leading-none bg-transparent border-0 cursor-pointer">
                 Services
                 <ChevronDown
                   className={`h-3.5 w-3.5 transition-transform duration-200 ${isServicesOpen ? "rotate-180" : ""}`}
@@ -126,23 +120,23 @@ export function Header() {
                 )}
               </AnimatePresence>
             </div>
-            <Link href="/brisbane" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
+            <Link href="/brisbane" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
               Service Areas
             </Link>
-            <Link href="/about" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
+            <Link href="/about" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
               About
             </Link>
-            <Link href="/blog" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
+            <Link href="/blog" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
               Blog
             </Link>
-            <Link href="/contact" className="text-foreground hover:text-primary transition-colors font-nav text-sm">
+            <Link href="/contact" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
               Contact
             </Link>
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center">
-            <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6 font-nav text-sm">
+          <div className="hidden md:flex items-center self-center">
+            <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-5 py-1.5 font-nav text-sm leading-none">
               <Link href="/quote">Get Free Quote</Link>
             </Button>
           </div>

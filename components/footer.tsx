@@ -29,7 +29,6 @@ export function Footer() {
     businessHours: "Monday - Sunday: 7AM - 7PM",
     aboutText: "Brisbane's trusted fabric cleaning specialists. Fair pricing, fresh results, guaranteed satisfaction.",
     copyrightText: "Fair and Fresh Cleaning. All rights reserved.",
-    brandName: "Fair & Fresh Cleaning",
     logoUrl: "/fair-fresh-logo.svg",
   });
 
@@ -51,7 +50,6 @@ export function Footer() {
             instagram: map.site_instagram || prev.instagram,
             twitter: map.site_twitter || prev.twitter,
             businessHours: map.site_business_hours || prev.businessHours,
-            brandName: map.site_brand_name || prev.brandName,
             logoUrl: map.site_logo || prev.logoUrl,
           }));
         }
@@ -98,18 +96,16 @@ export function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand + Description */}
           <FadeIn>
-            <div className="flex items-center gap-3 mb-4">
-              <Image
-                src={settings.logoUrl}
-                alt={settings.brandName}
-                width={120}
-                height={40}
-                className="h-10 w-auto"
-              />
-              <div className="h-8 w-px bg-border" />
-              <span className="text-base font-heading text-foreground/90">
-                {settings.brandName}
-              </span>
+            <div className="flex items-center mb-4">
+              <Link href="/" className="inline-block group">
+                <Image
+                  src={settings.logoUrl}
+                  alt="Fair & Fresh Cleaning"
+                  width={360}
+                  height={78}
+                  className="h-10 sm:h-12 md:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+                />
+              </Link>
             </div>
             <p className="text-muted-foreground text-sm mb-6 text-pretty">
               {settings.aboutText}

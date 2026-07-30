@@ -240,7 +240,7 @@ export default function SettingsPage() {
                 <img
                   src={editingValues[item.key]}
                   alt={item.label}
-                  className="w-full h-48 rounded-lg border border-gray-200 object-cover"
+                  className="w-full h-48 rounded-lg border border-gray-200 object-contain p-4 bg-gray-50/80"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all rounded-lg flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
                   <label
