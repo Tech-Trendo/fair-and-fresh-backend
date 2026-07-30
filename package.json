@@ -66,6 +66,9 @@
   "optionalDependencies": {
     "lightningcss": "^1.33.0"
   },
+  "overrides": {
+    "minimatch": "^10.2.6"
+  },
   "allowScripts": {
     "lightningcss@1.32.0": true,
     "lightningcss@1.33.0": true
