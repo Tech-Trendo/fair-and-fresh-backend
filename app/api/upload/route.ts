@@ -22,9 +22,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const folder = formData.get('folder') || 'service';
     const ext = file.name.split('.').pop() || '';
     const basename = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9]/g, '_');
-    const filename = `uploads/${basename}-${Date.now()}.${ext}`;
+    const filename = `uploads/${folder}/${basename}-${Date.now()}.${ext}`;
 
     const { url } = await put(filename, file, {
       access: 'public',

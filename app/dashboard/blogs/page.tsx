@@ -383,6 +383,7 @@ export default function BlogsPage() {
     setUploadingImage(true);
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('folder', 'blog');
 
     try {
       const res = await apiFetch('/api/upload/', {

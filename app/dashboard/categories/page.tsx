@@ -127,6 +127,7 @@ export default function CategoriesPage() {
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('folder', categoryType === 'service' ? 'service' : 'blog');
 
     try {
       const res = await apiFetch('/api/upload/', {

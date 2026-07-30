@@ -50,6 +50,7 @@ export default function BeforeAfterPage() {
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('folder', 'service');
 
     try {
       const res = await apiFetch('/api/upload/', {
