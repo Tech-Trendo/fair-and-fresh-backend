@@ -84,6 +84,7 @@ export async function seedDatabase() {
       { id: 'sc-site-instagram', key: 'site_instagram', value: '#', label: 'Instagram URL', group: 'site_settings', type: 'text' },
       { id: 'sc-site-twitter', key: 'site_twitter', value: '#', label: 'Twitter URL', group: 'site_settings', type: 'text' },
       { id: 'sc-site-brand', key: 'site_brand_name', value: 'Fair & Fresh Cleaning', label: 'Brand Name', group: 'site_settings', type: 'text' },
+      { id: 'sc-site-logo', key: 'site_logo', value: '/fair-fresh-logo.svg', label: 'Site Logo', group: 'site_settings', type: 'image' },
       { id: 'sc-wh-start', key: 'working_hours_start', value: '07:00', label: 'Working Hours Start', group: 'site_settings', type: 'text' },
       { id: 'sc-wh-end', key: 'working_hours_end', value: '19:00', label: 'Working Hours End', group: 'site_settings', type: 'text' },
       { id: 'sc-home-hero-title', key: 'home_hero_title', value: 'Professional Fabric Cleaning in <span class="text-primary">Brisbane</span>', label: 'Hero Title (HTML allowed)', group: 'home', type: 'textarea' },

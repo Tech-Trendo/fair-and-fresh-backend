@@ -25,6 +25,8 @@ export function Header() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [menuItems, setMenuItems] = useState(servicesMenu);
   const [phone, setPhone] = useState("0430 799 567");
+  const [logoUrl, setLogoUrl] = useState("/fair-fresh-logo.svg");
+  const [brandName, setBrandName] = useState("Fair & Fresh Cleaning");
 
   useEffect(() => {
     let active = true;
@@ -34,6 +36,10 @@ export function Header() {
         if (active && data && Array.isArray(data.results)) {
           const phoneSetting = data.results.find((s: any) => s.key === "site_phone");
           if (phoneSetting) setPhone(phoneSetting.value);
+          const logoSetting = data.results.find((s: any) => s.key === "site_logo");
+          if (logoSetting) setLogoUrl(logoSetting.value);
+          const brandSetting = data.results.find((s: any) => s.key === "site_brand_name");
+          if (brandSetting) setBrandName(brandSetting.value);
         }
       })
       .catch(() => {});
@@ -65,15 +71,15 @@ export function Header() {
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3">
               <Image
-                src="/fair-fresh-logo.svg"
-                alt="Fair and Fresh Cleaning"
+                src={logoUrl}
+                alt={brandName}
                 width={120}
                 height={40}
                 className="h-10 w-auto"
               />
               <div className="hidden sm:block h-8 w-px bg-border" />
               <span className="hidden sm:inline text-lg font-heading text-foreground/90 tracking-tight">
-                Fair & Fresh Cleaning
+                {brandName}
               </span>
             </Link>
           </div>

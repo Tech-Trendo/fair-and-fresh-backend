@@ -30,6 +30,7 @@ export function Footer() {
     aboutText: "Brisbane's trusted fabric cleaning specialists. Fair pricing, fresh results, guaranteed satisfaction.",
     copyrightText: "Fair and Fresh Cleaning. All rights reserved.",
     brandName: "Fair & Fresh Cleaning",
+    logoUrl: "/fair-fresh-logo.svg",
   });
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export function Footer() {
             twitter: map.site_twitter || prev.twitter,
             businessHours: map.site_business_hours || prev.businessHours,
             brandName: map.site_brand_name || prev.brandName,
+            logoUrl: map.site_logo || prev.logoUrl,
           }));
         }
       })
@@ -98,7 +100,7 @@ export function Footer() {
           <FadeIn>
             <div className="flex items-center gap-3 mb-4">
               <Image
-                src="/fair-fresh-logo.svg"
+                src={settings.logoUrl}
                 alt={settings.brandName}
                 width={120}
                 height={40}
@@ -106,7 +108,7 @@ export function Footer() {
               />
               <div className="h-8 w-px bg-border" />
               <span className="text-base font-heading text-foreground/90">
-                Fair & Fresh Cleaning
+                {settings.brandName}
               </span>
             </div>
             <p className="text-muted-foreground text-sm mb-6 text-pretty">
