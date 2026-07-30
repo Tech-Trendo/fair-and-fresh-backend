@@ -67,7 +67,8 @@
     "lightningcss": "^1.33.0"
   },
   "overrides": {
-    "minimatch": "^10.2.6"
+    "minimatch": "^10.2.6",
+    "postcss": "^8.5.18"
   },
   "allowScripts": {
     "lightningcss@1.32.0": true,
