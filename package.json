@@ -68,7 +68,8 @@
   },
   "overrides": {
     "minimatch": "^10.2.6",
-    "postcss": "^8.5.18"
+    "postcss": "^8.5.18",
+    "sharp": "^0.35.3"
   },
   "allowScripts": {
     "lightningcss@1.32.0": true,
