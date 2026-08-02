@@ -7,10 +7,12 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { serviceCategories } from "@/lib/schema";
 import { eq } from "drizzle-orm";
-import { ArrowLeft, Sparkles, ShieldCheck, CheckCircle, ArrowRight } from "lucide-react";
+import { ArrowLeft, Sparkles, ShieldCheck, CheckCircle, ArrowRight, MapPin } from "lucide-react";
 import { Metadata } from "next";
 import { CategoryTabs } from "@/components/category-tabs";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
+import { suburbs } from "@/lib/schema";
+import { asc } from "drizzle-orm";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -81,15 +83,23 @@ export default async function CategoryPage({ params }: PageProps) {
   const categoriesList = allCategories.map((c) => ({ id: c.id, title: c.title, slug: c.slug }));
 
   const servicesList = (categoryData.servicesCategories || [])
-    .map((sc: any) => sc.service)
-    .filter(Boolean)
-    .map((s: any) => ({
+    .map((sc) => sc.service)
+    .filter((s): s is NonNullable<typeof s> => Boolean(s))
+    .map((s) => ({
       name: s.name,
       slug: s.slug,
       image: s.images[0]?.imageUrl || "/placeholder.svg",
       icon: s.icon || undefined,
       shortDescription: s.shortDescription || "",
     }));
+
+  // Phase 9 — internal linking to suburb hub pages.
+  const serviceSuburbs = await db
+    .select({ name: suburbs.name, slug: suburbs.slug })
+    .from(suburbs)
+    .where(eq(suburbs.isActive, true))
+    .orderBy(asc(suburbs.name))
+    .limit(10);
 
   return (
     <>
@@ -180,6 +190,33 @@ export default async function CategoryPage({ params }: PageProps) {
             )}
           </div>
         </section>
+
+        {/* Popular service areas (internal linking) */}
+        {serviceSuburbs.length > 0 && (
+          <section className="py-16 md:py-20 bg-white border-t border-border">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <FadeIn className="mb-6">
+                <h2 className="text-xl md:text-2xl font-heading-bold text-foreground mb-2">
+                  Popular Service Areas
+                </h2>
+                <p className="text-sm text-muted-foreground font-body">
+                  Professional {categoryData.title.toLowerCase()} services available across Brisbane and Queensland.
+                </p>
+              </FadeIn>
+              <FadeIn delay={0.1} className="flex flex-wrap gap-2.5">
+                {serviceSuburbs.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/suburbs/${s.slug}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-nav text-primary bg-accent-tint hover:bg-primary hover:text-primary-foreground transition-colors px-3.5 py-1.5 rounded-full"
+                  >
+                    <MapPin className="w-3 h-3" /> {s.name}
+                  </Link>
+                ))}
+              </FadeIn>
+            </div>
+          </section>
+        )}
       </main>
       <Footer />
     </>

@@ -1,4 +1,3 @@
-import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -18,11 +17,8 @@ function toAbsoluteUrl(pathOrUrl: string): string {
   return `${BASE_URL}${pathOrUrl.startsWith("/") ? "" : "/"}${pathOrUrl}`;
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [dbServices, dbCategories, dbBlogCategories, dbBlogs] = await Promise.all([
-    db.query.services.findMany({
-      columns: { slug: true, createdAt: true, canonicalUrl: true, metaRobots: true },
-    }),
+export async function GET() {
+  const [dbCategories, dbBlogCategories, dbBlogs] = await Promise.all([
     db.query.serviceCategories.findMany({
       columns: { slug: true, canonicalUrl: true, metaRobots: true },
     }),
@@ -34,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   ]);
 
-  const staticPages: MetadataRoute.Sitemap = [
+  const staticPages = [
     { url: BASE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
     { url: `${BASE_URL}/services`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
@@ -44,16 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
   ];
 
-  const servicePages: MetadataRoute.Sitemap = dbServices
-    .filter((s) => isIndexable(s.metaRobots))
-    .map((s) => ({
-      url: toAbsoluteUrl(s.canonicalUrl || `/services/${s.slug}`),
-      lastModified: s.createdAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    }));
-
-  const categoryPages: MetadataRoute.Sitemap = dbCategories
+  const categoryPages = dbCategories
     .filter((c) => isIndexable(c.metaRobots))
     .map((c) => ({
       url: toAbsoluteUrl(c.canonicalUrl || `/category/${c.slug}`),
@@ -62,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     }));
 
-  const blogCategoryPages: MetadataRoute.Sitemap = dbBlogCategories
+  const blogCategoryPages = dbBlogCategories
     .filter((c) => isIndexable(c.metaRobots))
     .map((c) => ({
       url: toAbsoluteUrl(c.canonicalUrl || `/blog/category/${c.slug}`),
@@ -71,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.75,
     }));
 
-  const blogPages: MetadataRoute.Sitemap = dbBlogs
+  const blogPages = dbBlogs
     .filter((b) => isIndexable(b.metaRobots))
     .map((b) => ({
       url: toAbsoluteUrl(b.canonicalUrl || `/blog/${b.slug}`),
@@ -80,5 +67,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-  return [...staticPages, ...categoryPages, ...servicePages, ...blogCategoryPages, ...blogPages];
+  const entries = [...staticPages, ...categoryPages, ...blogCategoryPages, ...blogPages]
+    .map(
+      (e) =>
+        `<url><loc>${e.url}</loc><lastmod>${(e.lastModified ?? new Date()).toISOString()}</lastmod><changefreq>${e.changeFrequency}</changefreq><priority>${e.priority}</priority></url>`
+    )
+    .join("");
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${entries}</urlset>`;
+  return new Response(xml, { headers: { "Content-Type": "application/xml" } });
 }

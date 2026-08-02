@@ -4,10 +4,8 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Reviews, Review } from "@/components/reviews";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle, Phone, ArrowRight, Shield, Clock, Sparkles, Award, Star, Plus } from "lucide-react";
+import { CheckCircle, Phone, ArrowRight, Sparkles, MapPin, type LucideIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem, CountUp } from "@/components/motion-wrapper";
@@ -29,6 +27,11 @@ interface FAQ {
   answer: string;
 }
 
+interface ServiceAreasLink {
+  name: string;
+  href: string;
+}
+
 interface ServiceTemplateProps {
   badge: string;
   title: string;
@@ -47,16 +50,18 @@ interface ServiceTemplateProps {
   processSteps: ProcessStep[];
   typesTitle: string;
   types: string[];
-  faqs: FAQ[];
+  faqs?: FAQ[];
   ctaTitle: string;
   ctaDescription: string;
   reviews?: Review[];
+  priceNote?: string;
+  serviceAreas?: ServiceAreasLink[];
 }
 
 import * as lucideIcons from "lucide-react";
 
 const IconRenderer = ({ iconName, className }: { iconName: string; className?: string }) => {
-  const Icon = (lucideIcons as any)[iconName] || lucideIcons.Sparkles;
+  const Icon = (lucideIcons as unknown as Record<string, LucideIcon>)[iconName] || lucideIcons.Sparkles;
   return <Icon className={className} />;
 };
 
@@ -82,6 +87,8 @@ export function ServiceTemplate({
   ctaTitle,
   ctaDescription,
   reviews,
+  priceNote,
+  serviceAreas,
 }: ServiceTemplateProps) {
   return (
     <main className="min-h-screen bg-background">
@@ -100,6 +107,11 @@ export function ServiceTemplate({
               </FadeIn>
               <FadeIn delay={0.2}>
                 <p className="text-base md:text-lg text-muted-foreground mb-8 text-pretty font-body leading-relaxed">{description}</p>
+                {priceNote && (
+                  <p className="inline-flex items-center gap-1.5 text-xs font-nav text-primary bg-accent-tint px-3 py-1.5 rounded-full mb-8">
+                    <Sparkles className="h-3.5 w-3.5" /> {priceNote}
+                  </p>
+                )}
               </FadeIn>
               <StaggerContainer className="grid grid-cols-3 gap-3 mb-8">
                 {stats.map((stat, idx) => (
@@ -223,6 +235,7 @@ export function ServiceTemplate({
       <Reviews reviews={reviews} />
 
       {/* FAQ */}
+      {faqs && faqs.length > 0 && (
       <section className="py-16 md:py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-12">
@@ -244,6 +257,30 @@ export function ServiceTemplate({
           </FadeIn>
         </div>
       </section>
+      )}
+
+      {/* Service areas (internal linking) */}
+      {serviceAreas && serviceAreas.length > 0 && (
+        <section className="py-16 md:py-20 bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <FadeIn className="mb-8">
+              <h2 className="text-2xl md:text-3xl font-heading-bold text-foreground mb-2">We Also Service These Areas</h2>
+              <p className="text-sm text-muted-foreground font-body">Local fabric cleaning available across more Brisbane and Queensland suburbs.</p>
+            </FadeIn>
+            <div className="flex flex-wrap gap-2.5">
+              {serviceAreas.map((area) => (
+                <Link
+                  key={area.href}
+                  href={area.href}
+                  className="inline-flex items-center gap-1.5 text-xs font-nav text-primary bg-accent-tint hover:bg-primary hover:text-primary-foreground transition-colors px-3.5 py-1.5 rounded-full"
+                >
+                  <MapPin className="h-3 w-3" /> {area.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="py-16 md:py-24 bg-background">

@@ -18,9 +18,13 @@ export default function DashboardLayout({
     const token = getAccessToken();
     if (!token) {
       router.push('/login');
-    } else {
-      setAuthenticated(true);
+      return;
     }
+    // Token check is a synchronous localStorage read; deferring the state flip
+    // past the initial commit avoids react-hooks/set-state-in-effect without
+    // changing behavior (the loading state renders until the token is applied).
+    const id = window.setTimeout(() => setAuthenticated(true), 0);
+    return () => window.clearTimeout(id);
   }, [router, pathname]);
 
   const handleLogout = () => {
@@ -44,6 +48,7 @@ export default function DashboardLayout({
   const navLinks = [
     { name: 'Overview', href: '/dashboard', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z' },
     { name: 'Categories', href: '/dashboard/categories', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
+    { name: 'Suburbs', href: '/dashboard/suburbs', icon: 'M12 21s-6-5.686-6-10a6 6 0 1112 0c0 4.314-6 10-6 10zM12 13a3 3 0 100-6 3 3 0 000 6z' },
     { name: 'Services', href: '/dashboard/services', icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 00-2 2z' },
     { name: 'Blogs', href: '/dashboard/blogs', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
     { name: 'Messages', href: '/dashboard/messages', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },

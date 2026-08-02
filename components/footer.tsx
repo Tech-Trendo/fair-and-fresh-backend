@@ -19,6 +19,9 @@ const fallbackServices = [
 
 export function Footer() {
   const [services, setServices] = useState(fallbackServices);
+  const [serviceAreas, setServiceAreas] = useState<
+    { region: string; label: string; suburbs: { id: number; name: string; slug: string }[] }[]
+  >([]);
   const [settings, setSettings] = useState({
     phone: "0430 799 567",
     email: "support@fairandfreshcleaning.com.au",
@@ -40,7 +43,7 @@ export function Footer() {
       .then((data) => {
         if (active && data && Array.isArray(data.results)) {
           const map: Record<string, string> = {};
-          data.results.forEach((item: any) => { map[item.key] = item.value; });
+          data.results.forEach((item: { key: string; value: string }) => { map[item.key] = item.value; });
           setSettings((prev) => ({
             ...prev,
             phone: map.site_phone || prev.phone,
@@ -61,7 +64,7 @@ export function Footer() {
       .then((data) => {
         if (active && data && Array.isArray(data.results)) {
           const map: Record<string, string> = {};
-          data.results.forEach((item: any) => { map[item.key] = item.value; });
+          data.results.forEach((item: { key: string; value: string }) => { map[item.key] = item.value; });
           setSettings((prev) => ({
             ...prev,
             aboutText: map.footer_about_text || prev.aboutText,
@@ -81,6 +84,15 @@ export function Footer() {
               slug: srv.slug,
             }))
           );
+        }
+      })
+      .catch(() => {});
+
+    fetch("/api/suburbs?grouped=true")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data && Array.isArray(data.groups)) {
+          setServiceAreas(data.groups);
         }
       })
       .catch(() => {});
@@ -215,6 +227,36 @@ export function Footer() {
             </div>
           </FadeIn>
         </div>
+
+        {/* Service Areas (suburb hubs) */}
+        {serviceAreas.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-border">
+            <h3 className="text-sm font-heading text-foreground mb-4">Service Areas</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-5">
+              {serviceAreas.map((group) => (
+                <div key={group.region}>
+                  <h4 className="text-xs font-nav text-muted-foreground uppercase tracking-wider mb-2">
+                    {group.label}
+                  </h4>
+                  <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+                    {group.suburbs.slice(0, 10).map((s) => (
+                      <Link
+                        key={s.slug}
+                        href={`/suburbs/${s.slug}`}
+                        className="text-xs text-muted-foreground hover:text-primary transition-colors font-body"
+                      >
+                        {s.name}
+                      </Link>
+                    ))}
+                    {group.suburbs.length > 10 && (
+                      <span className="text-xs text-muted-foreground/70 font-body">+{group.suburbs.length - 10} more</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Copyright bar */}
         <div className="border-t border-border mt-10 pt-6 text-center">

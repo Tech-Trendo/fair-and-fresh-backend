@@ -43,6 +43,27 @@
       "when": 1785304081712,
       "tag": "0005_add_availability",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785657732369,
+      "tag": "0006_add_suburb_page_network",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1785659785001,
+      "tag": "0007_suburb_join_table_unique_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785660580212,
+      "tag": "0008_combo_targets_and_base_price",
+      "breakpoints": true
     }
   ]
 }

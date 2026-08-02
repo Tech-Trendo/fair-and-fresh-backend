@@ -3,10 +3,26 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { MapPin, Phone, Clock, CheckCircle2, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
+
+const slugify = (name: string) =>
+  name.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^\w\-]+/g, "");
+
+// Display names on this page that map to differently-slugged seeded suburbs.
+// Empty string = no hub page exists yet -> render as plain text (no broken link).
+const areaSlugOverrides: Record<string, string> = {
+  "Ipswich CBD": "ipswich",
+  Noosa: "noosa-heads",
+};
+
+const getSuburbHref = (name: string): string | null => {
+  if (name in areaSlugOverrides) {
+    return areaSlugOverrides[name] ? `/suburbs/${areaSlugOverrides[name]}` : null;
+  }
+  return `/suburbs/${slugify(name)}`;
+};
 
 export default function BrisbanePage() {
   const serviceAreas = [
@@ -109,7 +125,19 @@ export default function BrisbanePage() {
                       {area.suburbs.map((suburb, subIndex) => (
                         <div key={subIndex} className="flex items-center gap-1.5 py-1">
                           <div className="h-1.5 w-1.5 rounded-full bg-primary/40" />
-                          <span className="text-xs text-muted-foreground font-body">{suburb}</span>
+                          {(() => {
+                            const href = getSuburbHref(suburb);
+                            return href ? (
+                              <Link
+                                href={href}
+                                className="text-xs text-muted-foreground font-body hover:text-primary transition-colors"
+                              >
+                                {suburb}
+                              </Link>
+                            ) : (
+                              <span className="text-xs text-muted-foreground font-body">{suburb}</span>
+                            );
+                          })()}
                         </div>
                       ))}
                     </div>

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceTemplate } from "@/components/service-template";
 import { db } from "@/lib/db";
-import { services } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { services, suburbs, comboPageTargets } from "@/lib/schema";
+import { eq, asc } from "drizzle-orm";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -119,6 +119,28 @@ export default async function ServicePage({ params }: PageProps) {
     service: service.name,
   }));
 
+  // Phase 9 — internal linking: suburb hub pages + curated combo pages for this service.
+  const [activeSuburbs, comboSlugs] = await Promise.all([
+    db
+      .select({ name: suburbs.name, slug: suburbs.slug })
+      .from(suburbs)
+      .where(eq(suburbs.isActive, true))
+      .orderBy(asc(suburbs.name))
+      .limit(8),
+    db
+      .select({ suburbSlug: suburbs.slug })
+      .from(comboPageTargets)
+      .innerJoin(suburbs, eq(suburbs.id, comboPageTargets.suburbId))
+      .where(eq(comboPageTargets.serviceId, service.id))
+      .limit(8),
+  ]);
+
+  const comboSet = new Set(comboSlugs.map((c) => c.suburbSlug));
+  const serviceAreas = activeSuburbs.map((s) => ({
+    name: s.name,
+    href: comboSet.has(s.slug) ? `/services/${service.slug}/${s.slug}` : `/suburbs/${s.slug}`,
+  }));
+
   return (
     <ServiceTemplate
       badge="Professional Cleaning Care"
@@ -144,6 +166,7 @@ export default async function ServicePage({ params }: PageProps) {
       types={typesList}
       faqs={standardFaqs}
       reviews={testimonialsList.length > 0 ? testimonialsList : undefined}
+      serviceAreas={serviceAreas}
       ctaTitle={`Experience Brisbane's Best ${service.name} Care`}
       ctaDescription={`Don't wait—restore the beauty and hygiene of your space today. Contact us for a free, no-obligation quote.`}
     />

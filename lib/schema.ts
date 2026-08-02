@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, jsonb, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, integer, jsonb, primaryKey, serial, varchar, decimal, uniqueIndex } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users Table
@@ -103,6 +103,7 @@ export const services = pgTable('services', {
   slug: text('slug').unique().notNull(),
   icon: text('icon'),
   sortOrder: integer('sort_order').default(0).notNull(),
+  basePrice: decimal('base_price', { precision: 10, scale: 2 }), // null = no price published; suburb pricing = basePrice * suburb.priceMultiplier
 
   // SEOMixin fields
   metaTitle: text('meta_title'),
@@ -257,6 +258,75 @@ export const quotationRequests = pgTable('quotation_requests', {
 });
 
 
+// Suburbs Table (programmatic suburb landing page network)
+export const suburbs = pgTable('suburbs', {
+  id: serial('id').primaryKey(),
+  slug: varchar('slug', { length: 100 }).unique().notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
+  region: varchar('region', { length: 50 }).notNull(), // e.g. 'brisbane-north', 'gold-coast'
+  regionType: varchar('region_type', { length: 30 }).notNull(), // 'inner-city' | 'coastal' | 'outer-suburban' — drives copy-block selection
+  postcode: varchar('postcode', { length: 10 }),
+  lat: decimal('lat', { precision: 9, scale: 6 }),
+  lng: decimal('lng', { precision: 9, scale: 6 }),
+  travelTimeMins: integer('travel_time_mins'),
+  localLandmark: text('local_landmark'),
+  priceMultiplier: decimal('price_multiplier', { precision: 4, scale: 2 }).default('1.00').notNull(),
+  metaDescription: text('meta_description'),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Suburb Testimonials Join Table (links suburbs to existing testimonials — review content is NOT duplicated)
+export const suburbTestimonials = pgTable(
+  'suburb_testimonials',
+  {
+    id: serial('id').primaryKey(),
+    suburbId: integer('suburb_id').references(() => suburbs.id, { onDelete: 'cascade' }).notNull(),
+    reviewId: text('review_id').references(() => testimonials.id, { onDelete: 'cascade' }).notNull(), // testimonials is the existing 'reviews' table
+  },
+  (table) => [
+    uniqueIndex('suburb_testimonials_suburb_review_unique').on(table.suburbId, table.reviewId),
+  ]
+);
+
+// Suburb Service Pricing Overrides Table (null = base price * priceMultiplier)
+export const suburbServicePricing = pgTable(
+  'suburb_service_pricing',
+  {
+    id: serial('id').primaryKey(),
+    suburbId: integer('suburb_id').references(() => suburbs.id, { onDelete: 'cascade' }).notNull(),
+    serviceId: text('service_id').references(() => services.id, { onDelete: 'cascade' }).notNull(),
+    priceOverride: decimal('price_override', { precision: 10, scale: 2 }),
+  },
+  (table) => [
+    uniqueIndex('suburb_service_pricing_suburb_service_unique').on(table.suburbId, table.serviceId),
+  ]
+);
+
+// Suburb Copy Blocks Table (regionType-driven content pools for rotation)
+export const suburbCopyBlocks = pgTable('suburb_copy_blocks', {
+  id: serial('id').primaryKey(),
+  regionType: varchar('region_type', { length: 30 }).notNull(), // matches suburbs.regionType
+  blockType: varchar('block_type', { length: 30 }).notNull(), // 'intro' | 'local-detail' | 'faq-question' | 'faq-answer'
+  content: text('content').notNull(),
+});
+
+// Combo Page Targets Table (curated service x suburb combo pages — NOT a full matrix)
+export const comboPageTargets = pgTable(
+  'combo_page_targets',
+  {
+    id: serial('id').primaryKey(),
+    serviceId: text('service_id').references(() => services.id, { onDelete: 'cascade' }).notNull(),
+    suburbId: integer('suburb_id').references(() => suburbs.id, { onDelete: 'cascade' }).notNull(),
+    isActive: boolean('is_active').default(true).notNull(),
+    createdAt: timestamp('created_at').defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('combo_page_targets_service_suburb_unique').on(table.serviceId, table.suburbId),
+  ]
+);
+
 // --- Relations Definitions ---
 
 export const blogsRelations = relations(blogs, ({ many }) => ({
@@ -289,6 +359,8 @@ export const servicesRelations = relations(services, ({ many }) => ({
   images: many(serviceImages),
   testimonials: many(testimonials),
   servicesCategories: many(servicesCategories),
+  suburbServicePricing: many(suburbServicePricing),
+  comboPageTargets: many(comboPageTargets),
 }));
 
 export const servicesCategoriesRelations = relations(servicesCategories, ({ one }) => ({
@@ -330,9 +402,49 @@ export const serviceImagesRelations = relations(serviceImages, ({ one }) => ({
   }),
 }));
 
-export const testimonialsRelations = relations(testimonials, ({ one }) => ({
+export const testimonialsRelations = relations(testimonials, ({ one, many }) => ({
   service: one(services, {
     fields: [testimonials.serviceId],
     references: [services.id],
+  }),
+  suburbTestimonials: many(suburbTestimonials),
+}));
+
+export const suburbsRelations = relations(suburbs, ({ many }) => ({
+  suburbTestimonials: many(suburbTestimonials),
+  suburbServicePricing: many(suburbServicePricing),
+  comboPageTargets: many(comboPageTargets),
+}));
+
+export const suburbTestimonialsRelations = relations(suburbTestimonials, ({ one }) => ({
+  suburb: one(suburbs, {
+    fields: [suburbTestimonials.suburbId],
+    references: [suburbs.id],
+  }),
+  review: one(testimonials, {
+    fields: [suburbTestimonials.reviewId],
+    references: [testimonials.id],
+  }),
+}));
+
+export const suburbServicePricingRelations = relations(suburbServicePricing, ({ one }) => ({
+  suburb: one(suburbs, {
+    fields: [suburbServicePricing.suburbId],
+    references: [suburbs.id],
+  }),
+  service: one(services, {
+    fields: [suburbServicePricing.serviceId],
+    references: [services.id],
+  }),
+}));
+
+export const comboPageTargetsRelations = relations(comboPageTargets, ({ one }) => ({
+  service: one(services, {
+    fields: [comboPageTargets.serviceId],
+    references: [services.id],
+  }),
+  suburb: one(suburbs, {
+    fields: [comboPageTargets.suburbId],
+    references: [suburbs.id],
   }),
 }));
