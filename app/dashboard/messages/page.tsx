@@ -180,21 +180,21 @@ export default function MessagesPage() {
             onClick={() => setFilter('all')}
             className={`flex-1 py-1.5 px-3 rounded-md text-[11px] font-semibold transition-all ${
               filter === 'all'
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-[#4B5563] hover:bg-[#F9FAFB]'
-            }`}
-          >
-            All
+? 'bg-red-600 text-primary-foreground shadow-sm'
+			            : 'text-[#4B5563] hover:bg-[#F9FAFB]'
+		            }`}
+		          >
+		            All
           </button>
           <button
             onClick={() => setFilter('unread')}
             className={`flex-1 py-1.5 px-3 rounded-md text-[11px] font-semibold transition-all flex items-center justify-center gap-1.5 ${
               filter === 'unread'
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-[#4B5563] hover:bg-[#F9FAFB]'
-            }`}
-          >
-            Unread
+? 'bg-red-600 text-primary-foreground shadow-sm'
+			            : 'text-[#4B5563] hover:bg-[#F9FAFB]'
+		            }`}
+		          >
+		            Unread
             {messages.filter((m) => !m.isRead).length > 0 && (
               <span className={`px-1.5 py-0.2 rounded-full text-[9px] ${filter === 'unread' ? 'bg-primary-foreground text-primary' : 'bg-red-100 text-red-700'}`}>
                 {messages.filter((m) => !m.isRead).length}
@@ -205,11 +205,11 @@ export default function MessagesPage() {
             onClick={() => setFilter('read')}
             className={`flex-1 py-1.5 px-3 rounded-md text-[11px] font-semibold transition-all ${
               filter === 'read'
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-[#4B5563] hover:bg-[#F9FAFB]'
-            }`}
-          >
-            Read
+? 'bg-red-600 text-primary-foreground shadow-sm'
+			            : 'text-[#4B5563] hover:bg-[#F9FAFB]'
+		            }`}
+		          >
+		            Read
           </button>
         </div>
       </div>

@@ -201,7 +201,7 @@ export default function AvailabilityPage() {
           </div>
           <button
             onClick={handleSaveWorkingHours}
-            className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-md hover:bg-blue-700 transition-colors cursor-pointer whitespace-nowrap"
+            className="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-md hover:bg-red-700 transition-colors cursor-pointer whitespace-nowrap"
           >
             Save Hours
           </button>

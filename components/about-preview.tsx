@@ -108,7 +108,7 @@ export function AboutPreview({
               <Link href={ctaHref}>
                 <Button
                   size="lg"
-                  className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-nav text-base"
+                  className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-base"
                 >
                   {ctaText}
                   <ArrowRight className="ml-2 h-4 w-4" />

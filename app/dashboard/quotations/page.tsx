@@ -215,11 +215,11 @@ export default function QuotationsPage() {
               onClick={() => setFilter(status)}
               className={`flex-1 py-1.5 px-3 rounded-md text-[11px] font-semibold transition-all ${
                 filter === status
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-[#4B5563] hover:bg-[#F9FAFB]'
-              }`}
-            >
-              {status === 'all' ? 'All' : status}
+? 'bg-red-600 text-primary-foreground shadow-sm'
+			            : 'text-[#4B5563] hover:bg-[#F9FAFB]'
+		            }`}
+		          >
+		            {status === 'all' ? 'All' : status}
               {status !== 'all' && quotations.filter((q) => q.status === status).length > 0 && (
                 <span className={`ml-1.5 px-1.5 py-0.2 rounded-full text-[9px] ${
                   filter === status ? 'bg-primary-foreground text-primary' : 'bg-zinc-100 text-zinc-700'
@@ -411,7 +411,7 @@ export default function QuotationsPage() {
                             onClick={() => handleUpdateStatus(quote.id, 'Pending')}
                             className={`px-2.5 py-1 rounded text-[10px] font-bold border transition-colors ${
                               quote.status === 'Pending'
-                                ? 'bg-blue-55 text-blue-700 border-blue-300'
+                                ? 'bg-red-500 text-white border-red-300'
                                 : 'bg-white hover:bg-zinc-50 border-zinc-200 text-zinc-700'
                             }`}
                           >

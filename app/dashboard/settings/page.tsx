@@ -337,7 +337,7 @@ export default function SettingsPage() {
             className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-md transition-all cursor-pointer ${
               changedKeys.size === 0 || saving
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                : 'bg-red-600 text-white hover:bg-red-700 shadow-sm'
             }`}
           >
             {saving ? (
@@ -411,7 +411,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 mt-3">
             <button
               onClick={handleAddNew}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-red-600 rounded-md hover:bg-red-700 transition-all cursor-pointer"
             >
               <Check className="h-3 w-3" />
               Add
@@ -460,7 +460,7 @@ export default function SettingsPage() {
             <p className="text-sm text-gray-500">No editable content in this section yet.</p>
             <button
               onClick={() => setShowNewForm(true)}
-              className="mt-3 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-all cursor-pointer"
+              className="mt-3 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 transition-all cursor-pointer"
             >
               <Plus className="h-3 w-3" />
               Add First Field

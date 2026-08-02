@@ -208,7 +208,7 @@ export function Footer() {
             </div>
             <div className="mt-6">
               <Link href="/quote">
-                <button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-nav rounded-full px-5 py-2.5 transition-colors">
+                <button className="w-full bg-red-600 hover:bg-red-700 text-primary-foreground text-sm font-nav rounded-full px-5 py-2.5 transition-colors">
                   Book Online
                 </button>
               </Link>

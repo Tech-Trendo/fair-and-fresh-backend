@@ -73,10 +73,10 @@ export default function ThankYouPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-              <Button asChild className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-nav text-sm px-7">
+              <Button asChild className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-sm px-7">
                 <Link href="/">Return to Home</Link>
               </Button>
-              <Button asChild variant="outline" className="rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground font-nav text-sm px-7 bg-transparent">
+              <Button asChild variant="outline" className="rounded-full border-red-600 text-red-600 hover:bg-red-600 hover:text-primary-foreground font-nav text-sm px-7 bg-transparent">
                 <Link href="tel:0430799567"><Phone className="mr-2 h-4 w-4" /> Call Us Now</Link>
               </Button>
             </div>

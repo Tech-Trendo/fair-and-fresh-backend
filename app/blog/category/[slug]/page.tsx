@@ -174,7 +174,7 @@ export default async function BlogCategoryPage({ params }: PageProps) {
               <div className="mt-6">
                 <Link
                   href="/blog"
-                  className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/95 transition-all text-xs"
+                  className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-red-600 text-primary-foreground font-bold hover:bg-red-700 transition-all text-xs"
                 >
                   View All Articles
                 </Link>

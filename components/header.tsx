@@ -136,7 +136,7 @@ export function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center self-center">
-            <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-5 py-1.5 font-nav text-sm leading-none">
+            <Button asChild className="bg-red-600 hover:bg-red-700 text-primary-foreground rounded-full px-5 py-1.5 font-nav text-sm leading-none">
               <Link href="/quote">Get Free Quote</Link>
             </Button>
           </div>
@@ -218,7 +218,7 @@ export function Header() {
                     </svg>
                     {phone}
                   </a>
-                  <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-nav">
+                  <Button asChild className="w-full bg-red-600 hover:bg-red-700 text-primary-foreground rounded-full font-nav">
                     <Link href="/quote" onClick={() => setIsMenuOpen(false)}>Get Free Quote</Link>
                   </Button>
                 </div>

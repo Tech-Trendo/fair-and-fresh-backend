@@ -119,7 +119,7 @@ export function Hero() {
               <Link href="/quote">
                 <Button
                   size="lg"
-                  className="rounded-full bg-primary hover:bg-primary/95 text-primary-foreground px-8 py-6 font-nav text-base w-full sm:w-auto shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 transition-all duration-300 group"
+                  className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground px-8 py-6 font-nav text-base w-full sm:w-auto shadow-lg shadow-red-600/25 hover:shadow-xl hover:shadow-red-600/35 transition-all duration-300 group"
                 >
                   <span>Get Free Quote</span>
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -129,7 +129,7 @@ export function Hero() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="rounded-full border-2 border-slate-200 hover:border-primary bg-white/80 hover:bg-primary/5 text-slate-800 hover:text-primary px-8 py-6 font-nav text-base w-full sm:w-auto shadow-xs hover:shadow-md transition-all duration-300"
+                  className="rounded-full border-2 border-slate-200 hover:border-red-600 bg-white/80 hover:bg-red-600/5 text-slate-800 hover:text-red-600 px-8 py-6 font-nav text-base w-full sm:w-auto shadow-xs hover:shadow-md transition-all duration-300"
                 >
                   <Phone className="mr-2.5 h-4 w-4 text-primary" />
                   <span>{content.phone}</span>

@@ -8,9 +8,9 @@ interface BlogCategoryTabsProps {
 
 function tabClass(isActive: boolean, interactive = true) {
   return `px-4 py-1.5 rounded-full text-xs font-nav transition-all ${
-    isActive
-      ? "bg-primary text-primary-foreground"
-      : `bg-white text-muted-foreground hover:text-foreground border border-border${interactive ? " cursor-pointer hover:border-primary/50" : ""}`
+isActive
+	      ? "bg-primary text-primary-foreground"
+	      : `bg-white text-muted-foreground hover:text-foreground border border-border${interactive ? " cursor-pointer hover:border-primary/50" : ""}`
   }`;
 }
 

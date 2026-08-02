@@ -93,7 +93,7 @@ export function Services({
           <Link href="/quote">
             <Button
               size="lg"
-              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-8 font-nav text-base"
+              className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground px-8 font-nav text-base"
             >
               Get Free Quote
             </Button>

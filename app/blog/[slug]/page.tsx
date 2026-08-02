@@ -198,7 +198,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     Book any professional cleaning service today and get an instant <strong>20% OFF</strong>! Professional equipment, insured cleaners.
                   </p>
-                  <Link href="/quote" className="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/95 transition-all text-xs text-center shadow-sm">
+                  <Link href="/quote" className="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl bg-red-600 text-primary-foreground font-bold hover:bg-red-700 transition-all text-xs text-center shadow-sm">
                     Get Free Quote Now
                   </Link>
                 </div>
