@@ -33,6 +33,7 @@ interface FormattableService {
   twitterCard?: string | null;
   canonicalUrl?: string | null;
   metaRobots?: string | null;
+  homeSection?: string | null;
   servicesCategories?: { category: CategoryRef }[];
   category?: CategoryRef[];
   whatsIncluded?: {
@@ -96,6 +97,7 @@ export function formatService(srv: FormattableService | null | undefined) {
     twitter_card: srv.twitterCard || 'summary_large_image',
     canonical_url: srv.canonicalUrl || '',
     meta_robots: srv.metaRobots || '',
+    home_section: srv.homeSection || 'steam',
     whats_included: (srv.whatsIncluded || []).map((item) => ({
       id: item.id,
       service_id: item.serviceId,

@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
       longDescription: long_description || '',
       whatWeOffer: what_we_offer || {},
       slug: finalSlug,
+      homeSection: body.home_section || 'steam',
       metaTitle: meta_title || '',
       metaDescription: meta_description || '',
       metaKeywords: meta_keywords || '',

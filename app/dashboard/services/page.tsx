@@ -19,6 +19,7 @@ interface Service {
   slug: string;
   icon?: string;
   sort_order?: number;
+  home_section?: string;
   categories?: { id: string; name: string; slug: string }[];
   category?: { id: string; name: string; slug: string } | null;
   // SEO Mixin fields
@@ -80,6 +81,7 @@ export default function ServicesPage() {
   const [metaRobots, setMetaRobots] = useState('');
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [allCategories, setAllCategories] = useState<{ id: string; title: string }[]>([]);
+  const [homeSection, setHomeSection] = useState<string>('steam');
 
   // Pagination states
   const [page, setPage] = useState(1);
@@ -157,6 +159,7 @@ export default function ServicesPage() {
     setMetaRobots('');
     setIcon('Sparkles');
     setSelectedCategoryIds([]);
+    setHomeSection('steam');
     sortOrderTouchedRef.current = false;
 
     setActiveTab('general');
@@ -232,6 +235,7 @@ export default function ServicesPage() {
     setMetaRobots(srv.meta_robots || '');
     setIcon(srv.icon || 'Sparkles');
     setSelectedCategoryIds((srv.categories || []).map((cat) => cat.id));
+    setHomeSection(srv.home_section || 'steam');
     sortOrderTouchedRef.current = false;
  
     setActiveTab('general');
@@ -368,7 +372,8 @@ export default function ServicesPage() {
       twitter_card: twitterCard,
       canonical_url: canonicalUrl,
       meta_robots: metaRobots,
-      categoryIds: selectedCategoryIds
+      categoryIds: selectedCategoryIds,
+      home_section: homeSection,
     };
 
     try {
@@ -740,6 +745,20 @@ export default function ServicesPage() {
                       <option value="Sun">Sun / Window Clean</option>
                       <option value="HelpCircle">Help / General</option>
                     </select>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Homepage Section</label>
+                    <select
+                      value={homeSection}
+                      onChange={(e) => setHomeSection(e.target.value)}
+                      className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white cursor-pointer"
+                    >
+                      <option value="steam">Steam Cleaning</option>
+                      <option value="maintenance">Home Maintenance</option>
+                      <option value="specialized">Specialized Cleaning & Restoration</option>
+                    </select>
+                    <p className="text-[10px] text-[#9CA3AF]">Which section this service appears under on the homepage.</p>
                   </div>
 
                   <div className="flex flex-col gap-1.5">

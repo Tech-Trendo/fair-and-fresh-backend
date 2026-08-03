@@ -1,0 +1,1 @@
+ALTER TABLE "services" ADD COLUMN "home_section" text DEFAULT 'steam';

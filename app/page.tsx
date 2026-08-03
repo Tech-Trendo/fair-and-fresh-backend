@@ -62,25 +62,15 @@ export default async function Home() {
     orderBy: (services, { asc }) => [asc(services.sortOrder), asc(services.name)],
   });
 
-  const servicesList = dbServices.map((s) => ({
-    name: s.name,
-    slug: s.slug,
-    image: s.images[0]?.imageUrl || "/placeholder.svg",
-    icon: s.icon || undefined,
-    shortDescription: s.shortDescription || "",
-    category: s.servicesCategories.map((sc) => sc.category),
-  }));
-
-  // Fetch all categories for filtering tabs
-  const dbCategories = await db.query.serviceCategories.findMany({
-    orderBy: (serviceCategories, { asc }) => [asc(serviceCategories.title)],
-  });
-
-  const categoriesList = dbCategories.map((c) => ({
-    id: c.id,
-    title: c.title,
-    slug: c.slug,
-  }));
+   const servicesList = dbServices.map((s) => ({
+     name: s.name,
+     slug: s.slug,
+     image: s.images[0]?.imageUrl || "/placeholder.svg",
+     icon: s.icon || undefined,
+     shortDescription: s.shortDescription || "",
+     category: s.servicesCategories.map((sc) => sc.category),
+     homeSection: s.homeSection || "steam",
+    }));
 
   // Fetch before/after images
   const dbBeforeAfter = await db
@@ -133,7 +123,7 @@ export default async function Home() {
       <Header />
       <Hero />
       {servicesList.length > 0 && (
-        <Services services={servicesList} categories={categoriesList} />
+        <Services services={servicesList} />
       )}
       <BeforeAfterSlider images={beforeAfterImagesData} />
       <AboutPreview

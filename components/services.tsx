@@ -4,8 +4,13 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
-import { CategoryTabs } from "@/components/category-tabs";
 import { useState } from "react";
+
+const SECTIONS = [
+  { key: "steam", label: "Steam Cleaning" },
+  { key: "maintenance", label: "Home Maintenance" },
+  { key: "specialized", label: "Specialized Cleaning & Restoration" },
+] as const;
 
 export interface ServiceData {
   name: string;
@@ -14,21 +19,13 @@ export interface ServiceData {
   icon?: string;
   shortDescription?: string;
   category?: { id: string; title: string; slug: string }[];
+  homeSection?: string;
 }
 
-export function Services({
-  services,
-  categories = [],
-}: {
-  services: ServiceData[];
-  categories?: { id: string; title: string; slug: string }[];
-}) {
-  const [selectedCategory, setSelectedCategory] = useState("all");
+export function Services({ services }: { services: ServiceData[] }) {
+  const [activeSection, setActiveSection] = useState("steam");
 
-  const filteredServices = services.filter((service) => {
-    if (selectedCategory === "all") return true;
-    return (service.category || []).some((cat) => cat.slug === selectedCategory);
-  });
+  const filtered = services.filter((s) => s.homeSection === activeSection);
 
   return (
     <section id="services" className="py-16 md:py-24 bg-background">
@@ -46,47 +43,56 @@ export function Services({
           </FadeIn>
         </div>
 
-        <CategoryTabs
-          categories={categories}
-          activeSlug={selectedCategory}
-          onSelect={setSelectedCategory}
-        />
+        {/* Section Tabs */}
+        <FadeIn delay={0.15}>
+          <div className="flex flex-wrap justify-center gap-2 mb-10">
+            {SECTIONS.map((section) => (
+              <button
+                key={section.key}
+                onClick={() => setActiveSection(section.key)}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors cursor-pointer ${
+                  activeSection === section.key
+                    ? "bg-red-600 text-white"
+                    : "bg-white text-foreground border border-border hover:bg-muted"
+                }`}
+              >
+                {section.label}
+              </button>
+            ))}
+          </div>
+        </FadeIn>
 
         <StaggerContainer
-          key={selectedCategory}
+          key={activeSection}
           className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
-          {filteredServices.map((service) => {
-            return (
-              <StaggerItem key={service.slug}>
-                <Link href={`/services/${service.slug}`} className="block h-full group">
-                  <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden h-full flex flex-col border border-border">
-                    {/* Photo at the top */}
-                    <div className="relative aspect-video overflow-hidden bg-muted">
-                      <Image
-                        src={service.image || "/placeholder.svg"}
-                        alt={service.name}
-                        width={400}
-                        height={250}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    {/* Content below */}
-                    <div className="p-5 flex flex-col flex-grow">
-                      <h3 className="text-base font-heading-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                        {service.name}
-                      </h3>
-                      {service.shortDescription && (
-                        <p className="text-sm text-muted-foreground font-body leading-relaxed line-clamp-2 flex-grow">
-                          {service.shortDescription}
-                        </p>
-                      )}
-                    </div>
+          {filtered.map((service) => (
+            <StaggerItem key={service.slug}>
+              <Link href={`/services/${service.slug}`} className="block h-full group">
+                <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden h-full flex flex-col border border-border">
+                  <div className="relative aspect-video overflow-hidden bg-muted">
+                    <Image
+                      src={service.image || "/placeholder.svg"}
+                      alt={service.name}
+                      width={400}
+                      height={250}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                </Link>
-              </StaggerItem>
-            );
-          })}
+                  <div className="p-5 flex flex-col flex-grow">
+                    <h3 className="text-base font-heading-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {service.name}
+                    </h3>
+                    {service.shortDescription && (
+                      <p className="text-sm text-muted-foreground font-body leading-relaxed line-clamp-2 flex-grow">
+                        {service.shortDescription}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            </StaggerItem>
+          ))}
         </StaggerContainer>
 
         <FadeIn y={12} delay={0.2} className="text-center mt-10">

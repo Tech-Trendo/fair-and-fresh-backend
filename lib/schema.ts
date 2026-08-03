@@ -104,6 +104,7 @@ export const services = pgTable('services', {
   icon: text('icon'),
   sortOrder: integer('sort_order').default(0).notNull(),
   basePrice: decimal('base_price', { precision: 10, scale: 2 }), // null = no price published; suburb pricing = basePrice * suburb.priceMultiplier
+  homeSection: text('home_section').default('steam'), // 'steam' | 'maintenance' | 'specialized' — homepage grouping
 
   // SEOMixin fields
   metaTitle: text('meta_title'),

@@ -104,8 +104,9 @@ export async function PUT(
         shortDescription: short_description || '',
         longDescription: long_description || '',
         whatWeOffer: what_we_offer || {},
-        slug: finalSlug,
-        metaTitle: meta_title || '',
+      slug: finalSlug,
+      homeSection: body.home_section || srv.homeSection || 'steam',
+      metaTitle: meta_title || '',
         metaDescription: meta_description || '',
         metaKeywords: meta_keywords || '',
         ogTitle: og_title || '',
@@ -270,6 +271,7 @@ export async function PATCH(
     if (body.twitter_card !== undefined) updateObj.twitterCard = body.twitter_card;
     if (body.canonical_url !== undefined) updateObj.canonicalUrl = body.canonical_url;
     if (body.sort_order !== undefined && !isNaN(Number(body.sort_order))) updateObj.sortOrder = Number(body.sort_order);
+    if (body.home_section !== undefined) updateObj.homeSection = body.home_section;
 
     if (Object.keys(updateObj).length > 0) {
       await db.update(services).set(updateObj).where(eq(services.id, id));
