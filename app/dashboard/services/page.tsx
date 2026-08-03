@@ -61,7 +61,8 @@ export default function ServicesPage() {
   const [serviceTypesList, setServiceTypesList] = useState<{ title: string }[]>([]);
 
   // Form Fields - Images
-  const [imagesList, setImagesList] = useState<string[]>([]);
+  const [imagesList, setImagesList] = useState<string[]>([]); // already-saved image URLs
+  const [pendingImages, setPendingImages] = useState<{ file: File; preview: string }[]>([]); // selected locally, uploaded on Save
   const [uploadingImage, setUploadingImage] = useState(false);
 
   // Form Fields - SEO Mixin
@@ -143,6 +144,7 @@ export default function ServicesPage() {
     setTestimonialsList([]);
     setServiceTypesList([]);
     setImagesList([]);
+    clearPendingImages();
     setSlug('');
     setMetaTitle('');
     setMetaDescription('');
@@ -211,6 +213,7 @@ export default function ServicesPage() {
       }))
     );
     setImagesList((srv.images || []).map((img) => img.image_url));
+    clearPendingImages();
     setServiceTypesList(
       (srv.service_types || []).map((item) => ({
         title: item.title,
@@ -241,33 +244,26 @@ export default function ServicesPage() {
     setModalOpen(true);
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Images are NOT uploaded here — they are kept locally with a preview and
+  // only pushed to /api/upload/ when the user clicks Save/Create (handleSubmit).
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    setUploadingImage(true);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', 'service');
+    const newPending = Array.from(files).map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setPendingImages((prev) => [...prev, ...newPending]);
+    // Reset input so the same file can be picked again
+    e.target.value = '';
+  };
 
-    try {
-      const res = await apiFetch('/api/upload/', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (res.status === 201) {
-        const data = await res.json();
-        setImagesList((prev) => [...prev, data.image_url]);
-      } else {
-        alert('Image upload failed.');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error uploading image.');
-    } finally {
-      setUploadingImage(false);
-    }
+  const clearPendingImages = () => {
+    setPendingImages((prev) => {
+      prev.forEach((p) => URL.revokeObjectURL(p.preview));
+      return [];
+    });
   };
 
   const addWhatsIncluded = () => {
@@ -330,9 +326,23 @@ export default function ServicesPage() {
     setImagesList((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  const removePendingImage = (idx: number) => {
+    setPendingImages((prev) => {
+      const removed = prev[idx];
+      if (removed) URL.revokeObjectURL(removed.preview);
+      return prev.filter((_, i) => i !== idx);
+    });
+  };
+
+  const closeModal = () => {
+    clearPendingImages();
+    setModalOpen(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
+    if (submitLoading) return; // guard against double-submit during uploads
 
     setSubmitLoading(true);
 
@@ -345,6 +355,47 @@ export default function ServicesPage() {
       return;
     }
 
+    // Upload any locally-selected images now (only when Save/Create is clicked)
+    const finalImageUrls: string[] = [...imagesList];
+    if (pendingImages.length > 0) {
+      setUploadingImage(true);
+      for (const p of [...pendingImages]) {
+        try {
+          const formData = new FormData();
+          formData.append('file', p.file);
+          formData.append('folder', 'service');
+          const res = await apiFetch('/api/upload/', {
+            method: 'POST',
+            body: formData,
+          });
+          if (res.status === 201) {
+            const data = await res.json();
+            finalImageUrls.push(data.image_url);
+            // Drop the successfully-uploaded file from pending so a retry
+            // after a partial failure doesn't re-upload it (avoids duplicates).
+            setPendingImages((prev) => {
+              const idx = prev.findIndex((x) => x.file === p.file);
+              if (idx === -1) return prev;
+              URL.revokeObjectURL(prev[idx].preview);
+              return prev.filter((_, i) => i !== idx);
+            });
+          } else {
+            alert('Image upload failed. Please try again.');
+            setSubmitLoading(false);
+            setUploadingImage(false);
+            return;
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Error uploading image. Please try again.');
+          setSubmitLoading(false);
+          setUploadingImage(false);
+          return;
+        }
+      }
+      setUploadingImage(false);
+    }
+
     const payload = {
       name,
       short_description: shortDescription,
@@ -353,7 +404,7 @@ export default function ServicesPage() {
       icon,
       whats_included: whatsIncludedList.filter(item => item && item.title && item.title.trim()),
       benefits: benefitsList.filter(item => item && item.title && item.title.trim()),
-      images: imagesList,
+      images: finalImageUrls,
       testimonials: testimonialsList.filter(item => item && item.author && item.author.trim()),
       service_types: serviceTypesList.filter(item => item && item.title && item.title.trim()),
       slug: slug || null,
@@ -386,6 +437,7 @@ export default function ServicesPage() {
       });
 
       if (res.status === 200 || res.status === 201) {
+        clearPendingImages();
         setModalOpen(false);
         if (currentService) {
           // Stay on the current page after editing
@@ -643,7 +695,7 @@ export default function ServicesPage() {
                 {currentService ? 'Edit Service Catalog' : 'Create Service Catalog'}
               </h3>
               <button
-                onClick={() => setModalOpen(false)}
+                onClick={closeModal}
                 className="text-[#9CA3AF] hover:text-[#4B5563] transition-colors cursor-pointer"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -992,6 +1044,7 @@ export default function ServicesPage() {
                       <input
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={handleImageUpload}
                         className="hidden"
                         id="srv-image-file"
@@ -1001,14 +1054,16 @@ export default function ServicesPage() {
                         htmlFor="srv-image-file"
                         className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-3 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors"
                       >
-                        {uploadingImage ? 'Uploading...' : '+ Upload Image'}
+                        {uploadingImage ? 'Uploading...' : '+ Add Image'}
                       </label>
                     </div>
                   </div>
 
+                  <p className="text-[10px] text-[#9CA3AF]">Images are uploaded when you click Save/Create — nothing is stored until then.</p>
+
                   <div className="grid grid-cols-4 gap-3 mt-2">
                     {imagesList.map((img, idx) => (
-                      <div key={idx} className="relative rounded-lg border border-[#E5E7EB] overflow-hidden group aspect-square bg-[#F3F4F6]">
+                      <div key={`saved-${idx}`} className="relative rounded-lg border border-[#E5E7EB] overflow-hidden group aspect-square bg-[#F3F4F6]">
                         <img src={img} alt="Gallery" className="w-full h-full object-cover" />
                         <button
                           type="button"
@@ -1016,6 +1071,19 @@ export default function ServicesPage() {
                           className="absolute inset-0 bg-black/40 flex items-center justify-center text-xs font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           Delete
+                        </button>
+                      </div>
+                    ))}
+                    {pendingImages.map((p, idx) => (
+                      <div key={`pending-${idx}`} className="relative rounded-lg border border-dashed border-amber-400 overflow-hidden group aspect-square bg-[#FEF3C7]">
+                        <img src={p.preview} alt="New image preview" className="w-full h-full object-cover" />
+                        <span className="absolute top-1 left-1 rounded bg-amber-500 px-1.5 py-0.5 text-[9px] font-semibold text-white">New</span>
+                        <button
+                          type="button"
+                          onClick={() => removePendingImage(idx)}
+                          className="absolute inset-0 bg-black/40 flex items-center justify-center text-xs font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          Remove
                         </button>
                       </div>
                     ))}
@@ -1181,7 +1249,7 @@ export default function ServicesPage() {
               <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E7EB] mt-3">
                 <button
                   type="button"
-                  onClick={() => setModalOpen(false)}
+                  onClick={closeModal}
                   className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors"
                 >
                   Cancel
