@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '@/lib/auth';
+
+const PAGE_SIZE = 10;
 
 interface Service {
   id: string;
@@ -79,16 +81,28 @@ export default function ServicesPage() {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [allCategories, setAllCategories] = useState<{ id: string; title: string }[]>([]);
 
-  const [submitLoading, setSubmitLoading] = useState(false);
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
 
-  const fetchServices = async () => {
+  const [submitLoading, setSubmitLoading] = useState(false);
+  // Ref (not state) so the async create-modal continuation reads the latest value
+  const sortOrderTouchedRef = useRef(false);
+
+  const fetchServices = async (currentPage: number = 1) => {
     try {
       setLoading(true);
       setError('');
-      const res = await apiFetch('/api/services/');
+      const res = await apiFetch(`/api/services/?page=${currentPage}&page_size=${PAGE_SIZE}`);
       if (res.status === 200) {
         const data = await res.json();
         setServices(data.results || []);
+        setTotalCount(data.count || 0);
+        setHasNext(!!data.next);
+        setHasPrev(!!data.previous);
+        setPage(currentPage);
       } else {
         throw new Error('Failed to load services');
       }
@@ -116,7 +130,7 @@ export default function ServicesPage() {
     fetchCategories();
   }, []);
 
-  const openCreateModal = () => {
+  const openCreateModal = async () => {
     setCurrentService(null);
     setName('');
     setShortDescription('');
@@ -143,12 +157,27 @@ export default function ServicesPage() {
     setMetaRobots('');
     setIcon('Sparkles');
     setSelectedCategoryIds([]);
-    // Auto-assign next order
-    const maxOrder = services.length > 0 ? Math.max(...services.map(s => s.sort_order ?? 0)) : 0;
-    setSortOrder(maxOrder + 1);
-    
+    sortOrderTouchedRef.current = false;
+
     setActiveTab('general');
     setModalOpen(true);
+
+    // Auto-assign next order based on ALL services (table is paginated)
+    try {
+      const res = await apiFetch('/api/services/?page_size=100');
+      if (res.status === 200) {
+        const data = await res.json();
+        const all = data.results || [];
+        const maxOrder = all.length > 0
+          ? Math.max(...all.map((s: Service) => s.sort_order ?? 0))
+          : 0;
+        if (!sortOrderTouchedRef.current) setSortOrder(maxOrder + 1);
+      } else if (!sortOrderTouchedRef.current) {
+        setSortOrder((services[services.length - 1]?.sort_order ?? 0) + 1);
+      }
+    } catch {
+      if (!sortOrderTouchedRef.current) setSortOrder((services[services.length - 1]?.sort_order ?? 0) + 1);
+    }
   };
 
   const openEditModal = (srv: Service) => {
@@ -203,6 +232,7 @@ export default function ServicesPage() {
     setMetaRobots(srv.meta_robots || '');
     setIcon(srv.icon || 'Sparkles');
     setSelectedCategoryIds((srv.categories || []).map((cat) => cat.id));
+    sortOrderTouchedRef.current = false;
  
     setActiveTab('general');
     setModalOpen(true);
@@ -353,7 +383,14 @@ export default function ServicesPage() {
 
       if (res.status === 200 || res.status === 201) {
         setModalOpen(false);
-        fetchServices();
+        if (currentService) {
+          // Stay on the current page after editing
+          fetchServices(page);
+        } else {
+          // Jump to the page where the new service sits (sorted by sort_order asc)
+          const createdPage = Math.max(1, Math.floor((sortOrder || 0) / PAGE_SIZE) + 1);
+          fetchServices(createdPage);
+        }
       } else {
         const data = await res.json();
         alert(data.name ? `Name error: ${data.name.join(' ')}` : 'Request failed.');
@@ -376,16 +413,16 @@ export default function ServicesPage() {
     // Clone the list of services
     const updatedServices = [...services];
     
-    // Swap the two items in the array
-    const temp = updatedServices[idx];
-    updatedServices[idx] = updatedServices[targetIdx];
-    updatedServices[targetIdx] = temp;
+    // Swap the two items in the array (only the pair changes position)
+    const a = updatedServices[idx];
+    const b = updatedServices[targetIdx];
+    const aOrder = a.sort_order ?? idx;
+    const bOrder = b.sort_order ?? targetIdx;
+    updatedServices[idx] = { ...a, sort_order: bOrder };
+    updatedServices[targetIdx] = { ...b, sort_order: aOrder };
 
-    // Assign new sort_order based on their new index in the list
-    const servicesWithNewOrder = updatedServices.map((srv, index) => ({
-      ...srv,
-      sort_order: index,
-    }));
+    // Only the two swapped items changed order; the rest keep their existing sort_order
+    const servicesWithNewOrder = updatedServices;
 
     // Update state optimistically
     setServices(servicesWithNewOrder);
@@ -409,7 +446,7 @@ export default function ServicesPage() {
       await Promise.all(promises);
     } catch (err) {
       console.error('Reorder failed', err);
-      fetchServices(); // rollback
+      fetchServices(page); // rollback
     }
   };
 
@@ -422,7 +459,9 @@ export default function ServicesPage() {
       });
 
       if (res.status === 204) {
-        fetchServices();
+        // If the last item on the page was deleted, step back one page
+        const nextPage = services.length === 1 && page > 1 ? page - 1 : page;
+        fetchServices(nextPage);
       } else {
         alert('Delete failed.');
       }
@@ -535,6 +574,57 @@ export default function ServicesPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {totalCount > PAGE_SIZE && (
+        <div className="flex items-center justify-between border border-[#E5E7EB] bg-white px-4 py-3 sm:px-6 rounded-lg shadow-xs">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <button
+              type="button"
+              onClick={() => fetchServices(page - 1)}
+              disabled={!hasPrev || loading}
+              className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              onClick={() => fetchServices(page + 1)}
+              disabled={!hasNext || loading}
+              className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs text-[#4B5563]">
+                Showing <span className="font-semibold">{Math.min((page - 1) * PAGE_SIZE + 1, totalCount)}</span> to{' '}
+                <span className="font-semibold">{Math.min(page * PAGE_SIZE, totalCount)}</span> of{' '}
+                <span className="font-semibold">{totalCount}</span> services
+              </p>
+            </div>
+            <div className="flex gap-1.5">
+              <button
+                type="button"
+                onClick={() => fetchServices(page - 1)}
+                disabled={!hasPrev || loading}
+                className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                onClick={() => fetchServices(page + 1)}
+                disabled={!hasNext || loading}
+                className="inline-flex h-8 items-center justify-center rounded-md bg-[#2563EB] px-4 text-xs font-semibold text-white hover:bg-[#1D4ED8] cursor-pointer transition-colors disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -659,7 +749,10 @@ export default function ServicesPage() {
                         type="number"
                         min={0}
                         value={sortOrder}
-                        onChange={(e) => setSortOrder(Number(e.target.value))}
+                        onChange={(e) => {
+                          setSortOrder(Number(e.target.value));
+                          sortOrderTouchedRef.current = true;
+                        }}
                         className="w-24 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
                       />
                       <p className="text-[10px] text-[#9CA3AF]">Lower numbers appear first on the frontend. You can also use the ▲▼ arrows in the table.</p>
