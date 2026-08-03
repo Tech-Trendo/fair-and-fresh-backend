@@ -87,7 +87,7 @@ export function Contact() {
 
                 <div className="mt-8 p-4 bg-primary/10 rounded-lg">
                   <h4 className="font-semibold text-primary mb-2 text-sm md:text-base">
-                    Quick Response Guarantee
+                    Quick Response Time
                   </h4>
                   <p className="text-primary/80 text-xs md:text-sm">
                     We respond to all inquiries within 2 hours during business hours. Same-day service

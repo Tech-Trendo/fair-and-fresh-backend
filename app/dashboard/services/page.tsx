@@ -17,7 +17,8 @@ interface Service {
   slug: string;
   icon?: string;
   sort_order?: number;
-  category?: { id: string; title: string; slug: string }[];
+  categories?: { id: string; name: string; slug: string }[];
+  category?: { id: string; name: string; slug: string } | null;
   // SEO Mixin fields
   meta_title?: string;
   meta_description?: string;
@@ -201,7 +202,7 @@ export default function ServicesPage() {
     setCanonicalUrl(srv.canonical_url || '');
     setMetaRobots(srv.meta_robots || '');
     setIcon(srv.icon || 'Sparkles');
-    setSelectedCategoryIds((srv.category || []).map((cat) => cat.id));
+    setSelectedCategoryIds((srv.categories || []).map((cat) => cat.id));
  
     setActiveTab('general');
     setModalOpen(true);

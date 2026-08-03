@@ -30,7 +30,7 @@ export function Footer() {
     instagram: "#",
     twitter: "#",
     businessHours: "Monday - Sunday: 7AM - 7PM",
-    aboutText: "Brisbane's trusted fabric cleaning specialists. Fair pricing, fresh results, guaranteed satisfaction.",
+    aboutText: "Brisbane's trusted fabric cleaning specialists. Fair pricing, fresh results.",
     copyrightText: "All rights reserved.",
     logoUrl: "/fair-fresh-logo.svg",
   });

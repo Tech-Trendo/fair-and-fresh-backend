@@ -26,22 +26,22 @@ export function About() {
               <div className="flex items-center gap-3">
                 <Shield className="h-8 w-8 text-blue-600" />
                 <div>
-                  <div className="font-semibold">Fully Insured</div>
-                  <div className="text-sm text-gray-600">Complete protection</div>
+                  <div className="font-semibold">Transparent Pricing</div>
+                  <div className="text-sm text-gray-600">Honest quotes, no hidden fees</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Award className="h-8 w-8 text-blue-600" />
                 <div>
-                  <div className="font-semibold">Certified Technicians</div>
-                  <div className="text-sm text-gray-600">Professional training</div>
+                  <div className="font-semibold">Experienced Team</div>
+                  <div className="text-sm text-gray-600">Trained and careful technicians</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Users className="h-8 w-8 text-blue-600" />
                 <div>
-                  <div className="font-semibold">500+ Happy Customers</div>
-                  <div className="text-sm text-gray-600">Proven track record</div>
+                  <div className="font-semibold">Locally Owned</div>
+                  <div className="text-sm text-gray-600">Brisbane family business</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -79,7 +79,7 @@ export function About() {
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
-                    <span>100% satisfaction guarantee on all services</span>
+                    <span>Thorough post-job inspection on every service</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>

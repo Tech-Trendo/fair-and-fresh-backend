@@ -149,9 +149,9 @@ export default async function ServicePage({ params }: PageProps) {
       heroImage={service.images[0]?.imageUrl || "/placeholder.svg"}
       heroImageAlt={service.name}
       stats={[
-        { label: "Happy Clients", value: 2500, suffix: "+" },
+        { label: "Brisbane Suburbs", value: 75, suffix: "+" },
         { label: "Years Experience", value: 15, suffix: "+" },
-        { label: "Rating", value: 4.9 },
+        { label: "Cleaning Services", value: 6, suffix: "+" },
       ]}
       benefitsTitle={`Why Choose Our ${service.name}?`}
       benefitsDescription={`Professional results that extend the life of your ${service.name.toLowerCase()} and improve your indoor air quality.`}

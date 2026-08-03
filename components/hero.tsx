@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Phone, Star, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Phone, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -14,9 +14,6 @@ export function Hero() {
     title: 'Professional Fabric Cleaning in <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Brisbane</span>',
     description: "Carpet, mattress, rug, upholstery, and curtain cleaning across Brisbane. Straightforward pricing, thorough work, and results you can see — and feel.",
     promoText: "Same-day booking — 20% off",
-    ratingText: "4.9/5 Rating",
-    statsLabel: "Happy Customers",
-    statsValue: "500+",
     heroImage: "/professional-carpet-cleaning-service-in-modern-hom.jpg",
     phone: "0430 799 567",
   });
@@ -34,9 +31,6 @@ export function Hero() {
             title: map.home_hero_title || prev.title,
             description: map.home_hero_description || prev.description,
             promoText: map.home_promo_text || prev.promoText,
-            ratingText: map.home_rating_text || prev.ratingText,
-            statsLabel: map.home_stats_label || prev.statsLabel,
-            statsValue: map.home_stats_value || prev.statsValue,
             heroImage: map.home_hero_image || prev.heroImage,
           }));
         }
@@ -138,7 +132,7 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Right image column — with floating trust badges */}
+          {/* Right image column */}
           <motion.div
             className="relative lg:pl-4"
             initial={{ opacity: 0, y: 20 }}
@@ -161,97 +155,9 @@ export function Hero() {
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
 
-            {/* FLOATING TRUST BADGES */}
-
-            {/* Top-Right Badge: Rating */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 10 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                y: [0, -6, 0]
-              }}
-              transition={{
-                opacity: { duration: 0.4, delay: 0.3 },
-                scale: { duration: 0.4, delay: 0.3 },
-                y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-              }}
-              className="absolute -top-4 -right-2 sm:-top-6 sm:-right-4 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 shadow-xl shadow-slate-900/10 border border-slate-100 z-20"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
-                  <Star className="w-5 h-5 fill-amber-400 text-amber-500" />
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1">
-                    <span className="font-heading-bold text-slate-900 text-base leading-none">4.9</span>
-                    <span className="text-xs text-slate-400 font-medium">/ 5.0</span>
-                  </div>
-                  <div className="flex items-center gap-0.5 mt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400 shrink-0" />
-                    ))}
-                    <span className="text-[10px] font-semibold text-slate-500 ml-1">Rating</span>
-                  </div>
-                </div>
-              </div>
             </motion.div>
 
-            {/* Left-Middle Badge: Happy Customers */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 10 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                y: [0, 6, 0]
-              }}
-              transition={{
-                opacity: { duration: 0.4, delay: 0.4 },
-                scale: { duration: 0.4, delay: 0.4 },
-                y: { duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
-              }}
-              className="absolute top-1/2 -translate-y-1/2 -left-3 sm:-left-6 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 shadow-xl shadow-slate-900/10 border border-slate-100 z-20"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 shrink-0">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-heading-bold text-slate-900 text-lg leading-none">{content.statsValue}</span>
-                  <span className="text-xs font-semibold text-slate-500 mt-0.5">{content.statsLabel}</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Bottom-Right Badge: Brisbane Suburbs */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 10 }}
-              animate={{ 
-                opacity: 1, 
-                scale: 1,
-                y: [0, -6, 0]
-              }}
-              transition={{
-                opacity: { duration: 0.4, delay: 0.5 },
-                scale: { duration: 0.4, delay: 0.5 },
-                y: { duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1 }
-              }}
-              className="absolute -bottom-4 -right-2 sm:-bottom-6 sm:-right-4 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 shadow-xl shadow-slate-900/10 border border-slate-100 z-20"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 shrink-0">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-heading-bold text-slate-900 text-lg leading-none">12+</span>
-                  <span className="text-xs font-semibold text-slate-500 mt-0.5">Brisbane Suburbs</span>
-                </div>
-              </div>
-            </motion.div>
-            
-          </motion.div>
-
-        </div>
+      </div>
       </div>
     </section>
   );

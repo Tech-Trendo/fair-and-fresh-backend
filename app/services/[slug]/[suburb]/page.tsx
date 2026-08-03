@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const regionLabel = getRegionLabel(sub.region);
   const title = `${svc.name} in ${sub.name} | Fair & Fresh Cleaning`;
-  const description = `Professional ${svc.name.toLowerCase()} in ${sub.name}, ${regionLabel}. Local pricing, fast response, and a 100% satisfaction guarantee.`;
+  const description = `Professional ${svc.name.toLowerCase()} in ${sub.name}, ${regionLabel}. Local pricing, fast response, and thorough results.`;
 
   return {
     title,
@@ -146,9 +146,9 @@ export default async function ServiceSuburbPage({ params }: PageProps) {
       heroImage={svc.images[0]?.imageUrl || "/placeholder.svg"}
       heroImageAlt={svc.name}
       stats={[
-        { label: "Happy Clients", value: 2500, suffix: "+" },
+        { label: "Brisbane Suburbs", value: 75, suffix: "+" },
         { label: "Years Experience", value: 15, suffix: "+" },
-        { label: "Rating", value: 4.9 },
+        { label: "Cleaning Services", value: 6, suffix: "+" },
       ]}
       benefitsTitle={`Why Choose Our ${svc.name} in ${sub.name}?`}
       benefitsDescription={`Professional results that extend the life of your ${svc.name.toLowerCase()} — trusted across ${regionLabel}.`}
@@ -163,7 +163,7 @@ export default async function ServiceSuburbPage({ params }: PageProps) {
       types={typesList}
       faqs={suburbFaqs.length > 0 ? suburbFaqs : undefined}
       ctaTitle={`Book ${svc.name} in ${sub.name}`}
-      ctaDescription={`Get a free, no-obligation quote for ${svc.name.toLowerCase()} in ${sub.name} — fair pricing and fresh results, guaranteed.`}
+      ctaDescription={`Get a free, no-obligation quote for ${svc.name.toLowerCase()} in ${sub.name} — fair pricing, fresh results.`}
       reviews={testimonialsList.length > 0 ? testimonialsList : undefined}
       priceNote={priceNote}
     />

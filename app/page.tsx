@@ -115,15 +115,15 @@ export default async function Home() {
     description: homeContent.home_about_description || 'For over 15 years, we have been transforming homes and businesses across Brisbane with our professional fabric cleaning services.',
     ctaText: homeContent.home_about_cta_text || 'Learn More About Us',
     stats: [
-      { value: Number(homeContent.home_about_years_value) || 15, suffix: '+', label: homeContent.home_about_years_label || 'Years' },
-      { value: Number(homeContent.home_about_clients_value) || 2.5, suffix: 'K+', label: homeContent.home_about_clients_label || 'Clients', decimals: 1 as const },
-      { value: Number(homeContent.home_about_satisfaction_value) || 98, suffix: '%', label: homeContent.home_about_satisfaction_label || 'Satisfaction' },
+      { value: Number(homeContent.home_about_years_value) || 15, suffix: '+', label: homeContent.home_about_years_label || 'Years Experience' },
+      { value: Number(homeContent.home_about_clients_value) || 75, suffix: '+', label: homeContent.home_about_clients_label || 'Brisbane Suburbs' },
+      { value: Number(homeContent.home_about_satisfaction_value) || 6, suffix: '+', label: homeContent.home_about_satisfaction_label || 'Cleaning Services' },
     ],
     features: [
-      { title: homeContent.home_about_feature_1_title || 'Fully Insured', description: homeContent.home_about_feature_1_desc || 'Complete protection' },
-      { title: homeContent.home_about_feature_2_title || 'Certified Experts', description: homeContent.home_about_feature_2_desc || 'Professional training' },
-      { title: homeContent.home_about_feature_3_title || '2,500+ Happy Clients', description: homeContent.home_about_feature_3_desc || 'Proven track record' },
-      { title: homeContent.home_about_feature_4_title || '100% Guarantee', description: homeContent.home_about_feature_4_desc || 'Satisfaction guaranteed' },
+      { title: homeContent.home_about_feature_1_title || 'Transparent Pricing', description: homeContent.home_about_feature_1_desc || 'Honest quotes, no hidden fees' },
+      { title: homeContent.home_about_feature_2_title || 'Experienced Team', description: homeContent.home_about_feature_2_desc || 'Trained and careful technicians' },
+      { title: homeContent.home_about_feature_3_title || 'Locally Owned', description: homeContent.home_about_feature_3_desc || 'Brisbane family business' },
+      { title: homeContent.home_about_feature_4_title || 'Thorough Inspections', description: homeContent.home_about_feature_4_desc || 'Post-job inspection on every service' },
     ],
   };
 

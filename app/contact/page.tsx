@@ -52,16 +52,16 @@ export default async function ContactPage() {
                   <div className="text-[10px] text-muted-foreground font-body">Response Time</div>
                 </div>
                 <div className="text-center p-3 bg-white rounded-xl border border-border shadow-sm">
-                  <div className="text-lg md:text-xl font-heading-bold text-primary"><CountUp end={2500} suffix="+" /></div>
-                  <div className="text-[10px] text-muted-foreground font-body">Happy Clients</div>
+                  <div className="text-lg md:text-xl font-heading-bold text-primary"><CountUp end={15} suffix="+" /></div>
+                  <div className="text-[10px] text-muted-foreground font-body">Brisbane Suburbs</div>
                 </div>
                 <div className="text-center p-3 bg-white rounded-xl border border-border shadow-sm">
-                  <div className="text-lg md:text-xl font-heading-bold text-primary"><CountUp end={5} suffix="★" /></div>
-                  <div className="text-[10px] text-muted-foreground font-body">Rated Service</div>
+                  <div className="text-lg md:text-xl font-heading-bold text-primary"><CountUp end={6} suffix="+" /></div>
+                  <div className="text-[10px] text-muted-foreground font-body">Cleaning Services</div>
                 </div>
               </div>
               <StaggerContainer className="space-y-2">
-                <StaggerItem className="flex items-center gap-2"><div className="w-8 h-8 bg-accent-tint rounded-full flex items-center justify-center"><Shield className="h-4 w-4 text-primary" /></div><span className="text-sm text-muted-foreground font-body">Fully Insured & Certified</span></StaggerItem>
+                <StaggerItem className="flex items-center gap-2"><div className="w-8 h-8 bg-accent-tint rounded-full flex items-center justify-center"><Shield className="h-4 w-4 text-primary" /></div><span className="text-sm text-muted-foreground font-body">Locally Owned & Operated</span></StaggerItem>
                 <StaggerItem className="flex items-center gap-2"><div className="w-8 h-8 bg-accent-tint rounded-full flex items-center justify-center"><Award className="h-4 w-4 text-primary" /></div><span className="text-sm text-muted-foreground font-body">15+ Years of Excellence</span></StaggerItem>
                 <StaggerItem className="flex items-center gap-2"><div className="w-8 h-8 bg-accent-tint rounded-full flex items-center justify-center"><CheckCircle2 className="h-4 w-4 text-primary" /></div><span className="text-sm text-muted-foreground font-body">Same-Day Service Available</span></StaggerItem>
               </StaggerContainer>
@@ -167,9 +167,9 @@ export default async function ContactPage() {
           <FadeIn className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-heading-bold text-foreground mb-6">{content.contact_why_title || "Why Brisbane Trusts Us"}</h2>
             <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto">
-              <div className="bg-white rounded-xl border border-border p-5 shadow-sm"><div className="text-2xl md:text-3xl font-heading-bold text-primary mb-1"><CountUp end={2500} suffix="+" /></div><p className="text-xs text-muted-foreground font-body">Happy Clients</p></div>
               <div className="bg-white rounded-xl border border-border p-5 shadow-sm"><div className="text-2xl md:text-3xl font-heading-bold text-primary mb-1"><CountUp end={15} suffix="+" /></div><p className="text-xs text-muted-foreground font-body">Years Experience</p></div>
-              <div className="bg-white rounded-xl border border-border p-5 shadow-sm"><div className="text-2xl md:text-3xl font-heading-bold text-primary mb-1"><CountUp end={98} suffix="%" /></div><p className="text-xs text-muted-foreground font-body">Satisfaction Rate</p></div>
+              <div className="bg-white rounded-xl border border-border p-5 shadow-sm"><div className="text-2xl md:text-3xl font-heading-bold text-primary mb-1"><CountUp end={75} suffix="+" /></div><p className="text-xs text-muted-foreground font-body">Brisbane Suburbs</p></div>
+              <div className="bg-white rounded-xl border border-border p-5 shadow-sm"><div className="text-2xl md:text-3xl font-heading-bold text-primary mb-1"><CountUp end={6} suffix="+" /></div><p className="text-xs text-muted-foreground font-body">Cleaning Services</p></div>
             </div>
           </FadeIn>
         </div>

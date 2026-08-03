@@ -39,7 +39,7 @@ export default function BrisbanePage() {
   const whyChooseUs = [
     { title: "Local Brisbane Experts", description: "Born and bred in Brisbane, we understand the unique cleaning challenges of Queensland's climate and lifestyle.", icon: MapPin },
     { title: "Fast Response Times", description: "Same-day service available across most Brisbane suburbs. We're never more than 30 minutes away.", icon: Clock },
-    { title: "Queensland's Trusted Choice", description: "Over 2,500 satisfied customers across Brisbane, Gold Coast, and surrounding areas.", icon: Star },
+    { title: "Upfront Pricing", description: "Honest quotes with no hidden fees, so you know exactly what to expect.", icon: Star },
     { title: "All Areas Covered", description: "From the CBD to the coast, we service all Brisbane suburbs and surrounding regions.", icon: CheckCircle2 },
   ];
 
@@ -186,7 +186,7 @@ export default function BrisbanePage() {
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-primary-foreground mb-4">Ready to Experience Brisbane&apos;s Best Fabric Cleaning?</h2>
               </FadeIn>
               <FadeIn delay={0.1}>
-                <p className="text-base md:text-lg text-primary-foreground/85 max-w-xl mx-auto font-body mb-8">Join over 2,500 satisfied customers across Brisbane and Queensland. Get your free quote today!</p>
+                <p className="text-base md:text-lg text-primary-foreground/85 max-w-xl mx-auto font-body mb-8">Get your free quote today — fair pricing, fresh results.</p>
               </FadeIn>
               <FadeIn delay={0.2} className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/quote">

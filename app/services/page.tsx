@@ -50,9 +50,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const benefits = [
   { icon: Shield, title: "Eco-Friendly Products", description: "Safe for your family and pets" },
-  { icon: Award, title: "Certified Professionals", description: "Trained and experienced technicians" },
+  { icon: Award, title: "Experienced Team", description: "Trained and careful technicians" },
   { icon: Clock, title: "Fast Service", description: "Quick turnaround times" },
-  { icon: Sparkles, title: "Satisfaction Guaranteed", description: "100% satisfaction or we return" },
+  { icon: Sparkles, title: "Thorough Results", description: "Every job inspected before we leave" },
 ];
 
 export default async function ServicesPage() {
@@ -200,7 +200,7 @@ export default async function ServicesPage() {
           <StaggerContainer className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
               { step: "01", title: "Assessment & Quote", description: "We evaluate your cleaning needs and provide a transparent, upfront quote." },
-              { step: "02", title: "Professional Cleaning", description: "Our certified technicians use eco-friendly products and advanced techniques." },
+              { step: "02", title: "Professional Cleaning", description: "Our experienced technicians use eco-friendly products and advanced techniques." },
               { step: "03", title: "Quality Check", description: "We inspect our work to ensure it meets our high standards before completion." },
             ].map((process, index) => (
               <StaggerItem key={process.step}>

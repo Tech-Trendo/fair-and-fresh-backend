@@ -126,7 +126,7 @@ export default async function CategoryPage({ params }: PageProps) {
                 </p>
                 <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground font-body">
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-primary" /> Satisfaction Guarantee
+                    <ShieldCheck className="w-4 h-4 text-primary" /> Upfront Pricing
                   </span>
                   <span className="flex items-center gap-1.5">
                     <CheckCircle className="w-4 h-4 text-primary" /> Eco-Friendly Products

@@ -63,9 +63,9 @@ export default async function AboutPage() {
             <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-heading-bold text-foreground leading-tight mb-5 text-balance" dangerouslySetInnerHTML={{ __html: heroTitle }} />
             <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto font-body">{heroDesc}</p>
             <div className="grid grid-cols-3 gap-6 py-8 max-w-md mx-auto">
-              <div><div className="text-2xl md:text-3xl font-heading-bold text-primary"><CountUp end={2500} suffix="+" /></div><div className="text-xs text-muted-foreground font-body">Happy Clients</div></div>
               <div><div className="text-2xl md:text-3xl font-heading-bold text-primary"><CountUp end={15} suffix="+" /></div><div className="text-xs text-muted-foreground font-body">Years Experience</div></div>
-              <div><div className="text-2xl md:text-3xl font-heading-bold text-primary"><CountUp end={98} suffix="%" /></div><div className="text-xs text-muted-foreground font-body">Satisfaction</div></div>
+              <div><div className="text-2xl md:text-3xl font-heading-bold text-primary"><CountUp end={75} suffix="+" /></div><div className="text-xs text-muted-foreground font-body">Brisbane Suburbs</div></div>
+              <div><div className="text-2xl md:text-3xl font-heading-bold text-primary"><CountUp end={6} suffix="+" /></div><div className="text-xs text-muted-foreground font-body">Cleaning Services</div></div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/quote"><Button size="lg" className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-base">Get Your Free Quote</Button></Link>
@@ -157,12 +157,12 @@ export default async function AboutPage() {
           </FadeIn>
           <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {[
-              { icon: Star, title: "15+ Years Experience", description: "Over a decade of expertise in fabric cleaning across Brisbane" },
-              { icon: Shield, title: "Fully Insured", description: "Complete peace of mind with comprehensive insurance coverage" },
+              { icon: Star, title: "15+ Years Experience", description: "Over a decade of experience in fabric cleaning across Brisbane" },
+              { icon: Shield, title: "Transparent Pricing", description: "Honest quotes with no hidden fees" },
               { icon: Clock, title: "7 Days Service", description: "Flexible scheduling including weekends" },
-              { icon: CheckCircle2, title: "Satisfaction Guaranteed", description: "We're not happy until you're thrilled with the results" },
+              { icon: CheckCircle2, title: "Thorough Inspections", description: "Post-job inspection on every service" },
               { icon: Sparkles, title: "Eco-Friendly", description: "Safe, non-toxic cleaning solutions for your family" },
-              { icon: Users, title: "Expert Team", description: "Highly trained professionals dedicated to quality" },
+              { icon: Users, title: "Local Team", description: "Locally owned Brisbane business dedicated to quality" },
             ].map((reason, index) => (
               <StaggerItem key={index}>
                 <div className="text-center p-5 rounded-xl bg-primary-foreground/5 hover:bg-primary-foreground/10 transition-colors h-full">

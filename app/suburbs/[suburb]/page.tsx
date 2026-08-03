@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `Fabric & Carpet Cleaning in ${row.name} | Fair & Fresh Cleaning`;
   const description =
     row.metaDescription ??
-    `Professional fabric, carpet, mattress, rug and upholstery cleaning in ${row.name}, ${regionLabel}. Fair pricing, fresh results, guaranteed.`;
+    `Professional fabric, carpet, mattress, rug and upholstery cleaning in ${row.name}, ${regionLabel}. Fair pricing, thorough results.`;
 
   return {
     title,
@@ -124,7 +124,7 @@ export default async function SuburbPage({ params }: PageProps) {
 
   const intro =
     pickByHash(introBlocks, `${salt}:intro`, 1)[0] ??
-    `Professional fabric cleaning in ${row.name} — fair pricing, fresh results, and a 100% satisfaction guarantee on every job.`;
+    `Professional fabric cleaning in ${row.name} — fair pricing, fresh results, thorough inspections on every job.`;
   const localDetail = pickByHash(localDetailBlocks, `${salt}:local`, 1)[0] ?? null;
 
   // Pair each FAQ question with its matching answer by index (seed data must insert
@@ -266,7 +266,7 @@ export default async function SuburbPage({ params }: PageProps) {
               </div>
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-6 text-xs text-muted-foreground font-body">
                 <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-primary" /> Satisfaction Guarantee
+                  <ShieldCheck className="w-4 h-4 text-primary" /> Upfront Pricing
                 </span>
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-primary" /> Eco-Friendly Products
