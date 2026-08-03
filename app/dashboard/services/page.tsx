@@ -58,7 +58,7 @@ export default function ServicesPage() {
   const [whatsIncludedList, setWhatsIncludedList] = useState<{ title: string; description: string }[]>([]);
   const [benefitsList, setBenefitsList] = useState<{ title: string; description: string }[]>([]);
   const [testimonialsList, setTestimonialsList] = useState<{ author: string; content: string; rating: number }[]>([]);
-  const [serviceTypesList, setServiceTypesList] = useState<{ title: string; description: string }[]>([]);
+  const [serviceTypesList, setServiceTypesList] = useState<{ title: string }[]>([]);
 
   // Form Fields - Images
   const [imagesList, setImagesList] = useState<string[]>([]);
@@ -214,7 +214,6 @@ export default function ServicesPage() {
     setServiceTypesList(
       (srv.service_types || []).map((item) => ({
         title: item.title,
-        description: item.description || '',
       }))
     );
     
@@ -314,16 +313,16 @@ export default function ServicesPage() {
   };
 
   const addServiceType = () => {
-    setServiceTypesList((prev) => [...prev, { title: '', description: '' }]);
+    setServiceTypesList((prev) => [...prev, { title: '' }]);
   };
 
   const removeServiceType = (idx: number) => {
     setServiceTypesList((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  const updateServiceType = (idx: number, key: 'title' | 'description', val: string) => {
+  const updateServiceType = (idx: number, val: string) => {
     setServiceTypesList((prev) =>
-      prev.map((item, i) => (i === idx ? { ...item, [key]: val } : item))
+      prev.map((item, i) => (i === idx ? { ...item, title: val } : item))
     );
   };
 
@@ -915,15 +914,8 @@ export default function ServicesPage() {
                             required
                             placeholder="Type Title"
                             value={item.title}
-                            onChange={(e) => updateServiceType(idx, 'title', e.target.value)}
+                            onChange={(e) => updateServiceType(idx, e.target.value)}
                             className="flex-1 rounded-md border border-[#E5E7EB] bg-white px-2.5 py-1 text-xs text-[#111827]"
-                          />
-                          <input
-                            type="text"
-                            placeholder="Description (optional)"
-                            value={item.description}
-                            onChange={(e) => updateServiceType(idx, 'description', e.target.value)}
-                            className="flex-2 rounded-md border border-[#E5E7EB] bg-white px-2.5 py-1 text-xs text-[#111827]"
                           />
                           <button
                             type="button"
