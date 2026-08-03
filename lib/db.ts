@@ -83,6 +83,7 @@ export async function seedDatabase() {
       { id: 'sc-site-facebook', key: 'site_facebook', value: '#', label: 'Facebook URL', group: 'site_settings', type: 'text' },
       { id: 'sc-site-instagram', key: 'site_instagram', value: '#', label: 'Instagram URL', group: 'site_settings', type: 'text' },
       { id: 'sc-site-twitter', key: 'site_twitter', value: '#', label: 'Twitter URL', group: 'site_settings', type: 'text' },
+      { id: 'sc-site-youtube', key: 'site_youtube', value: '#', label: 'YouTube URL', group: 'site_settings', type: 'text' },
       { id: 'sc-site-logo', key: 'site_logo', value: '/fair-fresh-logo.svg', label: 'Site Logo', group: 'site_settings', type: 'image' },
       { id: 'sc-wh-start', key: 'working_hours_start', value: '07:00', label: 'Working Hours Start', group: 'site_settings', type: 'text' },
       { id: 'sc-wh-end', key: 'working_hours_end', value: '19:00', label: 'Working Hours End', group: 'site_settings', type: 'text' },

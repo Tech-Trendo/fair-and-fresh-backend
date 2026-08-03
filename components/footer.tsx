@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FadeIn } from "@/components/motion-wrapper";
 
 const fallbackServices = [
@@ -22,13 +22,13 @@ export function Footer() {
   const [serviceAreas, setServiceAreas] = useState<
     { region: string; label: string; suburbs: { id: number; name: string; slug: string }[] }[]
   >([]);
-  const [settings, setSettings] = useState({
+    const [settings, setSettings] = useState({
     phone: "0430 799 567",
     email: "support@fairandfreshcleaning.com.au",
     address: "Brisbane and Surrounding Areas",
     facebook: "#",
     instagram: "#",
-    twitter: "#",
+    youtube: "#",
     businessHours: "Monday - Sunday: 7AM - 7PM",
     aboutText: "Brisbane's trusted fabric cleaning specialists. Fair pricing, fresh results.",
     copyrightText: "All rights reserved.",
@@ -51,7 +51,7 @@ export function Footer() {
             address: map.site_address || prev.address,
             facebook: map.site_facebook || prev.facebook,
             instagram: map.site_instagram || prev.instagram,
-            twitter: map.site_twitter || prev.twitter,
+            youtube: map.site_youtube || prev.youtube,
             businessHours: map.site_business_hours || prev.businessHours,
             logoUrl: map.site_logo || prev.logoUrl,
           }));
@@ -129,8 +129,8 @@ export function Footer() {
               <a href={settings.instagram} aria-label="Instagram" className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <FaInstagram size={16} />
               </a>
-              <a href={settings.twitter} aria-label="Twitter" className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors">
-                <FaTwitter size={16} />
+              <a href={settings.youtube} aria-label="YouTube" className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+                <FaYoutube size={16} />
               </a>
             </div>
           </FadeIn>

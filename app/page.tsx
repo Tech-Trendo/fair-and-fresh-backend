@@ -5,6 +5,7 @@ import { Services } from "@/components/services";
 import { Reviews } from "@/components/reviews";
 import { AboutPreview } from "@/components/about-preview";
 import { CtaSection } from "@/components/cta-section";
+import { ServiceAreaMap } from "@/components/service-area-map";
 import { Footer } from "@/components/footer";
 import { db } from "@/lib/db";
 import { staticPages, beforeAfterImages } from "@/lib/schema";
@@ -147,6 +148,7 @@ export default async function Home() {
         <Reviews reviews={testimonialsList} />
       )}
       <CtaSection />
+      <ServiceAreaMap />
       <Footer />
     </main>
   );
