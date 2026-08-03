@@ -14,7 +14,7 @@ interface Service {
   whats_included?: { id: string; title: string; description?: string }[];
   benefits?: { id: string; title: string; description?: string }[];
   images?: { id: string; image_url: string }[];
-  testimonials?: { id: string; author: string; content: string; rating: number }[];
+  testimonials?: { id: string; author: string; content: string; rating: number; name?: string; comment?: string }[];
   service_types?: { id: string; title: string; description?: string }[];
   slug: string;
   icon?: string;
@@ -205,8 +205,8 @@ export default function ServicesPage() {
     );
     setTestimonialsList(
       (srv.testimonials || []).map((item) => ({
-        author: item.author,
-        content: item.content,
+        author: item.author ?? item.name ?? '',
+        content: item.content ?? item.comment ?? '',
         rating: item.rating,
       }))
     );
@@ -351,11 +351,11 @@ export default function ServicesPage() {
       long_description: longDescription,
       what_we_offer: parsedOffer,
       icon,
-      whats_included: whatsIncludedList.filter(item => item.title.trim()),
-      benefits: benefitsList.filter(item => item.title.trim()),
+      whats_included: whatsIncludedList.filter(item => item && item.title && item.title.trim()),
+      benefits: benefitsList.filter(item => item && item.title && item.title.trim()),
       images: imagesList,
-      testimonials: testimonialsList.filter(item => item.author.trim()),
-      service_types: serviceTypesList.filter(item => item.title.trim()),
+      testimonials: testimonialsList.filter(item => item && item.author && item.author.trim()),
+      service_types: serviceTypesList.filter(item => item && item.title && item.title.trim()),
       slug: slug || null,
       sort_order: sortOrder,
       meta_title: metaTitle,

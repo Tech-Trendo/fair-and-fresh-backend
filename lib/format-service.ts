@@ -58,9 +58,11 @@ interface FormattableService {
   testimonials?: {
     id?: string;
     serviceId?: string;
+    author?: string;
+    content?: string;
     name?: string;
+    comment?: string;
     rating?: number | null;
-    comment?: string | null;
     image?: string | null;
     role?: string | null;
   }[];
@@ -121,15 +123,22 @@ export function formatService(srv: FormattableService | null | undefined) {
       service_id: item.serviceId,
       image_url: item.imageUrl
     })),
-    testimonials: (srv.testimonials || []).map((item) => ({
-      id: item.id,
-      service_id: item.serviceId,
-      name: item.name,
-      rating: item.rating,
-      comment: item.comment,
-      image: item.image,
-      role: item.role
-    })),
+    testimonials: (srv.testimonials || []).map((item) => {
+      const author = item.author ?? item.name ?? '';
+      const content = item.content ?? item.comment ?? '';
+      return {
+        id: item.id,
+        service_id: item.serviceId,
+        author,
+        content,
+        // Legacy aliases kept for any consumers still reading name/comment
+        name: author,
+        comment: content,
+        rating: item.rating,
+        image: item.image,
+        role: item.role
+      };
+    }),
     categories: resolvedCategories.map((c) => ({
       id: c.id,
       name: c.name,
