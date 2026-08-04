@@ -1,17 +1,32 @@
-import { buildStaticMapUrl, type MapSuburb } from "@/lib/geoapify";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 
-const BRISBANE: MapSuburb = {
+// Brisbane CBD (Geoapify format: lat, lng).
+const BRISBANE = {
   lat: -27.4698,
   lng: 153.0251,
-  name: "Brisbane",
-  region: "queensland",
 };
 
+// Bounding box covering greater Brisbane so the map shows the whole service area.
+const MIN_LON = 152.9;
+const MIN_LAT = -27.62;
+const MAX_LON = 153.15;
+const MAX_LAT = -27.32;
+
+// Key-free OpenStreetMap embed — guaranteed to render on any deployment
+// (no GEOAPIFY_API_KEY required), centered on Brisbane with a marker.
+function buildOsmEmbedUrl() {
+  const params = new URLSearchParams({
+    // Order is minlon,minlat,maxlon,maxlat (URLSearchParams encodes the commas).
+    bbox: `${MIN_LON},${MIN_LAT},${MAX_LON},${MAX_LAT}`,
+    layer: "mapnik",
+    marker: `${BRISBANE.lat},${BRISBANE.lng}`,
+  });
+  return `https://www.openstreetmap.org/export/embed.html?${params.toString()}`;
+}
+
 export function ServiceAreaMap() {
-  const src = buildStaticMapUrl(BRISBANE);
-  if (!src) return null;
+  const src = buildOsmEmbedUrl();
 
   return (
     <section id="service-areas" className="py-16 md:py-24 bg-secondary/30">
@@ -32,15 +47,17 @@ export function ServiceAreaMap() {
 
         {/* Map */}
         <div className="max-w-5xl mx-auto">
-          {/* eslint-disable-next-line @next/next/no-img-element -- server-rendered static map image; keeps the page light (no client map lib) */}
-          <img
-            src={src}
-            alt="Service area map of Brisbane and surrounding suburbs"
-            loading="lazy"
-            width={640}
-            height={400}
-            className="rounded-xl shadow-md border border-border w-full h-auto"
-          />
+          <div className="rounded-xl shadow-md border border-border overflow-hidden bg-white">
+            <iframe
+              src={src}
+              title="Service area map of Brisbane and surrounding suburbs"
+              loading="lazy"
+              width="100%"
+              height="400"
+              style={{ border: 0, display: "block" }}
+              allowFullScreen
+            />
+          </div>
           <div className="mt-8 text-center">
             <p className="text-sm text-muted-foreground font-body mb-4">
               We cover all of Brisbane&apos;s major suburbs — from the CBD to the North and South sides.
