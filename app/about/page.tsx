@@ -51,6 +51,22 @@ export default async function AboutPage() {
   const siteEmail = settings.site_email || "support@fairandfreshcleaning.com.au";
   const section1Paragraphs = section1Desc.split('\n\n').filter(Boolean);
 
+  // Fetch all services dynamically (same source as the API) with their first image
+  const dbServices = await db.query.services.findMany({
+    with: {
+      images: {
+        limit: 1,
+      },
+    },
+    orderBy: (services, { asc }) => [asc(services.sortOrder), asc(services.name)],
+  });
+
+  const expertiseServices = dbServices.map((s) => ({
+    title: s.name,
+    slug: s.slug,
+    image: s.images[0]?.imageUrl || "/placeholder.svg",
+  }));
+
   return (
     <main className="min-h-screen bg-background">
       <Header />
@@ -177,6 +193,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Expertise Grid */}
+      {expertiseServices.length > 0 && (
       <section className="py-16 md:py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-10">
@@ -184,18 +201,8 @@ export default async function AboutPage() {
             <h2 className="text-2xl md:text-3xl font-heading-bold text-foreground mb-2">Comprehensive Fabric Care</h2>
           </FadeIn>
           <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 max-w-6xl mx-auto">
-            {[
-              { title: "Carpet Cleaning", image: "/professional-carpet-cleaning.png" },
-              { title: "Bond Cleaning", image: "/bond-cleaning-hero-image.png" },
-              { title: "Mattress Cleaning", image: "/mattress-deep-cleaning-service.jpg" },
-              { title: "Lawn Mowing", image: "/lawn-mowing-hero-image.jpg" },
-              { title: "Rugs Cleaning", image: "/professional-rug-cleaning-service.jpg" },
-              { title: "Upholstery Cleaning", image: "/upholstery-cleaning-photo.jpg" },
-              { title: "Curtain Cleaning", image: "/curtain-cleaning-photo.jpg" },
-              { title: "Car Detailing", image: "/car-detailing-hero-image.jpg" },
-              { title: "Flood Damage Restoration", image: "/flood-damage-restoration-water-extraction-emergenc.jpg" },
-            ].map((service, index) => (
-              <StaggerItem key={index}>
+            {expertiseServices.map((service, index) => (
+              <StaggerItem key={`${service.slug}-${index}`}>
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-border group h-full">
                   <div className="relative w-full h-[200px] overflow-hidden">
                     <Image src={service.image} alt={service.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw" className="object-cover" />
@@ -208,6 +215,7 @@ export default async function AboutPage() {
           </StaggerContainer>
         </div>
       </section>
+      )}
 
       {/* CTA */}
       <section className="py-16 md:py-20 bg-white">
