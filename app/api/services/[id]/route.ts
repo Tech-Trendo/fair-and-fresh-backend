@@ -4,6 +4,14 @@ import { services, whatsIncluded, benefits, serviceTypes, serviceImages, testimo
 import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
 import { formatService } from '@/lib/format-service';
+import { del } from '@vercel/blob';
+
+const deleteBlobFiles = async (urls: string[]) =>
+  Promise.allSettled(
+    urls
+      .filter((url) => url.includes('blob.vercel-storage.com'))
+      .map((url) => del(url))
+  );
 
 export async function GET(
   request: NextRequest,
@@ -162,16 +170,33 @@ export async function PUT(
       await db.insert(serviceTypes).values(values);
     }
 
-    // 4. Sync images (clear and recreate)
+    // 4. Sync images (clear and recreate). Removed images are deleted from blob
+    //    ONLY here (i.e. when save is clicked) — cancelling the edit form leaves
+    //    the stored files untouched.
+    const existingImageRows = await db
+      .select({ imageUrl: serviceImages.imageUrl })
+      .from(serviceImages)
+      .where(eq(serviceImages.serviceId, id));
+
+    const nextImageUrls = (Array.isArray(imagesInput) ? imagesInput : []).map((item) =>
+      typeof item === 'string' ? item : item.image_url
+    );
+
     await db.delete(serviceImages).where(eq(serviceImages.serviceId, id));
-    if (Array.isArray(imagesInput) && imagesInput.length > 0) {
-      const values = imagesInput.map((item, idx) => ({
+    if (nextImageUrls.length > 0) {
+      const values = nextImageUrls.map((imageUrl, idx) => ({
         id: `img-${Date.now()}-${idx}`,
         serviceId: id,
-        imageUrl: typeof item === 'string' ? item : item.image_url
+        imageUrl,
       }));
       await db.insert(serviceImages).values(values);
     }
+
+    await deleteBlobFiles(
+      existingImageRows
+        .map((r) => r.imageUrl)
+        .filter((url) => !nextImageUrls.includes(url))
+    );
 
     // 5. Sync testimonials (clear and recreate)
     await db.delete(testimonials).where(eq(testimonials.serviceId, id));
@@ -398,6 +423,15 @@ export async function DELETE(
     if (check.length === 0) {
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
     }
+
+    // Remove the service's blob files first (so they are deleted even though
+    // cascade deletes the service_images rows).
+    const imageRows = await db
+      .select({ imageUrl: serviceImages.imageUrl })
+      .from(serviceImages)
+      .where(eq(serviceImages.serviceId, id));
+    const removedUrls = imageRows.map((r) => r.imageUrl);
+    await deleteBlobFiles(removedUrls);
 
     await db.delete(services).where(eq(services.id, id));
     // Drizzle onDelete: 'cascade' automatically cleans up whatsIncluded, benefits, serviceImages, and testimonials!

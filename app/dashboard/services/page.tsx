@@ -323,6 +323,9 @@ export default function ServicesPage() {
   };
 
   const removeImage = (idx: number) => {
+    // Only removed from the form here — the blob file is deleted server-side
+    // when the user clicks Save (PUT /api/services/:id), so cancelling the
+    // modal leaves the stored image untouched.
     setImagesList((prev) => prev.filter((_, i) => i !== idx));
   };
 
@@ -1059,7 +1062,7 @@ export default function ServicesPage() {
                     </div>
                   </div>
 
-                  <p className="text-[10px] text-[#9CA3AF]">Images are uploaded when you click Save/Create — nothing is stored until then.</p>
+                  <p className="text-[10px] text-[#9CA3AF]">Images are uploaded when you click Save/Create — nothing is stored until then. Removed gallery images are deleted from storage on Save; cancelling keeps them.</p>
 
                   <div className="grid grid-cols-4 gap-3 mt-2">
                     {imagesList.map((img, idx) => (
