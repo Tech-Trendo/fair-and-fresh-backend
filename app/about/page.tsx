@@ -81,7 +81,7 @@ export default async function AboutPage() {
           <div className="grid lg:grid-cols-2 gap-10 items-center max-w-6xl mx-auto">
             <SlideIn direction="left">
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-sm">
-                <Image src="/professional-carpet-cleaning.png" alt="Professional cleaning team at work" fill className="object-cover" />
+                <Image src="/professional-carpet-cleaning.png" alt="Professional cleaning team at work" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
               </div>
             </SlideIn>
             <SlideIn direction="left">
@@ -198,7 +198,7 @@ export default async function AboutPage() {
               <StaggerItem key={index}>
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-border group h-full">
                   <div className="relative w-full h-[200px] overflow-hidden">
-                    <Image src={service.image} alt={service.title} fill className="object-cover" />
+                    <Image src={service.image} alt={service.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw" className="object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4"><h3 className="text-sm font-heading-bold text-white">{service.title}</h3></div>
                   </div>

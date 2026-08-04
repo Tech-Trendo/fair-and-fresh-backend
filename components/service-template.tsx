@@ -192,7 +192,7 @@ export function ServiceTemplate({
             {galleryImages.map((image, index) => (
               <StaggerItem key={index}>
                 <div className="relative aspect-square rounded-xl overflow-hidden shadow-sm border border-border">
-                  <Image src={image.url || "/placeholder.svg"} alt={image.alt} fill className="object-cover" />
+                  <Image src={image.url || "/placeholder.svg"} alt={image.alt} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover" />
                   {image.url === "/placeholder.svg" && (
                     <div className="absolute inset-0 flex items-center justify-center bg-background"><p className="text-xs text-muted-foreground font-body">Image coming soon</p></div>
                   )}
