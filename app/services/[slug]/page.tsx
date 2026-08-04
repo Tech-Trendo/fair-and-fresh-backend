@@ -138,7 +138,7 @@ export default async function ServicePage({ params }: PageProps) {
   const comboSet = new Set(comboSlugs.map((c) => c.suburbSlug));
   const serviceAreas = activeSuburbs.map((s) => ({
     name: s.name,
-    href: comboSet.has(s.slug) ? `/services/${service.slug}/${s.slug}` : `/suburbs/${s.slug}`,
+    href: comboSet.has(s.slug) ? `/services/${service.slug}/${s.slug}` : `/${s.slug}`,
   }));
 
   return (

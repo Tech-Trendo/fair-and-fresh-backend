@@ -19,9 +19,9 @@ const areaSlugOverrides: Record<string, string> = {
 
 const getSuburbHref = (name: string): string | null => {
   if (name in areaSlugOverrides) {
-    return areaSlugOverrides[name] ? `/suburbs/${areaSlugOverrides[name]}` : null;
+    return areaSlugOverrides[name] ? `/${areaSlugOverrides[name]}` : null;
   }
-  return `/suburbs/${slugify(name)}`;
+  return `/${slugify(name)}`;
 };
 
 export default function BrisbanePage() {

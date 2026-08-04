@@ -207,7 +207,7 @@ export default async function CategoryPage({ params }: PageProps) {
                 {serviceSuburbs.map((s) => (
                   <Link
                     key={s.slug}
-                    href={`/suburbs/${s.slug}`}
+                    href={`/${s.slug}`}
                     className="inline-flex items-center gap-1.5 text-xs font-nav text-primary bg-accent-tint hover:bg-primary hover:text-primary-foreground transition-colors px-3.5 py-1.5 rounded-full"
                   >
                     <MapPin className="w-3 h-3" /> {s.name}

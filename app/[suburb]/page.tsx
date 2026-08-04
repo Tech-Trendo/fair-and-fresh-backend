@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
-    alternates: { canonical: `${SITE_URL}/suburbs/${row.slug}` },
+    alternates: { canonical: `${SITE_URL}/${row.slug}` },
     openGraph: {
       title,
       description,
@@ -486,7 +486,7 @@ export default async function SuburbPage({ params }: PageProps) {
                   {nearbyPick.map((n) => (
                     <Link
                       key={n.slug}
-                      href={`/suburbs/${n.slug}`}
+                      href={`/${n.slug}`}
                       className="inline-flex items-center gap-1.5 text-xs font-nav text-primary bg-accent-tint hover:bg-primary hover:text-primary-foreground transition-colors px-3.5 py-1.5 rounded-full"
                     >
                       <MapPin className="w-3 h-3" /> {n.name}

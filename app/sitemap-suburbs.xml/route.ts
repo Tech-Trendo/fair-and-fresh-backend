@@ -20,7 +20,7 @@ export async function GET() {
 
   const entries = activeSuburbs
     .map((s) => ({
-      url: `${BASE_URL}/suburbs/${s.slug}`,
+      url: `${BASE_URL}/${s.slug}`,
       lastModified: s.updatedAt ?? s.createdAt ?? new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.8,

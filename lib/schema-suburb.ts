@@ -18,7 +18,7 @@ export interface SuburbJsonLdInput {
 }
 
 export function buildSuburbJsonLd(input: SuburbJsonLdInput) {
-  const suburbUrl = `${SITE_URL}/suburbs/${input.slug}`;
+  const suburbUrl = `${SITE_URL}/${input.slug}`;
 
   const areaServed: Record<string, unknown> = { '@type': 'Place', name: input.name };
   if (input.lat && input.lng) {

@@ -242,7 +242,7 @@ export function Footer() {
                     {group.suburbs.slice(0, 10).map((s) => (
                       <Link
                         key={s.slug}
-                        href={`/suburbs/${s.slug}`}
+                        href={`/${s.slug}`}
                         className="text-xs text-muted-foreground hover:text-primary transition-colors font-body"
                       >
                         {s.name}
