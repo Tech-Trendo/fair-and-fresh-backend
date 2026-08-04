@@ -3,7 +3,7 @@ import { db, slugify } from '@/lib/db';
 import { staticPages } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
-import { formatPage } from '../route';
+import { formatPage } from '@/lib/format-page';
 
 export async function GET(
   request: NextRequest,

@@ -3,7 +3,7 @@ import { db, slugify } from '@/lib/db';
 import { blogCategories, serviceCategories } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
-import { formatCategory } from '../route';
+import { formatCategory } from '@/lib/format-category';
 
 export async function GET(
   request: NextRequest,

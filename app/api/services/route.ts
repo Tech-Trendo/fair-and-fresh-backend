@@ -6,6 +6,12 @@ import { paginate } from '@/lib/pagination';
 import { eq, sql } from 'drizzle-orm';
 import { formatService } from '@/lib/format-service';
 
+// Public catalog only changes via the admin dashboard, so cache at the CDN;
+// the dashboard re-fetches after every write, so 5 min staleness is a non-issue.
+const CACHE_HEADERS = {
+  'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+};
+
 export async function GET(request: NextRequest) {
   try {
     const servicesList = await db.query.services.findMany({
@@ -26,7 +32,7 @@ export async function GET(request: NextRequest) {
 
     const formattedServices = servicesList.map(formatService);
     const paginated = paginate(formattedServices, request.nextUrl);
-    return NextResponse.json(paginated, { status: 200 });
+    return NextResponse.json(paginated, { status: 200, headers: CACHE_HEADERS });
   } catch (error) {
     console.error('List services failed:', error);
     return NextResponse.json({ detail: 'Internal server error' }, { status: 500 });

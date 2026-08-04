@@ -3,6 +3,15 @@ import { db } from '@/lib/db';
 import { staticPages, services, blogs } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
+// Robots rules only change when an admin edits a page's SEO settings, so a short
+// in-memory TTL cache is safe and avoids a Postgres round-trip per request.
+const cache = new Map<string, { metaRobots: string; expiresAt: number }>();
+const CACHE_TTL_MS = 60_000;
+
+// Lets the CDN serve repeat crawler requests (identical ?path=) without hitting
+// the function or Postgres at all.
+const CACHE_HEADERS = { 'Cache-Control': 'public, max-age=60' };
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -12,6 +21,14 @@ export async function GET(request: NextRequest) {
     let cleanPath = path.trim();
     if (cleanPath.length > 1 && cleanPath.endsWith('/')) {
       cleanPath = cleanPath.slice(0, -1);
+    }
+
+    const cached = cache.get(cleanPath);
+    if (cached && cached.expiresAt > Date.now()) {
+      return NextResponse.json(
+        { metaRobots: cached.metaRobots },
+        { status: 200, headers: CACHE_HEADERS }
+      );
     }
 
     let metaRobots = '';
@@ -55,7 +72,8 @@ export async function GET(request: NextRequest) {
       metaRobots = blog?.metaRobots || '';
     }
 
-    return NextResponse.json({ metaRobots }, { status: 200 });
+    cache.set(cleanPath, { metaRobots, expiresAt: Date.now() + CACHE_TTL_MS });
+    return NextResponse.json({ metaRobots }, { status: 200, headers: CACHE_HEADERS });
   } catch (error) {
     console.error('Fetch robots-tag failed:', error);
     return NextResponse.json({ metaRobots: '' }, { status: 200 });

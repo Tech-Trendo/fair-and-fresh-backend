@@ -5,7 +5,7 @@ import { Footer } from "@/components/footer";
 import { Reviews, Review } from "@/components/reviews";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle, Phone, ArrowRight, Sparkles, MapPin, type LucideIcon } from "lucide-react";
+import { CheckCircle, Phone, ArrowRight, Sparkles, MapPin, Shield, Clock, Award, Star, type LucideIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem, CountUp } from "@/components/motion-wrapper";
@@ -58,10 +58,23 @@ interface ServiceTemplateProps {
   serviceAreas?: ServiceAreasLink[];
 }
 
-import * as lucideIcons from "lucide-react";
+// Curated icon lookup by name — replaces `import * as lucideIcons`, which pulled the
+// entire lucide-react icon set (~540 KB) into the client bundle and defeated tree-shaking.
+// Add entries here as new icon names are needed.
+const ICON_MAP: Record<string, LucideIcon> = {
+  Sparkles,
+  Shield,
+  Clock,
+  Award,
+  Star,
+  CheckCircle,
+  MapPin,
+  Phone,
+  ArrowRight,
+};
 
 const IconRenderer = ({ iconName, className }: { iconName: string; className?: string }) => {
-  const Icon = (lucideIcons as unknown as Record<string, LucideIcon>)[iconName] || lucideIcons.Sparkles;
+  const Icon = ICON_MAP[iconName] || Sparkles;
   return <Icon className={className} />;
 };
 

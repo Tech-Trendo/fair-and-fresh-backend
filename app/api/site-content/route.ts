@@ -5,6 +5,12 @@ import { getAdminUser } from '@/lib/jwt';
 import { eq, asc } from 'drizzle-orm';
 import crypto from 'crypto';
 
+// Content only changes through the admin dashboard, so a short CDN + browser
+// cache is safe and makes the header/footer/hero calls near-instant.
+const CACHE_HEADERS = {
+  'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+};
+
 // GET /api/site-content - Get all site content (public, no auth needed for GET)
 export async function GET(request: NextRequest) {
   try {
@@ -21,7 +27,7 @@ export async function GET(request: NextRequest) {
       if (!item.length) {
         return NextResponse.json({ error: 'Not found' }, { status: 404 });
       }
-      return NextResponse.json(item[0]);
+      return NextResponse.json(item[0], { headers: CACHE_HEADERS });
     }
 
     let query = db.select().from(siteContent).orderBy(asc(siteContent.group), asc(siteContent.key));
@@ -32,11 +38,11 @@ export async function GET(request: NextRequest) {
         .from(siteContent)
         .where(eq(siteContent.group, group))
         .orderBy(asc(siteContent.key));
-      return NextResponse.json({ results: items });
+      return NextResponse.json({ results: items }, { headers: CACHE_HEADERS });
     }
 
     const items = await query;
-    return NextResponse.json({ results: items });
+    return NextResponse.json({ results: items }, { headers: CACHE_HEADERS });
   } catch (error) {
     console.error('Error fetching site content:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
