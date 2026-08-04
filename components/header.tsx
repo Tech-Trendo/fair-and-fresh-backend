@@ -27,6 +27,18 @@ export function Header() {
   const [phone, setPhone] = useState("0430 799 567");
   const [logoUrl, setLogoUrl] = useState("/fair-fresh-logo.svg");
 
+  const fetchAllServices = async (): Promise<any[]> => {
+    const all: any[] = [];
+    let url: string | null = "/api/services?page_size=100";
+    while (url) {
+      const res: Response = await fetch(url);
+      const data: { results?: any[]; next?: string | null } = await res.json();
+      if (data && Array.isArray(data.results)) all.push(...data.results);
+      url = data.next || null;
+    }
+    return all;
+  };
+
   useEffect(() => {
     let active = true;
     fetch("/api/site-content?group=site_settings")
@@ -41,11 +53,10 @@ export function Header() {
       })
       .catch(() => {});
 
-    fetch("/api/services")
-      .then((res) => res.json())
-      .then((data) => {
-        if (active && data && Array.isArray(data.results)) {
-          const mapped = data.results.map((srv: any) => ({
+    fetchAllServices()
+      .then((all) => {
+        if (active && Array.isArray(all)) {
+          const mapped = all.map((srv: any) => ({
             name: srv.name,
             href: `/services/${srv.slug}`,
           }));
@@ -104,7 +115,7 @@ export function Header() {
                     transition={{ duration: 0.15 }}
                   >
                     <div className="bg-white shadow-lg rounded-xl border border-border overflow-hidden">
-                      <div className="py-1">
+                      <div className="py-1 max-h-80 overflow-y-auto pl-1 pr-2">
                         {menuItems.map((service) => (
                           <Link
                             key={service.name}
@@ -185,16 +196,18 @@ export function Header() {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.15 }}
                       >
-                        {menuItems.map((service) => (
-                          <Link
-                            key={service.name}
-                            href={service.href}
-                            className="block py-1.5 text-sm text-muted-foreground hover:text-primary transition-colors font-body"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            {service.name}
-                          </Link>
-                        ))}
+                        <div className="max-h-64 overflow-y-auto pr-1">
+                          {menuItems.map((service) => (
+                            <Link
+                              key={service.name}
+                              href={service.href}
+                              className="block py-1.5 text-sm text-muted-foreground hover:text-primary transition-colors font-body"
+                              onClick={() => setIsMenuOpen(false)}
+                            >
+                              {service.name}
+                            </Link>
+                          ))}
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>

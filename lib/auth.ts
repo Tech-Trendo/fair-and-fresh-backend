@@ -39,14 +39,19 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  let response = await fetch(url, { ...options, headers });
+  // Admin must always read fresh data after writes: GET endpoints like
+  // /api/services send Cache-Control: public which would otherwise serve a
+  // stale copy (up to 5 min) to the browser, hiding recent changes.
+  const fetchOptions: RequestInit = { ...options, headers, cache: 'no-store' };
+
+  let response = await fetch(url, fetchOptions);
 
   if (response.status === 401 && getRefreshToken()) {
     const refreshed = await tryRefreshToken();
     if (refreshed) {
       token = getAccessToken();
       headers.set('Authorization', `Bearer ${token}`);
-      response = await fetch(url, { ...options, headers });
+      response = await fetch(url, fetchOptions);
     } else {
       clearTokens();
       if (typeof window !== 'undefined') {

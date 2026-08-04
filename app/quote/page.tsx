@@ -13,6 +13,18 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
+const fetchAllServices = async (): Promise<any[]> => {
+  const all: any[] = [];
+  let url: string | null = "/api/services?page_size=100";
+  while (url) {
+    const res: Response = await fetch(url);
+    const data: { results?: any[]; next?: string | null } = await res.json();
+    if (data && Array.isArray(data.results)) all.push(...data.results);
+    url = data.next || null;
+  }
+  return all;
+};
+
 const getIcon = (slug: string) => {
   const s = slug.toLowerCase();
   if (s.includes("bond")) return "🏠";
@@ -172,7 +184,7 @@ export default function QuotePage() {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/services").then((res) => res.json()).then((data) => { if (active && data && Array.isArray(data.results)) setActiveServices(data.results.map((srv: any) => ({ id: srv.id, name: srv.name, icon: getIcon(srv.slug) }))); }).catch(() => {});
+    fetchAllServices().then((list) => { if (active && list.length > 0) setActiveServices(list.map((srv: any) => ({ id: srv.id, name: srv.name, icon: getIcon(srv.slug) }))); }).catch(() => {});
     fetch("/api/availability").then((res) => res.json()).then((data) => { if (active && data && Array.isArray(data.results)) { setClosedDates(data.results.filter((i: any) => i.type === 'closed_date' && i.date).map((i: any) => i.date)); setUnavailableSlots(data.results.filter((i: any) => i.type === 'unavailable_slot' && i.date).map((i: any) => ({ date: i.date, startTime: i.startTime }))); } }).catch(() => {});
     fetch("/api/site-content?group=site_settings").then((res) => res.json()).then((data) => { if (active && data && Array.isArray(data.results)) { const start = data.results.find((s: any) => s.key === 'working_hours_start'); const end = data.results.find((s: any) => s.key === 'working_hours_end'); if (start) setWorkingStart(start.value); if (end) setWorkingEnd(end.value); } }).catch(() => {});
     return () => { active = false; };
