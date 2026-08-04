@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -11,6 +11,14 @@ export interface SliderImage {
 
 export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
   const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!images || images.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrent((c) => (c === images.length - 1 ? 0 : c + 1));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [images]);
 
   if (!images || images.length === 0) return null;
 
