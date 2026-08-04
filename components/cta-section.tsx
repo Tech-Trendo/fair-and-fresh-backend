@@ -10,7 +10,7 @@ import {
   type Variants,
 } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Phone, ArrowRight, Star, Clock, ShieldCheck, Sparkles } from "lucide-react";
+import { Phone, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const headingWords = "Ready for Fresh, Clean Fabrics?".split(" ");
@@ -39,12 +39,6 @@ const bubbles = [
   { left: "84%", top: "62%", size: 66, duration: 9.5, delay: 1.2 },
   { left: "92%", top: "16%", size: 30, duration: 6.5, delay: 0.6 },
   { left: "58%", top: "8%", size: 24, duration: 8.5, delay: 2.6 },
-];
-
-const trustItems = [
-  { icon: Star, label: "4.9/5 Google Rating" },
-  { icon: Clock, label: "Same-Day Service" },
-  { icon: ShieldCheck, label: "Satisfaction Guaranteed" },
 ];
 
 export function CtaSection() {
@@ -119,8 +113,7 @@ export function CtaSection() {
               viewport={{ once: true, amount: 0.4 }}
               transition={{ duration: 0.5 }}
             >
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-nav tracking-wide text-white/90 backdrop-blur">
-                <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+              <span className="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-nav tracking-wide text-white/90 backdrop-blur">
                 Brisbane&apos;s Trusted Fabric Cleaning Specialists
               </span>
             </motion.div>
@@ -191,25 +184,6 @@ export function CtaSection() {
               </a>
             </motion.div>
 
-            {/* Trust badges */}
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.5, delay: 0.75 }}
-              className="mt-10 flex flex-wrap justify-center gap-3"
-            >
-              {trustItems.map((item) => (
-                <motion.span
-                  key={item.label}
-                  whileHover={{ y: -3 }}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-nav text-white/85 backdrop-blur"
-                >
-                  <item.icon className="h-3.5 w-3.5 text-amber-300" />
-                  {item.label}
-                </motion.span>
-              ))}
-            </motion.div>
           </div>
         </div>
       </div>

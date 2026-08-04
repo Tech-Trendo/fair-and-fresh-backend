@@ -110,12 +110,6 @@ export default async function Home() {
       { value: Number(homeContent.home_about_clients_value) || 75, suffix: '+', label: homeContent.home_about_clients_label || 'Brisbane Suburbs' },
       { value: Number(homeContent.home_about_satisfaction_value) || 6, suffix: '+', label: homeContent.home_about_satisfaction_label || 'Cleaning Services' },
     ],
-    features: [
-      { title: homeContent.home_about_feature_1_title || 'Transparent Pricing', description: homeContent.home_about_feature_1_desc || 'Honest quotes, no hidden fees' },
-      { title: homeContent.home_about_feature_2_title || 'Experienced Team', description: homeContent.home_about_feature_2_desc || 'Trained and careful technicians' },
-      { title: homeContent.home_about_feature_3_title || 'Locally Owned', description: homeContent.home_about_feature_3_desc || 'Brisbane family business' },
-      { title: homeContent.home_about_feature_4_title || 'Thorough Inspections', description: homeContent.home_about_feature_4_desc || 'Post-job inspection on every service' },
-    ],
   };
 
   return (
@@ -131,7 +125,6 @@ export default async function Home() {
         heading={aboutSection.heading}
         description={aboutSection.description}
         stats={aboutSection.stats}
-        features={aboutSection.features}
         ctaText={aboutSection.ctaText}
       />
       {testimonialsList.length > 0 && (
