@@ -159,7 +159,7 @@ return (
                 key={slot}
                 type="button"
                 onClick={() => onTimeChange(slot)}
-                className={`px-3 py-2 text-xs font-body rounded-lg border transition-all ${time === slot ? "bg-primary text-primary-foreground border-primary shadow-sm" : "border-border bg-white hover:border-primary/50 hover:bg-primary/[0.03]"}`}
+                className={`px-3 py-3.5 text-xs font-body rounded-lg border transition-all ${time === slot ? "bg-primary text-primary-foreground border-primary shadow-sm" : "border-border bg-white hover:border-primary/50 hover:bg-primary/[0.03]"}`}
               >
                 {slot}
               </button>
