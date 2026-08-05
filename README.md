@@ -1,37 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# fair-and-fresh-backend
+
+Backend for **Fair and Fresh** — a professional cleaning services marketplace. Built with **Next.js 16 (App Router)**, **Drizzle ORM**, **Neon PostgreSQL**, **Vercel Blob**, and **Vercel Speed Insights**.
+
+## Features
+
+- **Service catalog** with categories, pricing, and suburb-based availability
+- **Blog** with SEO metadata, categories, and rich content
+- **Quote/booking** system with contact forms and suburb-specific pricing
+- **Admin dashboard** for managing services, blog posts, categories, pages, and suburbs
+- **Static map rendering** via Geoapify for service-area visuals
+- **File uploads** via Vercel Blob
+- **SEO** — dynamic sitemaps, robots.txt, and per-page metadata
+- **Authentication** — JWT-based admin auth with token refresh
+- **Crawler optimization** — proxy middleware that serves `X-Robots-Tag` headers only to known bots, avoiding internal API round-trips for regular visitors
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Database | Neon PostgreSQL (serverless) |
+| ORM | Drizzle ORM |
+| Migrations | Drizzle Kit |
+| Storage | Vercel Blob |
+| Analytics | Vercel Analytics + Speed Insights |
+| Maps | Geoapify Static Maps API |
+| Styling | Tailwind CSS v4 |
+| UI | Radix UI primitives + custom components |
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20+
+- npm
+- A Neon PostgreSQL database (or compatible PostgreSQL)
+- A Geoapify API key (free tier: 3,000 requests/day)
+- A Vercel Blob store
+
+### Setup
+
+1. Clone the repository and install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy the example environment file and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+3. Run database migrations and seed data:
+
+```bash
+npm run build
+```
+
+The build pipeline runs Drizzle migrations, seeds the database, and then builds the Next.js app.
+
+4. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/                    # Next.js App Router pages and API routes
+  api/                  # API endpoints (blog, services, suburbs, contact, quote, etc.)
+  dashboard/            # Admin dashboard pages
+  blog/                 # Blog pages
+  services/             # Service listing pages
+  [suburb]/             # Dynamic suburb pages
+  quote/                # Quote/booking page
+  contact/              # Contact page
+  login/                # Admin login page
+  sitemap.xml/          # Dynamic sitemap generator
 
-## Learn More
+components/             # React components (UI primitives + page sections)
+  ui/                   # Reusable UI components (button, card, dialog, etc.)
+  header.tsx            # Site header
+  footer.tsx            # Site footer
+  hero.tsx              # Hero section
+  service-template.tsx  # Service detail page template
+  contact-form.tsx      # Contact form component
+  before-after-slider.tsx # Before/after image slider
 
-To learn more about Next.js, take a look at the following resources:
+lib/                    # Shared libraries
+  schema.ts             # Drizzle ORM table definitions
+  db.ts                 # Database connection and query helpers
+  auth.ts               # JWT authentication utilities
+  jwt.ts                # Token generation and verification
+  geoapify.ts           # Geoapify API helpers
+  suburb-pricing.ts     # Suburb-based pricing logic
+  site-content.ts       # Site-wide content fetchers
+  pagination.ts         # Pagination utilities
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+scripts/                # Build and data scripts
+  seed.ts               # Main seed script
+  seed-suburbs.ts       # Suburb data seeding
+  backfill-home-section.ts # Home page content backfill
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+public/                 # Static assets (images, SVGs, logos)
 
-## Deploy on Vercel
+drizzle/                # Drizzle migration SQL files
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# fair-and-fresh-backend
+See [`.env.example`](./.env.example) for the full list of required environment variables.
+
+## Deployment
+
+Deployed on **Vercel**. The build command runs migrations and seeding automatically:
+
+```bash
+npx drizzle-kit migrate && npx tsx scripts/seed.ts && next build
+```
+
+## License
+
+Private. All rights reserved.
+
