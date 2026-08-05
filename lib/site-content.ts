@@ -1,9 +1,11 @@
 import { db } from './db';
 import { siteContent } from './schema';
 import { eq } from 'drizzle-orm';
+import { cache } from 'react';
 
 // Server-side: get all content for a group
-export async function getContentGroup(group: string): Promise<Record<string, string>> {
+// Deduped per request so page + wrapper fetches of the same group hit the DB once.
+export const getContentGroup = cache(async (group: string): Promise<Record<string, string>> => {
   try {
     const items = await db
       .select()
@@ -19,7 +21,7 @@ export async function getContentGroup(group: string): Promise<Record<string, str
     console.error(`Error fetching content group "${group}":`, error);
     return {};
   }
-}
+});
 
 // Server-side: get a single content value by key
 export async function getContentValue(key: string): Promise<string | null> {

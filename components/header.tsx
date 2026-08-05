@@ -20,12 +20,14 @@ const servicesMenu = [
   { name: "Flood Damage Restoration", href: "/services/flood-damage-restoration" },
 ];
 
-export function Header() {
+export function Header({ logoUrl, phone }: { logoUrl?: string; phone?: string }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [menuItems, setMenuItems] = useState(servicesMenu);
-  const [phone, setPhone] = useState("0430 799 567");
-  const [logoUrl, setLogoUrl] = useState("/fair-fresh-logo.svg");
+  const [logo, setLogo] = useState(logoUrl || "/fair-fresh-logo.svg");
+  const [phoneNumber, setPhoneNumber] = useState(phone || "0430 799 567");
+
+  const hasServerProps = logoUrl !== undefined || phone !== undefined;
 
   const fetchAllServices = async (): Promise<any[]> => {
     const all: any[] = [];
@@ -41,17 +43,19 @@ export function Header() {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/site-content?group=site_settings")
-      .then((res) => res.json())
-      .then((data) => {
-        if (active && data && Array.isArray(data.results)) {
-          const phoneSetting = data.results.find((s: any) => s.key === "site_phone");
-          if (phoneSetting) setPhone(phoneSetting.value);
-          const logoSetting = data.results.find((s: any) => s.key === "site_logo");
-          if (logoSetting) setLogoUrl(logoSetting.value);
-        }
-      })
-      .catch(() => {});
+    if (!hasServerProps) {
+      fetch("/api/site-content?group=site_settings")
+        .then((res) => res.json())
+        .then((data) => {
+          if (active && data && Array.isArray(data.results)) {
+            const phoneSetting = data.results.find((s: any) => s.key === "site_phone");
+            if (phoneSetting) setPhoneNumber(phoneSetting.value);
+            const logoSetting = data.results.find((s: any) => s.key === "site_logo");
+            if (logoSetting) setLogo(logoSetting.value);
+          }
+        })
+        .catch(() => {});
+    }
 
     fetchAllServices()
       .then((all) => {
@@ -69,6 +73,7 @@ export function Header() {
     return () => {
       active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -79,7 +84,7 @@ export function Header() {
           <div className="flex items-center py-2">
             <Link href="/" className="flex items-center group">
               <Image
-                src={logoUrl}
+                src={logo}
                 alt="Cleaning Services"
                 width={360}
                 height={78}
@@ -154,7 +159,7 @@ export function Header() {
 
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
-            <a href={`tel:${phone.replace(/\s/g, '')}`} className="mr-3">
+            <a href={`tel:${phoneNumber.replace(/\s/g, '')}`} className="mr-3">
               <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
               </svg>
@@ -225,11 +230,12 @@ export function Header() {
                   Contact
                 </Link>
                 <div className="pt-2 space-y-2">
-                  <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center gap-2 text-primary font-nav text-sm">
+                  <a href={`tel:${phoneNumber.replace(/\s/g, '')}`} className="flex items-center gap-2 text-primary font-nav text-sm">
+                    
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                     </svg>
-                    {phone}
+                    {phoneNumber}
                   </a>
                   <Button asChild className="w-full bg-red-600 hover:bg-red-700 text-primary-foreground rounded-full font-nav">
                     <Link href="/quote" onClick={() => setIsMenuOpen(false)}>Get Free Quote</Link>

@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Header } from "@/components/header";
+﻿import type { Metadata } from "next";
+import { HeaderWrapper } from "@/components/header-wrapper";
 import { Footer } from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Clock, MessageSquare, FileText, ArrowRight, CheckCircle2, Shield, Award } from "lucide-react";
@@ -34,7 +34,7 @@ export default async function ContactPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <Header />
+      <HeaderWrapper />
 
       {/* Hero */}
       <section className="py-16 md:py-20 bg-background">

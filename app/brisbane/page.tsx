@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -77,7 +77,7 @@ export default function BrisbanePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <FadeIn className="text-center mb-12">
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3">Why Brisbane Chooses Us</h2>
-              <p className="text-base text-muted-foreground max-w-2xl mx-auto font-body">We&apos;re not just another cleaning company — we&apos;re your local Brisbane fabric care specialists</p>
+              <p className="text-base text-muted-foreground max-w-2xl mx-auto font-body">We&apos;re not just another cleaning company â€” we&apos;re your local Brisbane fabric care specialists</p>
             </FadeIn>
             <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {whyChooseUs.map((item, index) => (
@@ -186,7 +186,7 @@ export default function BrisbanePage() {
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-primary-foreground mb-4">Ready to Experience Brisbane&apos;s Best Fabric Cleaning?</h2>
               </FadeIn>
               <FadeIn delay={0.1}>
-                <p className="text-base md:text-lg text-primary-foreground/85 max-w-xl mx-auto font-body mb-8">Get your free quote today — fair pricing, fresh results.</p>
+                <p className="text-base md:text-lg text-primary-foreground/85 max-w-xl mx-auto font-body mb-8">Get your free quote today â€” fair pricing, fresh results.</p>
               </FadeIn>
               <FadeIn delay={0.2} className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/quote">

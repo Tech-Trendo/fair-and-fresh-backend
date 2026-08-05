@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/header";
+import { HeaderWrapper } from "@/components/header-wrapper";
 import { Hero } from "@/components/hero";
 import { Services } from "@/components/services";
 import { Reviews } from "@/components/reviews";
@@ -13,7 +13,10 @@ import { eq, asc } from "drizzle-orm";
 import { getContentGroup } from "@/lib/site-content";
 import { BeforeAfterSlider } from "@/components/before-after-slider";
 
-export const dynamic = 'force-dynamic';
+// Revalidated on a schedule: site content (hero copy, images, services) only
+// changes through the admin dashboard, so a short ISR window keeps edits fast
+// without re-rendering + re-querying the DB on every single visit.
+export const revalidate = 60;
 
 // Dynamically generate homepage metadata from staticPages table in DB
 export async function generateMetadata(): Promise<Metadata> {
@@ -100,6 +103,14 @@ export default async function Home() {
 
   // Fetch homepage about section content from site_content table
   const homeContent = await getContentGroup('home');
+  const siteSettings = await getContentGroup('site_settings');
+  const heroContent = {
+    title: homeContent.home_hero_title || 'Professional Fabric Cleaning in <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Brisbane</span>',
+    description: homeContent.home_hero_description || "Carpet, mattress, rug, upholstery, and curtain cleaning across Brisbane. Straightforward pricing, thorough work, and results you can see — and feel.",
+    promoText: homeContent.home_promo_text || "Same-day booking — 20% off",
+    heroImage: homeContent.home_hero_image || "/placeholder.svg",
+    phone: siteSettings.site_phone || "0430 799 567",
+  };
   const aboutSection = {
     image: homeContent.home_about_image || '/professional-cleaning-team-with-equipment-in-brisb.jpg',
     heading: homeContent.home_about_heading || "Brisbane's Most Trusted Fabric Cleaning Specialists",
@@ -114,8 +125,8 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen">
-      <Header />
-      <Hero />
+      <HeaderWrapper />
+      <Hero content={heroContent} />
       {servicesList.length > 0 && (
         <Services services={servicesList} />
       )}

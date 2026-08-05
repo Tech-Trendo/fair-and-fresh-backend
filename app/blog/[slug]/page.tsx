@@ -1,5 +1,5 @@
-import React from "react";
-import { Header } from "@/components/header";
+﻿import React from "react";
+import { HeaderWrapper } from "@/components/header-wrapper";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
 import Image from "next/image";
@@ -103,7 +103,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
   return (
     <>
-      <Header />
+      <HeaderWrapper />
       <main className="min-h-screen bg-background text-foreground font-sans py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -143,12 +143,12 @@ export default async function BlogDetailPage({ params }: PageProps) {
                     </div>
                     <span className="font-semibold text-foreground">Team</span>
                   </div>
-                  <span className="text-border hidden sm:inline">•</span>
+                  <span className="text-border hidden sm:inline">â€¢</span>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
                     {formattedDate}
                   </div>
-                  <span className="text-border hidden sm:inline">•</span>
+                  <span className="text-border hidden sm:inline">â€¢</span>
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     5 min read

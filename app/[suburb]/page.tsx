@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { suburbs, suburbCopyBlocks } from "@/lib/schema";
 import { eq, and, ne, asc } from "drizzle-orm";
-import { Header } from "@/components/header";
+import { HeaderWrapper } from "@/components/header-wrapper";
 import { Footer } from "@/components/footer";
 import { CtaSection } from "@/components/cta-section";
 import { SuburbMap } from "@/components/suburb-map";
@@ -38,7 +38,7 @@ interface PageProps {
 }
 
 export const dynamicParams = true; // new suburbs (added via dashboard) render without a redeploy
-export const revalidate = 86400; // ISR — regenerate once per day
+export const revalidate = 86400; // ISR â€” regenerate once per day
 
 export async function generateStaticParams() {
   const activeSuburbs = await db
@@ -124,7 +124,7 @@ export default async function SuburbPage({ params }: PageProps) {
 
   const intro =
     pickByHash(introBlocks, `${salt}:intro`, 1)[0] ??
-    `Professional fabric cleaning in ${row.name} — fair pricing, fresh results, thorough inspections on every job.`;
+    `Professional fabric cleaning in ${row.name} â€” fair pricing, fresh results, thorough inspections on every job.`;
   const localDetail = pickByHash(localDetailBlocks, `${salt}:local`, 1)[0] ?? null;
 
   // Pair each FAQ question with its matching answer by index (seed data must insert
@@ -136,7 +136,7 @@ export default async function SuburbPage({ params }: PageProps) {
   }
   const faqs = pickByHash(faqPairs, `${salt}:faq`, 3);
 
-  // Services grid — all services, ordered by site sort order.
+  // Services grid â€” all services, ordered by site sort order.
   const allServices = await db.query.services.findMany({
     orderBy: (t, { asc }) => [asc(t.sortOrder)],
     with: { images: { limit: 1 } },
@@ -170,7 +170,7 @@ export default async function SuburbPage({ params }: PageProps) {
     .orderBy(asc(suburbs.name));
   const nearbyPick = pickByHash(nearbySuburbs, `${salt}:nearby`, 4);
 
-  // Local detail strip — only fields that are actually populated. No placeholder text.
+  // Local detail strip â€” only fields that are actually populated. No placeholder text.
   const localFacts = [
     row.travelTimeMins
       ? { icon: Clock, label: "Travel time", value: `Around ${row.travelTimeMins} minutes from our team` }
@@ -183,7 +183,7 @@ export default async function SuburbPage({ params }: PageProps) {
     row.lat && row.lng && process.env.GEOAPIFY_API_KEY
   );
 
-  // Phase 6 — JSON-LD (AggregateRating only included when 3+ suburb-linked reviews exist).
+  // Phase 6 â€” JSON-LD (AggregateRating only included when 3+ suburb-linked reviews exist).
   const jsonLd = buildSuburbJsonLd({
     name: row.name,
     slug: row.slug,
@@ -199,7 +199,7 @@ export default async function SuburbPage({ params }: PageProps) {
 
   return (
     <>
-      <Header />
+      <HeaderWrapper />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -235,7 +235,7 @@ export default async function SuburbPage({ params }: PageProps) {
               <span className="inline-flex items-center bg-accent-tint text-primary text-xs font-nav px-3 py-1 rounded-full mb-4">
                 <MapPin className="w-3 h-3 mr-1.5" />
                 {regionLabel}
-                {row.postcode ? ` · Postcode ${row.postcode}` : ""}
+                {row.postcode ? ` Â· Postcode ${row.postcode}` : ""}
               </span>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading-bold text-foreground mb-4 leading-tight text-balance">
                 Fabric &amp; Carpet Cleaning in {row.name}
@@ -295,7 +295,7 @@ export default async function SuburbPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Local detail strip — only populated fields */}
+        {/* Local detail strip â€” only populated fields */}
         {localFacts.length > 0 && (
           <section className="py-10 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -326,7 +326,7 @@ export default async function SuburbPage({ params }: PageProps) {
                 Our Cleaning Services in {row.name}
               </h2>
               <p className="text-sm md:text-base text-muted-foreground font-body mt-2 max-w-2xl">
-                Professional fabric care across {regionLabel} — book any service in {row.name} today.
+                Professional fabric care across {regionLabel} â€” book any service in {row.name} today.
               </p>
             </FadeIn>
             <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -364,7 +364,7 @@ export default async function SuburbPage({ params }: PageProps) {
           </div>
         </section>
 
-        {/* Testimonials — suburb-specific when 2+ linked, otherwise honest general fallback */}
+        {/* Testimonials â€” suburb-specific when 2+ linked, otherwise honest general fallback */}
         <section className="py-16 md:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <FadeIn className="text-center mb-10">
@@ -377,7 +377,7 @@ export default async function SuburbPage({ params }: PageProps) {
             </FadeIn>
             {displayReviews.length === 0 ? (
               <p className="text-center text-sm text-muted-foreground font-body">
-                No reviews yet — be the first to share your experience.
+                No reviews yet â€” be the first to share your experience.
               </p>
             ) : (
               <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -416,7 +416,7 @@ export default async function SuburbPage({ params }: PageProps) {
           </div>
         </section>
 
-        {/* FAQ — regionType pool, deterministic selection of 3 */}
+        {/* FAQ â€” regionType pool, deterministic selection of 3 */}
         {faqs.length > 0 && (
           <section className="py-16 md:py-20 bg-background">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -452,7 +452,7 @@ export default async function SuburbPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Static map — only renders when coordinates AND API key exist */}
+        {/* Static map â€” only renders when coordinates AND API key exist */}
         {mapEnabled && (
           <section className="py-16 md:py-20 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

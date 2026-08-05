@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Header } from "@/components/header";
+﻿import type { Metadata } from "next";
+import { HeaderWrapper } from "@/components/header-wrapper";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -93,7 +93,7 @@ export default async function ServicesPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <Header />
+      <HeaderWrapper />
 
       {/* Hero */}
       <section className="py-20 md:py-28 bg-background">

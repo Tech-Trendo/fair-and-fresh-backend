@@ -1,5 +1,5 @@
-import React from "react";
-import { Header } from "@/components/header";
+﻿import React from "react";
+import { HeaderWrapper } from "@/components/header-wrapper";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
 import Image from "next/image";
@@ -93,7 +93,7 @@ export default async function CategoryPage({ params }: PageProps) {
       shortDescription: s.shortDescription || "",
     }));
 
-  // Phase 9 — internal linking to suburb hub pages.
+  // Phase 9 â€” internal linking to suburb hub pages.
   const serviceSuburbs = await db
     .select({ name: suburbs.name, slug: suburbs.slug })
     .from(suburbs)
@@ -103,7 +103,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   return (
     <>
-      <Header />
+      <HeaderWrapper />
       <main className="min-h-screen bg-background">
         {/* Banner */}
         <section className="py-16 md:py-20 bg-background border-b border-border">

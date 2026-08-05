@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Phone, ArrowRight } from "lucide-react";
 import Image from "next/image";
@@ -9,47 +8,15 @@ import { motion } from "framer-motion";
 
 const ease = [0.25, 0.4, 0, 1] as const;
 
-export function Hero() {
-  const [content, setContent] = useState({
-    title: 'Professional Fabric Cleaning in <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Brisbane</span>',
-    description: "Carpet, mattress, rug, upholstery, and curtain cleaning across Brisbane. Straightforward pricing, thorough work, and results you can see — and feel.",
-    promoText: "Same-day booking — 20% off",
-    heroImage: "/professional-carpet-cleaning-service-in-modern-hom.jpg",
-    phone: "0430 799 567",
-  });
+export type HeroContent = {
+  title: string;
+  description: string;
+  promoText: string;
+  heroImage: string;
+  phone: string;
+};
 
-  useEffect(() => {
-    let active = true;
-    fetch("/api/site-content?group=home")
-      .then((res) => res.json())
-      .then((data) => {
-        if (active && data && Array.isArray(data.results)) {
-          const map: Record<string, string> = {};
-          data.results.forEach((item: any) => { map[item.key] = item.value; });
-          setContent((prev) => ({
-            ...prev,
-            title: map.home_hero_title || prev.title,
-            description: map.home_hero_description || prev.description,
-            promoText: map.home_promo_text || prev.promoText,
-            heroImage: map.home_hero_image || prev.heroImage,
-          }));
-        }
-      })
-      .catch(() => {});
-
-    fetch("/api/site-content?group=site_settings")
-      .then((res) => res.json())
-      .then((data) => {
-        if (active && data && Array.isArray(data.results)) {
-          const phoneSetting = data.results.find((s: any) => s.key === "site_phone");
-          if (phoneSetting) setContent((prev) => ({ ...prev, phone: phoneSetting.value }));
-        }
-      })
-      .catch(() => {});
-
-    return () => { active = false; };
-  }, []);
-
+export function Hero({ content }: { content: HeroContent }) {
   return (
     <section className="relative bg-gradient-to-b from-blue-50/60 via-slate-50/40 to-background py-16 md:py-24 overflow-hidden border-b border-border/40">
       {/* Decorative ambient background glows */}
@@ -58,7 +25,7 @@ export function Hero() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
-          
+
           {/* Left text column */}
           <motion.div
             initial="hidden"
@@ -132,13 +99,10 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Right image column */}
-          <motion.div
-            className="relative lg:pl-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease }}
-          >
+          {/* Right image column - no opacity animation: LCP image must be
+              visible as soon as it loads, otherwise LCP is delayed until the
+              animation finishes */}
+          <div className="relative lg:pl-4">
             {/* Background card glow aura */}
             <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/15 to-indigo-600/15 rounded-3xl transform rotate-1 scale-105 blur-xl pointer-events-none" />
 
@@ -151,13 +115,13 @@ export function Hero() {
                 alt="Professional carpet cleaning service in Brisbane"
                 className="w-full h-auto object-cover transform transition-transform duration-700 hover:scale-105"
                 priority
+                fetchPriority="high"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
+          </div>
 
-            </motion.div>
-
-      </div>
+        </div>
       </div>
     </section>
   );

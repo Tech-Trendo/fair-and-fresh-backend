@@ -1,4 +1,4 @@
-import { Header } from "@/components/header";
+﻿import { HeaderWrapper } from "@/components/header-wrapper";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
 import Image from "next/image";
@@ -103,7 +103,7 @@ export default async function BlogCategoryPage({ params }: PageProps) {
 
   return (
     <>
-      <Header />
+      <HeaderWrapper />
       <main className="min-h-screen bg-background text-foreground font-sans">
         <section className="relative py-20 overflow-hidden bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10 border-b border-border">
           <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
