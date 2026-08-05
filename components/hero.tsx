@@ -113,6 +113,7 @@ export function Hero({ content }: { content: HeroContent }) {
                 height={480}
                 src={content.heroImage}
                 alt="Professional carpet cleaning service in Brisbane"
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 className="w-full h-auto object-cover transform transition-transform duration-700 hover:scale-105"
                 priority
                 fetchPriority="high"

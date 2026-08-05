@@ -138,7 +138,7 @@ export default async function ServicesPage() {
                 <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden h-full flex flex-col border border-border">
                   <Link href={`/services/${service.slug}`} className="block">
                     <div className="relative aspect-video overflow-hidden bg-muted">
-                      <Image src={service.image || "/placeholder.svg"} alt={service.title} width={400} height={250} className="w-full h-full object-cover" />
+                      <Image src={service.image || "/placeholder.svg"} alt={service.title} width={400} height={250} sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" className="w-full h-full object-cover" />
                     </div>
                   </Link>
                   <div className="p-5 flex flex-col flex-grow">
