@@ -4,7 +4,14 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar as UIDateCalendar } from "@/components/ui/calendar";
+import dynamic from "next/dynamic";
+const LazyDateCalendar = dynamic(
+  () => import("@/components/ui/calendar").then((m) => m.Calendar),
+  {
+    ssr: false,
+    loading: () => <div className="p-3 text-sm text-muted-foreground">Loading calendar…</div>,
+  }
+);
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDownIcon, Phone, ArrowRight, ArrowLeft, Check, Sparkles, Tag } from "lucide-react";
 import { Header } from "@/components/header";
@@ -134,7 +141,7 @@ return (
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <UIDateCalendar mode="single" selected={parsedDate} captionLayout="dropdown" endMonth={new Date(2029, 0)} startMonth={new Date(2025, 0)}
+              <LazyDateCalendar mode="single" selected={parsedDate} captionLayout="dropdown" endMonth={new Date(2029, 0)} startMonth={new Date(2025, 0)}
                 disabled={(date) => { const d = new Date(date.getFullYear(), date.getMonth(), date.getDate()); const today = new Date(); today.setHours(0, 0, 0, 0); const y = d.getFullYear(); const m = String(d.getMonth() + 1).padStart(2, '0'); const day = String(d.getDate()).padStart(2, '0'); return d < today || isDateClosed(`${y}-${m}-${day}`); }}
                 onSelect={(d: Date | undefined) => handleSelect(d)}
               />
