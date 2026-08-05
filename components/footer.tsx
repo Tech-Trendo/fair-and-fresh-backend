@@ -238,12 +238,12 @@ export function Footer() {
                   <h4 className="text-xs font-nav text-muted-foreground uppercase tracking-wider mb-2">
                     {group.label}
                   </h4>
-                  <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+                  <div className="flex flex-wrap gap-x-3 gap-y-2">
                     {group.suburbs.slice(0, 10).map((s) => (
                       <Link
                         key={s.slug}
                         href={`/${s.slug}`}
-                        className="text-xs text-muted-foreground hover:text-primary transition-colors font-body"
+                        className="text-xs text-muted-foreground hover:text-primary transition-colors font-body py-2 px-1 inline-block"
                       >
                         {s.name}
                       </Link>
