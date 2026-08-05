@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+
+const MotionImage = motion.create(Image);
 
 export interface SliderImage {
   image_url: string;
@@ -48,7 +51,7 @@ export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
           <div className="relative rounded-xl overflow-hidden shadow-sm bg-white border border-border">
             <div className="relative min-h-[300px] sm:min-h-[400px] md:min-h-[500px] max-h-[600px] flex items-center justify-center bg-background">
               <AnimatePresence mode="wait">
-                <motion.img
+                <MotionImage
                   key={current}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -56,7 +59,10 @@ export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
                   transition={{ duration: 0.3 }}
                   src={activeImage.image_url}
                   alt={activeImage.caption || 'Before & After transformation'}
-                  className="w-full h-full object-cover max-h-[600px]"
+                  width={1280}
+                  height={720}
+                  sizes="(min-width: 1024px) 1024px, calc(100vw - 32px)"
+                  className="w-full h-auto object-cover max-h-[600px]"
                 />
               </AnimatePresence>
 
