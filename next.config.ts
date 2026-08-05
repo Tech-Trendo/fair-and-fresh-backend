@@ -3,6 +3,7 @@ import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
+  analyzerMode: "json",
 });
 
 const nextConfig: NextConfig = {
