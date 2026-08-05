@@ -91,13 +91,13 @@ export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
               </button>
 
               {/* Indicator Dots */}
-              <div className="flex justify-center items-center gap-2 mt-5">
+              <div className="flex justify-center items-center gap-3 mt-5">
                 {images.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrent(idx)}
-                    className={`h-2 rounded-full transition-all duration-200 ${
-                      idx === current ? 'w-6 bg-primary' : 'w-2 bg-border hover:bg-primary/50'
+                    className={`h-3 rounded-full transition-all duration-200 ${
+                      idx === current ? 'w-8 bg-primary' : 'w-3 bg-border hover:bg-primary/50'
                     }`}
                     aria-label={`Go to slide ${idx + 1}`}
                   />

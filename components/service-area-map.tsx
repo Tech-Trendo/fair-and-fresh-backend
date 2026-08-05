@@ -64,7 +64,7 @@ export function ServiceAreaMap() {
             </p>
             <Link
               href="/brisbane"
-              className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-nav text-sm"
+              className="inline-flex items-center gap-2 text-red-700 hover:text-red-800 font-nav text-sm"
             >
               <MapPin className="h-4 w-4" />
               View All Service Areas

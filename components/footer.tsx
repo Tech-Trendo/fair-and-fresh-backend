@@ -249,7 +249,7 @@ export function Footer() {
                       </Link>
                     ))}
                     {group.suburbs.length > 10 && (
-                      <span className="text-xs text-muted-foreground/70 font-body">+{group.suburbs.length - 10} more</span>
+                      <span className="text-xs text-muted-foreground font-body">+{group.suburbs.length - 10} more</span>
                     )}
                   </div>
                 </div>

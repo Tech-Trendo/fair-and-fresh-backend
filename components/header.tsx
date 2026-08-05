@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -96,7 +96,7 @@ export function Header({ logoUrl, phone }: { logoUrl?: string; phone?: string })
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
+            <Link href="/" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none py-2">
               Home
             </Link>
             <div
@@ -104,7 +104,7 @@ export function Header({ logoUrl, phone }: { logoUrl?: string; phone?: string })
               onMouseEnter={() => setIsServicesOpen(true)}
               onMouseLeave={() => setIsServicesOpen(false)}
             >
-              <button className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors font-nav text-sm leading-none bg-transparent border-0 cursor-pointer">
+              <button className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors font-nav text-sm leading-none bg-transparent border-0 cursor-pointer py-2">
                 Services
                 <ChevronDown
                   className={`h-3.5 w-3.5 transition-transform duration-200 ${isServicesOpen ? "rotate-180" : ""}`}
@@ -136,23 +136,23 @@ export function Header({ logoUrl, phone }: { logoUrl?: string; phone?: string })
                 )}
               </AnimatePresence>
             </div>
-            <Link href="/brisbane" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
+            <Link href="/brisbane" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none py-2">
               Service Areas
             </Link>
-            <Link href="/about" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
+            <Link href="/about" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none py-2">
               About
             </Link>
-            <Link href="/blog" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
+            <Link href="/blog" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none py-2">
               Blog
             </Link>
-            <Link href="/contact" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none">
+            <Link href="/contact" className="inline-flex items-center text-foreground hover:text-primary transition-colors font-nav text-sm leading-none py-2">
               Contact
             </Link>
           </nav>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center self-center">
-            <Button asChild className="bg-red-600 hover:bg-red-700 text-primary-foreground rounded-full px-5 py-1.5 font-nav text-sm leading-none">
+            <Button asChild className="bg-red-600 hover:bg-red-700 text-primary-foreground rounded-full px-5 py-2.5 font-nav text-sm leading-none">
               <Link href="/quote">Get Free Quote</Link>
             </Button>
           </div>
