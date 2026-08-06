@@ -8,13 +8,13 @@ import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FadeIn } from "@/components/motion-wrapper";
 
 const fallbackServices = [
-  { name: "Carpet Cleaning", slug: "carpet-cleaning" },
-  { name: "Mattress Cleaning", slug: "mattress-cleaning" },
-  { name: "Rug Cleaning", slug: "rug-cleaning" },
-  { name: "Upholstery Cleaning", slug: "upholstery-cleaning" },
-  { name: "Curtain Cleaning", slug: "curtain-cleaning" },
-  { name: "Car Seat Cleaning", slug: "car-seat-cleaning" },
-  { name: "Flood Damage Restoration", slug: "flood-damage-restoration" },
+  { name: "Carpet Cleaning", slug: "carpet-cleaning-brisbane" },
+  { name: "Mattress Cleaning", slug: "mattress-cleaning-brisbane" },
+  { name: "Rug Cleaning", slug: "rug-cleaning-brisbane" },
+  { name: "Upholstery Cleaning", slug: "upholstery-couch-cleaning-brisbane" },
+  { name: "Curtain Cleaning", slug: "curtains-cleaning-brisbane" },
+  { name: "Bond Cleaning", slug: "bond-cleaning-brisbane" },
+  { name: "Flood Damage Restoration", slug: "flood-damage-restoration-brisbane" },
 ];
 
 export function Footer() {

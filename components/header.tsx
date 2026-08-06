@@ -8,16 +8,14 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const servicesMenu = [
-  { name: "Bond Cleaning", href: "/services/bond-cleaning" },
-  { name: "Carpet Cleaning", href: "/services/carpet-cleaning" },
-  { name: "Mattress Cleaning", href: "/services/mattress-cleaning" },
-  { name: "Rug Cleaning", href: "/services/rug-cleaning" },
-  { name: "Lawn Mowing", href: "/services/lawn-mowing" },
-  { name: "Car Detailing", href: "/services/car-detailing" },
-  { name: "Upholstery Cleaning", href: "/services/upholstery-cleaning" },
-  { name: "Curtain Cleaning", href: "/services/curtain-cleaning" },
-  { name: "Car Seat Cleaning", href: "/services/car-seat-cleaning" },
-  { name: "Flood Damage Restoration", href: "/services/flood-damage-restoration" },
+  { name: "Bond Cleaning", href: "/services/bond-cleaning-brisbane" },
+  { name: "Carpet Cleaning", href: "/services/carpet-cleaning-brisbane" },
+  { name: "Mattress Cleaning", href: "/services/mattress-cleaning-brisbane" },
+  { name: "Rug Cleaning", href: "/services/rug-cleaning-brisbane" },
+  { name: "Lawn Mowing", href: "/services/lawn-mowing-brisbane" },
+  { name: "Upholstery Cleaning", href: "/services/upholstery-couch-cleaning-brisbane" },
+  { name: "Curtain Cleaning", href: "/services/curtains-cleaning-brisbane" },
+  { name: "Flood Damage Restoration", href: "/services/flood-damage-restoration-brisbane" },
 ];
 
 export function Header({ logoUrl, phone }: { logoUrl?: string; phone?: string }) {
