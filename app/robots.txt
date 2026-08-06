@@ -1,4 +1,12 @@
-# Explicitly allow AI search and crawler bots
+# Fair & Fresh Cleaning - robots.txt
+
+# All crawlers: block private/internal paths
+User-agent: *
+Disallow: /thank-you
+Disallow: /dashboard
+Disallow: /login
+
+# AI search and research crawlers: explicitly allowed
 User-agent: GPTBot
 User-agent: OAI-SearchBot
 User-agent: ChatGPT-User
@@ -7,15 +15,6 @@ User-agent: Claude-SearchBot
 User-agent: Google-Extended
 User-agent: Applebot-Extended
 User-agent: PerplexityBot
-Disallow: /thank-you
-Disallow: /dashboard
-Disallow: /login
 Allow: /
-
-# General rules for all other crawlers
-User-agent: *
-Disallow: /thank-you
-Disallow: /dashboard
-Disallow: /login
 
 Sitemap: https://www.fairandfreshcleaning.com.au/sitemap.xml
