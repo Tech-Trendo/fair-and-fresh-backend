@@ -116,11 +116,6 @@ export default async function Home() {
     heading: homeContent.home_about_heading || "Brisbane's Most Trusted Fabric Cleaning Specialists",
     description: homeContent.home_about_description || 'For over 15 years, we have been transforming homes and businesses across Brisbane with our professional fabric cleaning services.',
     ctaText: homeContent.home_about_cta_text || 'Learn More About Us',
-    stats: [
-      { value: Number(homeContent.home_about_years_value) || 15, suffix: '+', label: homeContent.home_about_years_label || 'Years Experience' },
-      { value: Number(homeContent.home_about_clients_value) || 75, suffix: '+', label: homeContent.home_about_clients_label || 'Brisbane Suburbs' },
-      { value: Number(homeContent.home_about_satisfaction_value) || 6, suffix: '+', label: homeContent.home_about_satisfaction_label || 'Cleaning Services' },
-    ],
   };
 
   return (
@@ -135,7 +130,6 @@ export default async function Home() {
         image={aboutSection.image}
         heading={aboutSection.heading}
         description={aboutSection.description}
-        stats={aboutSection.stats}
         ctaText={aboutSection.ctaText}
       />
       {testimonialsList.length > 0 && (

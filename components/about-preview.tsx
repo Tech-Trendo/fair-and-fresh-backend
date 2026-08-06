@@ -16,7 +16,7 @@ interface StatItem {
 interface AboutPreviewProps {
   image: string;
   imageAlt?: string;
-  stats: StatItem[];
+  stats?: StatItem[];
   heading: string;
   description: string;
   ctaText: string;
@@ -49,16 +49,18 @@ export function AboutPreview({
                 />
               </div>
               {/* Stats overlay */}
-              <div className="grid grid-cols-3 gap-3 mt-4">
-                {stats.map((stat, idx) => (
-                  <div key={idx} className="bg-white rounded-xl border border-border p-4 text-center">
-                    <div className="text-xl md:text-2xl font-heading-bold text-primary">
-                      <CountUp end={stat.value} suffix={stat.suffix} decimals={stat.decimals} />
+              {stats && stats.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 mt-4">
+                  {stats.map((stat, idx) => (
+                    <div key={idx} className="bg-white rounded-xl border border-border p-4 text-center">
+                      <div className="text-xl md:text-2xl font-heading-bold text-primary">
+                        <CountUp end={stat.value} suffix={stat.suffix} decimals={stat.decimals} />
+                      </div>
+                      <div className="text-xs text-muted-foreground font-body">{stat.label}</div>
                     </div>
-                    <div className="text-xs text-muted-foreground font-body">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </FadeIn>
           </div>
 

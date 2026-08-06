@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Clock, CheckCircle2, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
+import { CtaSection } from "@/components/cta-section";
 
 const slugify = (name: string) =>
   name.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^\w\-]+/g, "");
@@ -179,30 +180,7 @@ export default function BrisbanePage() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 md:py-24 bg-background">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-primary rounded-xl px-8 py-14 md:px-16 md:py-20 text-center">
-              <FadeIn>
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-primary-foreground mb-4">Ready to Experience Brisbane&apos;s Best Fabric Cleaning?</h2>
-              </FadeIn>
-              <FadeIn delay={0.1}>
-                <p className="text-base md:text-lg text-primary-foreground/85 max-w-xl mx-auto font-body mb-8">Get your free quote today â€” fair pricing, fresh results.</p>
-              </FadeIn>
-              <FadeIn delay={0.2} className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/quote">
-                  <Button size="lg" className="rounded-full bg-white text-red-600 hover:bg-white/90 font-nav text-base px-8">
-                    Get Free Quote <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-                <a href="tel:0430799567">
-                  <Button size="lg" variant="outline" className="rounded-full border-white/40 text-white hover:bg-white/10 font-nav text-base px-8 bg-transparent">
-                    <Phone className="mr-2 h-4 w-4" /> 0430 799 567
-                  </Button>
-                </a>
-              </FadeIn>
-            </div>
-          </div>
-        </section>
+        <CtaSection />
       </main>
       <Footer />
     </>
