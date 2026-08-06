@@ -187,6 +187,7 @@ export default async function SuburbPage({ params }: PageProps) {
   const jsonLd = buildSuburbJsonLd({
     name: row.name,
     slug: row.slug,
+    region: row.region,
     regionLabel,
     postcode: row.postcode,
     lat: row.lat,

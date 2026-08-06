@@ -4,9 +4,20 @@
 export const SITE_URL = 'https://www.fairandfreshcleaning.com.au';
 export const BRAND_NAME = 'Fair & Fresh Cleaning';
 
+// Region landing pages. Only regions with a real landing page get a breadcrumb
+// crumb — Google requires every ListItem in a BreadcrumbList to include an `item` URL.
+const REGION_PATHS: Record<string, string> = {
+  'brisbane-city-inner': '/brisbane',
+  'brisbane-north': '/brisbane',
+  'brisbane-south': '/brisbane',
+  'brisbane-east': '/brisbane',
+  'brisbane-west': '/brisbane',
+};
+
 export interface SuburbJsonLdInput {
   name: string;
   slug: string;
+  region: string;
   regionLabel: string;
   postcode: string | null;
   lat: string | null;
@@ -65,13 +76,33 @@ export function buildSuburbJsonLd(input: SuburbJsonLdInput) {
     provider: { '@id': localBusiness['@id'] },
   };
 
+  // Every ListItem must have an `item` URL. The region crumb is only included
+  // when the region has a real landing page, otherwise the breadcrumb collapses
+  // to Home > Suburb (still valid).
+  const itemListElement: Record<string, unknown>[] = [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+  ];
+
+  const regionPath = REGION_PATHS[input.region];
+  if (regionPath) {
+    itemListElement.push({
+      '@type': 'ListItem',
+      position: itemListElement.length + 1,
+      name: input.regionLabel,
+      item: `${SITE_URL}${regionPath}`,
+    });
+  }
+
+  itemListElement.push({
+    '@type': 'ListItem',
+    position: itemListElement.length + 1,
+    name: input.name,
+    item: suburbUrl,
+  });
+
   const breadcrumb: Record<string, unknown> = {
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: input.regionLabel },
-      { '@type': 'ListItem', position: 3, name: input.name, item: suburbUrl },
-    ],
+    itemListElement,
   };
 
   const graph: Record<string, unknown>[] = [localBusiness, service, breadcrumb];

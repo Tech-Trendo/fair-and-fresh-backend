@@ -1,4 +1,5 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
+import { eq } from 'drizzle-orm';
 import postgres from 'postgres';
 import * as schema from './schema';
 import crypto from 'crypto';
@@ -44,30 +45,49 @@ export async function seedDatabase() {
     const adminUser = process.env.ADMIN_USERNAME;
     const adminPass = process.env.ADMIN_PASSWORD;
 
-    // 1. ALWAYS sync the admin credentials based on Vercel Environment Variables
+    // 1. Create the admin account ONLY if it does not already exist.
+    //    Previously this block ran an upsert that reset the password on every
+    //    deploy (so a password changed in the dashboard would be wiped by the
+    //    next build). Existing credentials are now never overwritten — change
+    //    the password via Dashboard -> Change Password instead.
+    //    Forgotten password? Set ADMIN_FORCE_RESET_PASSWORD=1 alongside
+    //    ADMIN_USERNAME/ADMIN_PASSWORD and redeploy once to reset it.
+    const forceReset = process.env.ADMIN_FORCE_RESET_PASSWORD === '1';
     if (adminUser && adminPass) {
-      const adminSalt = crypto.randomBytes(16).toString('hex');
-      const adminPasswordHash = hashPassword(adminPass, adminSalt);
+      const existingAdmin = await db
+        .select({ id: schema.users.id })
+        .from(schema.users)
+        .where(eq(schema.users.id, 'usr-admin'))
+        .limit(1);
 
-      // This inserts the admin if missing, OR updates it if 'usr-admin' already exists!
-      await db.insert(schema.users)
-        .values({
-          id: 'usr-admin',
-          username: adminUser,
-          passwordHash: adminPasswordHash,
-          salt: adminSalt,
-          isStaff: true
-        })
-        .onConflictDoUpdate({
-          target: schema.users.id,
-          set: {
+      if (existingAdmin.length === 0 || forceReset) {
+        const adminSalt = crypto.randomBytes(16).toString('hex');
+        const adminPasswordHash = hashPassword(adminPass, adminSalt);
+
+        await db
+          .insert(schema.users)
+          .values({
+            id: 'usr-admin',
             username: adminUser,
             passwordHash: adminPasswordHash,
-            salt: adminSalt
-          }
-        });
-      
-      console.log('🔒 Admin credentials successfully synchronized with environment variables.');
+            salt: adminSalt,
+            isStaff: true
+          })
+          .onConflictDoUpdate({
+            target: schema.users.id,
+            set: {
+              username: adminUser,
+              passwordHash: adminPasswordHash,
+              salt: adminSalt
+            }
+          });
+
+        console.log(forceReset
+          ? '🔒 Admin credentials force-reset from environment variables.'
+          : '🔒 Admin account created from environment variables.');
+      } else {
+        console.log('🔒 Admin account already exists — credentials left unchanged (use the dashboard to change the password).');
+      }
     } else {
       console.warn('⚠️ ADMIN_USERNAME or ADMIN_PASSWORD environment variable is missing. Skipping admin credential sync.');
     }

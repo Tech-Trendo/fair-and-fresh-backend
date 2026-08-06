@@ -34,26 +34,26 @@ const fetchAllServices = async (): Promise<any[]> => {
 
 const getIcon = (slug: string) => {
   const s = slug.toLowerCase();
-  if (s.includes("bond")) return "ðŸ ";
-  if (s.includes("carpet") || s.includes("rug")) return "ðŸ§¹";
-  if (s.includes("upholstery") || s.includes("seat") || s.includes("sofa")) return "ðŸ›‹ï¸";
-  if (s.includes("mattress")) return "ðŸ›ï¸";
-  if (s.includes("curtain")) return "ðŸªŸ";
-  if (s.includes("detail") || s.includes("car")) return "ðŸš—";
-  if (s.includes("lawn") || s.includes("mow") || s.includes("garden")) return "ðŸŒ±";
-  if (s.includes("flood") || s.includes("water") || s.includes("restoration")) return "ðŸ’§";
-  return "âœ¨";
+  if (s.includes("bond")) return "🏠";
+  if (s.includes("carpet") || s.includes("rug")) return "🧹";
+  if (s.includes("upholstery") || s.includes("seat") || s.includes("sofa")) return "🛋️";
+  if (s.includes("mattress")) return "🛏️";
+  if (s.includes("curtain")) return "🪟";
+  if (s.includes("detail") || s.includes("car")) return "🚗";
+  if (s.includes("lawn") || s.includes("mow") || s.includes("garden")) return "🌱";
+  if (s.includes("flood") || s.includes("water") || s.includes("restoration")) return "💧";
+  return "✨";
 };
 
 const initialServices = [
-  { id: "bond-cleaning", name: "Bond Cleaning", icon: "ðŸ " },
-  { id: "carpet-and-rug", name: "Carpet and Rug Cleaning", icon: "ðŸ§¹" },
-  { id: "upholstery-and-car-seats", name: "Upholstery and Car Seat Cleaning", icon: "ðŸ›‹ï¸" },
-  { id: "mattress", name: "Mattress Cleaning", icon: "ðŸ›ï¸" },
-  { id: "curtain", name: "Curtain Cleaning", icon: "ðŸªŸ" },
-  { id: "car-detailing", name: "Car Detailing", icon: "ðŸš—" },
-  { id: "lawn-mowing", name: "Lawn Mowing", icon: "ðŸŒ±" },
-  { id: "flood-damage", name: "Flood Damage Restoration", icon: "ðŸ’§" },
+  { id: "bond-cleaning", name: "Bond Cleaning", icon: "🏠" },
+  { id: "carpet-and-rug", name: "Carpet and Rug Cleaning", icon: "🧹" },
+  { id: "upholstery-and-car-seats", name: "Upholstery and Car Seat Cleaning", icon: "🛋️" },
+  { id: "mattress", name: "Mattress Cleaning", icon: "🛏️" },
+  { id: "curtain", name: "Curtain Cleaning", icon: "🪟" },
+  { id: "car-detailing", name: "Car Detailing", icon: "🚗" },
+  { id: "lawn-mowing", name: "Lawn Mowing", icon: "🌱" },
+  { id: "flood-damage", name: "Flood Damage Restoration", icon: "💧" },
 ];
 
 const to12Hour = (hour: number): string => {
