@@ -69,7 +69,7 @@ export async function PUT(
       return NextResponse.json({ detail: 'Not found.' }, { status: 404 });
     }
 
-    const finalSlug = slug || slugify(name);
+    const finalSlug = slug === undefined || slug === null ? slugify(name) : slug;
 
     await db.update(staticPages)
       .set({

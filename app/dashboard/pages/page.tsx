@@ -186,7 +186,7 @@ export default function PagesSeoPage() {
     setSubmitLoading(true);
     const payload: any = {
       name,
-      slug: slug || null,
+      slug,
       meta_title: metaTitle,
       meta_description: metaDescription,
       meta_keywords: metaKeywords,
@@ -358,10 +358,9 @@ export default function PagesSeoPage() {
                   <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Page Slug</label>
                   <input
                     type="text"
-                    required
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
-                    placeholder="e.g. faq"
+                    placeholder="e.g. faq (leave empty for the homepage)"
                     className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-none focus:border-zinc-400 focus:bg-white"
                   />
                 </div>

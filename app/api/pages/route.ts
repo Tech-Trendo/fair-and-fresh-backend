@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const finalSlug = slug || slugify(name);
+    const finalSlug = slug === undefined || slug === null ? slugify(name) : slug;
 
     await db.insert(staticPages).values({
       id,
