@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiFetch } from '@/lib/auth';
 import { toast } from 'sonner';
-import { Save, RefreshCw, Check, X, Eye, Edit3, Plus, Trash2, Upload, ImageIcon } from 'lucide-react';
+import { Save, RefreshCw, Eye, Edit3, Trash2, Upload, ImageIcon } from 'lucide-react';
 
 interface SiteContentItem {
   id: string;
@@ -31,8 +31,6 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [editingValues, setEditingValues] = useState<Record<string, string>>({});
   const [changedKeys, setChangedKeys] = useState<Set<string>>(new Set());
-  const [showNewForm, setShowNewForm] = useState(false);
-  const [newItem, setNewItem] = useState({ key: '', value: '', label: '', group: '', type: 'text' });
   const [imageUploading, setImageUploading] = useState<string | null>(null);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
@@ -142,52 +140,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handleAddNew = async () => {
-    if (!newItem.key || !newItem.value || !newItem.label || !newItem.group) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    try {
-      const res = await apiFetch('/api/site-content', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newItem),
-      });
-
-      if (res.ok) {
-        toast.success('Content added!');
-        setShowNewForm(false);
-        setNewItem({ key: '', value: '', label: '', group: '', type: 'text' });
-        fetchContent();
-      } else {
-        const err = await res.json();
-        toast.error(err.error || 'Failed to add');
-      }
-    } catch (err) {
-      toast.error('Failed to add content');
-    }
-  };
-
-  const handleDelete = async (key: string) => {
-    if (!confirm('Delete this content entry?')) return;
-
-    try {
-      const res = await apiFetch(`/api/site-content?key=${key}`, {
-        method: 'DELETE',
-      });
-
-      if (res.ok) {
-        toast.success('Content deleted');
-        fetchContent();
-      } else {
-        toast.error('Failed to delete');
-      }
-    } catch (err) {
-      toast.error('Failed to delete');
-    }
-  };
-
   const currentItems = contentMap[activeTab] || [];
 
   const renderEditor = (item: SiteContentItem) => {
@@ -215,13 +167,6 @@ export default function SettingsPage() {
                 Modified
               </span>
             )}
-            <button
-              onClick={() => handleDelete(item.key)}
-              className="p-1 text-gray-300 hover:text-red-500 transition-colors cursor-pointer"
-              title="Delete"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
           </div>
         </div>
 
@@ -325,13 +270,6 @@ export default function SettingsPage() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setShowNewForm(!showNewForm)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Add Field
-          </button>
-          <button
             onClick={handleSave}
             disabled={changedKeys.size === 0 || saving}
             className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-md transition-all cursor-pointer ${
@@ -349,83 +287,6 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
-
-      {/* New Item Form */}
-      {showNewForm && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h3 className="text-xs font-semibold text-blue-700 mb-3 uppercase tracking-wider">Add New Content Field</h3>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <div>
-              <label className="block text-[10px] font-medium text-blue-600 mb-1">Key *</label>
-              <input
-                value={newItem.key}
-                onChange={(e) => setNewItem({ ...newItem, key: e.target.value })}
-                placeholder="e.g. home_hero_title"
-                className="w-full px-2 py-1.5 text-xs border border-blue-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-medium text-blue-600 mb-1">Label *</label>
-              <input
-                value={newItem.label}
-                onChange={(e) => setNewItem({ ...newItem, label: e.target.value })}
-                placeholder="e.g. Hero Title"
-                className="w-full px-2 py-1.5 text-xs border border-blue-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-medium text-blue-600 mb-1">Group *</label>
-              <select
-                value={newItem.group}
-                onChange={(e) => setNewItem({ ...newItem, group: e.target.value })}
-                className="w-full px-2 py-1.5 text-xs border border-blue-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-              >
-                <option value="">Select...</option>
-                {tabs.map(tab => (
-                  <option key={tab.id} value={tab.id}>{tab.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-[10px] font-medium text-blue-600 mb-1">Type</label>
-              <select
-                value={newItem.type}
-                onChange={(e) => setNewItem({ ...newItem, type: e.target.value })}
-                className="w-full px-2 py-1.5 text-xs border border-blue-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
-              >
-                <option value="text">Text</option>
-                <option value="textarea">Textarea</option>
-                <option value="number">Number</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-[10px] font-medium text-blue-600 mb-1">Value *</label>
-              <input
-                value={newItem.value}
-                onChange={(e) => setNewItem({ ...newItem, value: e.target.value })}
-                placeholder="Default value"
-                className="w-full px-2 py-1.5 text-xs border border-blue-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-2 mt-3">
-            <button
-              onClick={handleAddNew}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-red-600 rounded-md hover:bg-red-700 transition-all cursor-pointer"
-            >
-              <Check className="h-3 w-3" />
-              Add
-            </button>
-            <button
-              onClick={() => setShowNewForm(false)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-all cursor-pointer"
-            >
-              <X className="h-3 w-3" />
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 border-b border-gray-200 overflow-x-auto">
@@ -458,13 +319,6 @@ export default function SettingsPage() {
           <div className="text-center py-16">
             <Eye className="h-10 w-10 text-gray-300 mx-auto mb-3" />
             <p className="text-sm text-gray-500">No editable content in this section yet.</p>
-            <button
-              onClick={() => setShowNewForm(true)}
-              className="mt-3 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 transition-all cursor-pointer"
-            >
-              <Plus className="h-3 w-3" />
-              Add First Field
-            </button>
           </div>
         ) : (
           <div className="grid gap-3">
