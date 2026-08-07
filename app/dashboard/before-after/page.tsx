@@ -5,6 +5,7 @@ import { apiFetch } from '@/lib/auth';
 
 interface BeforeAfterImage {
   id: string;
+  beforeImageUrl?: string;
   imageUrl: string;
   caption?: string;
   sortOrder: number;
@@ -16,7 +17,8 @@ export default function BeforeAfterPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState<'before' | 'after' | null>(null);
+  const [newBeforeImageUrl, setNewBeforeImageUrl] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
   const [newCaption, setNewCaption] = useState('');
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -43,11 +45,11 @@ export default function BeforeAfterPage() {
     fetchImages();
   }, []);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, slot: 'before' | 'after') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploading(true);
+    setUploading(slot);
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', 'service');
@@ -60,7 +62,11 @@ export default function BeforeAfterPage() {
 
       if (res.status === 201) {
         const data = await res.json();
-        setNewImageUrl(data.image_url);
+        if (slot === 'before') {
+          setNewBeforeImageUrl(data.image_url);
+        } else {
+          setNewImageUrl(data.image_url);
+        }
       } else {
         alert('Image upload failed.');
       }
@@ -68,11 +74,12 @@ export default function BeforeAfterPage() {
       console.error(err);
       alert('Error uploading image.');
     } finally {
-      setUploading(false);
+      setUploading(null);
     }
   };
 
   const openCreateModal = () => {
+    setNewBeforeImageUrl('');
     setNewImageUrl('');
     setNewCaption('');
     setModalOpen(true);
@@ -80,7 +87,10 @@ export default function BeforeAfterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newImageUrl.trim()) return;
+    if (!newImageUrl.trim() || !newBeforeImageUrl.trim()) {
+      alert('Please upload both a Before and an After image.');
+      return;
+    }
 
     setSubmitLoading(true);
 
@@ -88,7 +98,11 @@ export default function BeforeAfterPage() {
       const res = await apiFetch('/api/before-after/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image_url: newImageUrl, caption: newCaption }),
+        body: JSON.stringify({
+          before_image_url: newBeforeImageUrl,
+          image_url: newImageUrl,
+          caption: newCaption,
+        }),
       });
 
       if (res.status === 201) {
@@ -231,9 +245,19 @@ export default function BeforeAfterPage() {
                       </div>
                     </td>
                     <td className="px-5 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-20 h-14 rounded border border-[#E5E7EB] overflow-hidden bg-[#F3F4F6] flex-shrink-0">
-                          <img src={img.imageUrl} alt={img.caption || ''} className="w-full h-full object-cover" />
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          <div className="w-20 h-14 rounded border border-[#E5E7EB] overflow-hidden bg-[#F3F4F6] flex-shrink-0">
+                            <img src={img.beforeImageUrl} alt={img.caption ? `${img.caption} (before)` : 'Before'} className="w-full h-full object-cover" />
+                          </div>
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF]">Before</span>
+                        </div>
+                        <span className="text-[#C4C4C4]">→</span>
+                        <div className="flex items-center gap-1">
+                          <div className="w-20 h-14 rounded border border-[#E5E7EB] overflow-hidden bg-[#F3F4F6] flex-shrink-0">
+                            <img src={img.imageUrl} alt={img.caption ? `${img.caption} (after)` : 'After'} className="w-full h-full object-cover" />
+                          </div>
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF]">After</span>
                         </div>
                       </div>
                     </td>
@@ -270,35 +294,68 @@ export default function BeforeAfterPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              {newImageUrl && (
-                <div className="rounded-lg border border-[#E5E7EB] overflow-hidden bg-[#F3F4F6]">
-                  <img src={newImageUrl} alt="Preview" className="w-full h-48 object-cover" />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Before Image</label>
+                  {newBeforeImageUrl && (
+                    <div className="rounded-lg border border-[#E5E7EB] overflow-hidden bg-[#F3F4F6]">
+                      <img src={newBeforeImageUrl} alt="Before preview" className="w-full h-32 object-cover" />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, 'before')}
+                    className="hidden"
+                    id="ba-before-file"
+                    disabled={uploading !== null}
+                  />
+                  <label
+                    htmlFor="ba-before-file"
+                    className="inline-flex h-9 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-3 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors"
+                  >
+                    {uploading === 'before' ? 'Uploading...' : 'Upload Before'}
+                  </label>
                 </div>
-              )}
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Upload Image</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="ba-image-file"
-                  disabled={uploading}
-                />
-                <label
-                  htmlFor="ba-image-file"
-                  className="inline-flex h-9 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors"
-                >
-                  {uploading ? 'Uploading...' : 'Choose & Upload Image'}
-                </label>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">After Image</label>
+                  {newImageUrl && (
+                    <div className="rounded-lg border border-[#E5E7EB] overflow-hidden bg-[#F3F4F6]">
+                      <img src={newImageUrl} alt="After preview" className="w-full h-32 object-cover" />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, 'after')}
+                    className="hidden"
+                    id="ba-after-file"
+                    disabled={uploading !== null}
+                  />
+                  <label
+                    htmlFor="ba-after-file"
+                    className="inline-flex h-9 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-3 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors"
+                  >
+                    {uploading === 'after' ? 'Uploading...' : 'Upload After'}
+                  </label>
+                </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Image URL</label>
+                <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Before Image URL</label>
                 <input
                   type="text"
-                  required
+                  value={newBeforeImageUrl}
+                  onChange={(e) => setNewBeforeImageUrl(e.target.value)}
+                  placeholder="URL will appear after upload"
+                  className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">After Image URL</label>
+                <input
+                  type="text"
                   value={newImageUrl}
                   onChange={(e) => setNewImageUrl(e.target.value)}
                   placeholder="URL will appear after upload"
@@ -327,7 +384,7 @@ export default function BeforeAfterPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitLoading || !newImageUrl}
+                  disabled={submitLoading || !newImageUrl || !newBeforeImageUrl}
                   className="inline-flex h-8 items-center justify-center rounded-md bg-[#2563EB] px-4 text-xs font-semibold text-white hover:bg-[#1D4ED8] cursor-pointer transition-colors disabled:opacity-50"
                 >
                   {submitLoading ? 'Saving...' : 'Add Image'}

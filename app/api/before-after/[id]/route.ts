@@ -16,11 +16,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     const { id } = await params;
     const body = await request.json();
-    const { sort_order, image_url, caption } = body;
+    const { sort_order, image_url, before_image_url, caption } = body;
 
     const updates: Record<string, any> = {};
     if (sort_order !== undefined) updates.sortOrder = sort_order;
     if (image_url !== undefined) updates.imageUrl = image_url;
+    if (before_image_url !== undefined) {
+      updates.beforeImageUrl = before_image_url && before_image_url.trim() ? before_image_url.trim() : null;
+    }
     if (caption !== undefined) updates.caption = caption;
 
     if (Object.keys(updates).length === 0) {

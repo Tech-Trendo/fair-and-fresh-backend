@@ -83,6 +83,7 @@ export default async function Home() {
 
   const beforeAfterImagesData = dbBeforeAfter.map((img) => ({
     image_url: img.imageUrl,
+    before_image_url: img.beforeImageUrl || undefined,
     caption: img.caption || undefined,
   }));
 

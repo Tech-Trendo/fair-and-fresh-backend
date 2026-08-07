@@ -1,0 +1,1 @@
+ALTER TABLE "before_after_images" ADD COLUMN "before_image_url" text;

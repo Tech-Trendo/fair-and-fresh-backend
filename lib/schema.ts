@@ -213,6 +213,7 @@ export const contactMessages = pgTable('contact_messages', {
 // Before & After Images Table
 export const beforeAfterImages = pgTable('before_after_images', {
   id: text('id').primaryKey(),
+  beforeImageUrl: text('before_image_url'),
   imageUrl: text('image_url').notNull(),
   caption: text('caption'),
   sortOrder: integer('sort_order').default(0).notNull(),

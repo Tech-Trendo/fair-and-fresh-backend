@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { image_url, caption } = body;
+    const { image_url, before_image_url, caption } = body;
 
     if (!image_url || !image_url.trim()) {
       return NextResponse.json({ image_url: ['This field is required.'] }, { status: 400 });
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
     const newRecord = {
       id: newId,
       imageUrl: image_url.trim(),
+      beforeImageUrl: before_image_url && before_image_url.trim() ? before_image_url.trim() : null,
       caption: caption ? caption.trim() : null,
       sortOrder: 0,
       createdAt: new Date(),
