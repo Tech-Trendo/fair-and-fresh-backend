@@ -28,7 +28,7 @@ export function Services({ services }: { services: ServiceData[] }) {
   const filtered = services.filter((s) => s.homeSection === activeSection);
 
   return (
-    <section id="services" className="py-16 md:py-24 bg-background">
+    <section id="services" className="py-12 md:py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <FadeIn>

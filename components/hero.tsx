@@ -18,7 +18,7 @@ export type HeroContent = {
 
 export function Hero({ content }: { content: HeroContent }) {
   return (
-    <section className="relative bg-gradient-to-b from-blue-50/60 via-slate-50/40 to-background py-16 md:py-24 overflow-hidden border-b border-border/40">
+    <section className="relative bg-gradient-to-b from-blue-50/60 via-slate-50/40 to-background py-12 md:py-16 overflow-hidden border-b border-border/40">
       {/* Decorative ambient background glows */}
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 -left-24 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl pointer-events-none" />

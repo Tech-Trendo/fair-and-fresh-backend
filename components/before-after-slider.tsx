@@ -157,18 +157,15 @@ export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
   const activeImage = images[current];
 
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
           <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-4 py-1.5 rounded-full mb-4">
-            Proven Results
-          </span>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3 text-balance">
             Real Transformations: Before & After
-          </h2>
+          </span>
           <p className="text-base text-muted-foreground font-body max-w-2xl mx-auto">
-            Drag the handle to compare — see the remarkable difference our deep steam cleaning process brings to Brisbane carpets, tiles, and upholstery.
+            Transform your living space with our professional services in Brisbane. Experience the perfect blend of expertise and care that eliminates tough stains, odors, and allergens, restoring the comfort and freshness of your furniture. Let us make your house look and feel as good as new.
           </p>
         </div>
 

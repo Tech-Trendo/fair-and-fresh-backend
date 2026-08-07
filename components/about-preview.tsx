@@ -33,7 +33,7 @@ export function AboutPreview({
   ctaHref = "/about",
 }: AboutPreviewProps) {
   return (
-    <section id="about" className="py-16 md:py-24 bg-background">
+    <section id="about" className="py-12 md:py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left side - Image and inline stats */}
