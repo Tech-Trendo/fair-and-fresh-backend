@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
 import { formatService } from '@/lib/format-service';
 import { del } from '@vercel/blob';
+import { normalizeHomeSection } from '@/lib/home-sections';
 
 const deleteBlobFiles = async (urls: string[]) =>
   Promise.allSettled(
@@ -113,7 +114,9 @@ export async function PUT(
         longDescription: long_description || '',
         whatWeOffer: what_we_offer || {},
       slug: finalSlug,
-      homeSection: body.home_section || srv.homeSection || 'steam',
+      homeSection: body.home_section !== undefined && body.home_section !== null && body.home_section !== ''
+        ? normalizeHomeSection(body.home_section)
+        : normalizeHomeSection(srv.homeSection),
       metaTitle: meta_title || '',
         metaDescription: meta_description || '',
         metaKeywords: meta_keywords || '',
@@ -296,7 +299,9 @@ export async function PATCH(
     if (body.twitter_card !== undefined) updateObj.twitterCard = body.twitter_card;
     if (body.canonical_url !== undefined) updateObj.canonicalUrl = body.canonical_url;
     if (body.sort_order !== undefined && !isNaN(Number(body.sort_order))) updateObj.sortOrder = Number(body.sort_order);
-    if (body.home_section !== undefined) updateObj.homeSection = body.home_section;
+    if (body.home_section !== undefined && body.home_section !== null && body.home_section !== '') {
+      updateObj.homeSection = normalizeHomeSection(body.home_section);
+    }
 
     if (Object.keys(updateObj).length > 0) {
       await db.update(services).set(updateObj).where(eq(services.id, id));

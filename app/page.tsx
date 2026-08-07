@@ -8,9 +8,10 @@ import { CtaSection } from "@/components/cta-section";
 import { ServiceAreaMap } from "@/components/service-area-map";
 import { Footer } from "@/components/footer";
 import { db } from "@/lib/db";
-import { staticPages, beforeAfterImages } from "@/lib/schema";
+import { staticPages, beforeAfterImages, homeServiceCategories } from "@/lib/schema";
 import { eq, asc } from "drizzle-orm";
 import { getContentGroup } from "@/lib/site-content";
+import { normalizeHomeSection } from "@/lib/home-sections";
 import { BeforeAfterSlider } from "@/components/before-after-slider";
 
 // Revalidated on a schedule: site content (hero copy, images, services) only
@@ -72,8 +73,16 @@ export default async function Home() {
      icon: s.icon || undefined,
      shortDescription: s.shortDescription || "",
      category: s.servicesCategories.map((sc) => sc.category),
-     homeSection: s.homeSection || "steam",
+     homeSection: normalizeHomeSection(s.homeSection),
     }));
+
+  // Fetch home service categories (homepage section tabs), admin-managed
+  const dbHomeSections = await db
+    .select()
+    .from(homeServiceCategories)
+    .orderBy(asc(homeServiceCategories.sortOrder), asc(homeServiceCategories.title));
+
+  const homeSections = dbHomeSections.map((c) => ({ slug: c.slug, title: c.title }));
 
   // Fetch before/after images
   const dbBeforeAfter = await db
@@ -124,7 +133,7 @@ export default async function Home() {
       <HeaderWrapper />
       <Hero content={heroContent} />
       {servicesList.length > 0 && (
-        <Services services={servicesList} />
+        <Services services={servicesList} sections={homeSections} />
       )}
       <BeforeAfterSlider images={beforeAfterImagesData} />
       <AboutPreview

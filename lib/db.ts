@@ -177,7 +177,60 @@ export async function seedDatabase() {
     );
     console.log('🧹 Removed obsolete site content entries (components no longer on the site).');
 
-    // 3. Safely check if structural data (categories/services) is already seeded
+    // 3. Seed the default home service categories (homepage section groupings)
+    const homeCategoriesCount = await db
+      .select({ id: schema.homeServiceCategories.id })
+      .from(schema.homeServiceCategories)
+      .limit(1);
+    if (homeCategoriesCount.length === 0) {
+      await db.insert(schema.homeServiceCategories).values([
+        {
+          id: 'hsc-steam-cleaning',
+          title: 'Steam Cleaning',
+          slug: 'steam-cleaning',
+          sortOrder: 0,
+          description:
+            'Professional steam cleaning for carpets, upholstery, mattresses and more — deep cleaning that lifts dirt, stains and allergens from your fabrics.',
+          metaTitle: 'Steam Cleaning Brisbane | Carpet, Upholstery & Mattress Steam Cleaning',
+          metaDescription:
+            'Professional steam cleaning in Brisbane. Carpet, upholstery, mattress and rug steam cleaning that removes tough stains, odours and allergens. Get a free quote today.',
+          metaKeywords: 'steam cleaning Brisbane, carpet steam cleaning, upholstery steam cleaning, mattress steam cleaning',
+          ogTitle: 'Steam Cleaning Brisbane — Fair & Fresh Cleaning',
+          canonicalUrl: 'https://www.fairandfreshcleaning.com.au/home-services/steam-cleaning',
+        },
+        {
+          id: 'hsc-home-maintenance',
+          title: 'Home Maintenance',
+          slug: 'home-maintenance',
+          sortOrder: 1,
+          description:
+            'Practical home maintenance services that keep your Brisbane home in top shape — from lawn mowing to rubbish removal and general upkeep.',
+          metaTitle: 'Home Maintenance Brisbane | Lawn Mowing & Rubbish Removal',
+          metaDescription:
+            'Reliable home maintenance services across Brisbane. Lawn mowing, rubbish removal and general home upkeep from the team at Fair & Fresh Cleaning.',
+          metaKeywords: 'home maintenance Brisbane, lawn mowing Brisbane, rubbish removal Brisbane',
+          ogTitle: 'Home Maintenance Brisbane — Fair & Fresh Cleaning',
+          canonicalUrl: 'https://www.fairandfreshcleaning.com.au/home-services/home-maintenance',
+        },
+        {
+          id: 'hsc-specialized',
+          title: 'Specialized Cleaning & Restoration',
+          slug: 'specialized-cleaning-restoration',
+          sortOrder: 2,
+          description:
+            'Specialized cleaning and restoration for the jobs that need expert care — flood damage restoration, bond cleaning and more.',
+          metaTitle: 'Specialized Cleaning & Restoration Brisbane | Flood & Bond Cleaning',
+          metaDescription:
+            'Specialized cleaning and restoration services in Brisbane. Flood damage restoration, bond cleaning and specialist deep cleans from Fair & Fresh Cleaning.',
+          metaKeywords: 'specialized cleaning Brisbane, flood damage restoration Brisbane, bond cleaning Brisbane',
+          ogTitle: 'Specialized Cleaning & Restoration — Fair & Fresh Cleaning',
+          canonicalUrl: 'https://www.fairandfreshcleaning.com.au/home-services/specialized-cleaning-restoration',
+        },
+      ]);
+      console.log('🌱 Seeded default home service categories.');
+    }
+
+    // 4. Safely check if structural data (categories/services) is already seeded
     const categoriesCount = await db.select().from(schema.serviceCategories).limit(1);
     if (categoriesCount.length > 0) {
       return; // Safe exit: Content layout already exists, do not duplicate rows

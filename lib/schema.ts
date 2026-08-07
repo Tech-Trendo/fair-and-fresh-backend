@@ -58,6 +58,32 @@ export const serviceCategories = pgTable('service_categories', {
   metaRobots: text('meta_robots'),
 });
 
+// Home Service Categories Table (homepage section groupings — admin managed)
+export const homeServiceCategories = pgTable('home_service_categories', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description'),
+  image: text('image'),
+  slug: text('slug').unique().notNull(),
+  sortOrder: integer('sort_order').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+
+  // SEOMixin fields
+  metaTitle: text('meta_title'),
+  metaDescription: text('meta_description'),
+  metaKeywords: text('meta_keywords'),
+  ogTitle: text('og_title'),
+  ogDescription: text('og_description'),
+  ogImage: text('og_image'),
+  ogType: text('og_type').default('website'),
+  twitterTitle: text('twitter_title'),
+  twitterDescription: text('twitter_description'),
+  twitterImage: text('twitter_image'),
+  twitterCard: text('twitter_card').default('summary_large_image'),
+  canonicalUrl: text('canonical_url'),
+  metaRobots: text('meta_robots'),
+});
+
 
 // Blogs Table
 export const blogs = pgTable('blogs', {

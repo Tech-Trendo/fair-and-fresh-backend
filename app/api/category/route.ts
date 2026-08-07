@@ -1,16 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, slugify } from '@/lib/db';
-import { blogCategories, serviceCategories } from '@/lib/schema';
+import { blogCategories, serviceCategories, homeServiceCategories } from '@/lib/schema';
 import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
 import { formatCategory } from '@/lib/format-category';
+import { sql } from 'drizzle-orm';
+
+type CategoryTable = typeof serviceCategories | typeof blogCategories | typeof homeServiceCategories;
+
+function categoryTable(type: string): CategoryTable {
+  if (type === 'blog') return blogCategories;
+  if (type === 'home') return homeServiceCategories;
+  return serviceCategories;
+}
 
 export async function GET(request: NextRequest) {
   try {
     const type = request.nextUrl.searchParams.get('type') || 'service';
-    const categoriesList = type === 'blog'
-      ? await db.select().from(blogCategories)
-      : await db.select().from(serviceCategories);
+    const targetTable = categoryTable(type);
+
+    const categoriesList = type === 'home'
+      ? await db.select().from(targetTable).orderBy(sql`sort_order asc, title asc`)
+      : await db.select().from(targetTable);
 
     const formattedCategories = categoriesList.map(formatCategory);
     const paginated = paginate(formattedCategories, request.nextUrl);
@@ -31,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     const type = request.nextUrl.searchParams.get('type') || 'service';
-    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
+    const targetTable = categoryTable(type);
 
     const body = await request.json();
     const {
@@ -63,7 +74,7 @@ export async function POST(request: NextRequest) {
     const newId = `cat-${Date.now()}`;
     const finalSlug = slug || slugify(title);
 
-    await db.insert(targetTable).values({
+    const baseValues = {
       id: newId,
       title,
       description: description || '',
@@ -81,7 +92,18 @@ export async function POST(request: NextRequest) {
       twitterImage: twitter_image || '',
       twitterCard: twitter_card || 'summary_large_image',
       canonicalUrl: canonical_url || ''
-    });
+    };
+
+    let sortOrder = 0;
+    if (type === 'home') {
+      const maxResult = await db
+        .select({ maxOrder: sql<number>`coalesce(max(sort_order), 0)` })
+        .from(homeServiceCategories);
+      sortOrder = (maxResult[0]?.maxOrder ?? 0) + 1;
+      await db.insert(homeServiceCategories).values({ ...baseValues, sortOrder });
+    } else {
+      await db.insert(targetTable as typeof serviceCategories).values(baseValues);
+    }
 
     const newCategory = {
       id: newId,
@@ -89,6 +111,7 @@ export async function POST(request: NextRequest) {
       description: description || '',
       image: image || null,
       slug: finalSlug,
+      sort_order: sortOrder,
       meta_title: meta_title || '',
       meta_description: meta_description || '',
       meta_keywords: meta_keywords || '',

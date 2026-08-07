@@ -5,6 +5,7 @@ import { getAdminUser } from '@/lib/jwt';
 import { paginate } from '@/lib/pagination';
 import { eq, sql } from 'drizzle-orm';
 import { formatService } from '@/lib/format-service';
+import { normalizeHomeSection } from '@/lib/home-sections';
 
 // Public catalog only changes via the admin dashboard, so cache at the CDN;
 // the dashboard re-fetches after every write, so 5 min staleness is a non-issue.
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
       longDescription: long_description || '',
       whatWeOffer: what_we_offer || {},
       slug: finalSlug,
-      homeSection: body.home_section || 'steam',
+      homeSection: normalizeHomeSection(body.home_section),
       metaTitle: meta_title || '',
       metaDescription: meta_description || '',
       metaKeywords: meta_keywords || '',

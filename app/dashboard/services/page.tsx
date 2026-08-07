@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '@/lib/auth';
+import { DEFAULT_HOME_SECTIONS, normalizeHomeSection } from '@/lib/home-sections';
 
 const PAGE_SIZE = 10;
 
@@ -82,7 +83,8 @@ export default function ServicesPage() {
   const [metaRobots, setMetaRobots] = useState('');
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [allCategories, setAllCategories] = useState<{ id: string; title: string }[]>([]);
-  const [homeSection, setHomeSection] = useState<string>('steam');
+  const [allHomeCategories, setAllHomeCategories] = useState<{ id: string; title: string; slug: string }[]>([]);
+  const [homeSection, setHomeSection] = useState<string>('steam-cleaning');
 
   // Pagination states
   const [page, setPage] = useState(1);
@@ -123,6 +125,11 @@ export default function ServicesPage() {
         const data = await res.json();
         setAllCategories(data.results || []);
       }
+      const homeRes = await apiFetch('/api/category/?type=home');
+      if (homeRes.ok) {
+        const homeData = await homeRes.json();
+        setAllHomeCategories(homeData.results || []);
+      }
     } catch (err) {
       console.error('Failed to load categories', err);
     }
@@ -161,7 +168,7 @@ export default function ServicesPage() {
     setMetaRobots('');
     setIcon('Sparkles');
     setSelectedCategoryIds([]);
-    setHomeSection('steam');
+    setHomeSection(allHomeCategories[0]?.slug || DEFAULT_HOME_SECTIONS[0].slug);
     sortOrderTouchedRef.current = false;
 
     setActiveTab('general');
@@ -237,7 +244,7 @@ export default function ServicesPage() {
     setMetaRobots(srv.meta_robots || '');
     setIcon(srv.icon || 'Sparkles');
     setSelectedCategoryIds((srv.categories || []).map((cat) => cat.id));
-    setHomeSection(srv.home_section || 'steam');
+    setHomeSection(normalizeHomeSection(srv.home_section));
     sortOrderTouchedRef.current = false;
  
     setActiveTab('general');
@@ -802,17 +809,19 @@ export default function ServicesPage() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Homepage Section</label>
+                    <label className="text-[11px] font-semibold text-[#4B5563] uppercase tracking-wider">Home Service Category</label>
                     <select
                       value={homeSection}
                       onChange={(e) => setHomeSection(e.target.value)}
                       className="w-full rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3.5 py-2 text-xs text-[#111827] outline-hidden focus:border-zinc-400 focus:bg-white cursor-pointer"
                     >
-                      <option value="steam">Steam Cleaning</option>
-                      <option value="maintenance">Home Maintenance</option>
-                      <option value="specialized">Specialized Cleaning & Restoration</option>
+                      {(allHomeCategories.length > 0 ? allHomeCategories : DEFAULT_HOME_SECTIONS).map((cat) => (
+                        <option key={cat.slug} value={cat.slug}>
+                          {cat.title}
+                        </option>
+                      ))}
                     </select>
-                    <p className="text-[10px] text-[#9CA3AF]">Which section this service appears under on the homepage.</p>
+                    <p className="text-[10px] text-[#9CA3AF]">Which homepage section this service appears under. Manage sections in Categories → Home Service Categories.</p>
                   </div>
 
                   <div className="flex flex-col gap-1.5">

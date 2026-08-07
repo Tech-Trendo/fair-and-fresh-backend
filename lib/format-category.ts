@@ -5,6 +5,7 @@ export function formatCategory(cat: any) {
     description: cat.description || '',
     image: cat.image || '',
     slug: cat.slug,
+    sort_order: cat.sortOrder ?? 0,
     meta_title: cat.metaTitle || '',
     meta_description: cat.metaDescription || '',
     meta_keywords: cat.metaKeywords || '',

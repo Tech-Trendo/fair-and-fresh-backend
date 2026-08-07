@@ -5,12 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
 import { useState } from "react";
+import { DEFAULT_HOME_SECTIONS } from "@/lib/home-sections";
 
-const SECTIONS = [
-  { key: "steam", label: "Steam Cleaning" },
-  { key: "maintenance", label: "Home Maintenance" },
-  { key: "specialized", label: "Specialized Cleaning & Restoration" },
-] as const;
+export interface ServiceSection {
+  slug: string;
+  title: string;
+}
 
 export interface ServiceData {
   name: string;
@@ -22,8 +22,9 @@ export interface ServiceData {
   homeSection?: string;
 }
 
-export function Services({ services }: { services: ServiceData[] }) {
-  const [activeSection, setActiveSection] = useState("steam");
+export function Services({ services, sections = [] }: { services: ServiceData[]; sections?: ServiceSection[] }) {
+  const resolvedSections = sections.length > 0 ? sections : [...DEFAULT_HOME_SECTIONS];
+  const [activeSection, setActiveSection] = useState(resolvedSections[0].slug);
 
   const filtered = services.filter((s) => s.homeSection === activeSection);
 
@@ -46,17 +47,17 @@ export function Services({ services }: { services: ServiceData[] }) {
         {/* Section Tabs */}
         <FadeIn delay={0.15}>
           <div className="flex flex-wrap justify-center gap-2 mb-10">
-            {SECTIONS.map((section) => (
+            {resolvedSections.map((section) => (
               <button
-                key={section.key}
-                onClick={() => setActiveSection(section.key)}
+                key={section.slug}
+                onClick={() => setActiveSection(section.slug)}
                 className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors cursor-pointer ${
-                  activeSection === section.key
+                  activeSection === section.slug
                     ? "bg-red-600 text-white"
                     : "bg-white text-foreground border border-border hover:bg-muted"
                 }`}
               >
-                {section.label}
+                {section.title}
               </button>
             ))}
           </div>

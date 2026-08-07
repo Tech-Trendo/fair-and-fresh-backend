@@ -18,6 +18,12 @@ const servicesMenu = [
   { name: "Flood Damage Restoration", href: "/services/flood-damage-restoration-brisbane" },
 ];
 
+const homeSectionLinks = [
+  { name: "Steam Cleaning", href: "/home-services/steam-cleaning" },
+  { name: "Home Maintenance", href: "/home-services/home-maintenance" },
+  { name: "Specialized Cleaning & Restoration", href: "/home-services/specialized-cleaning-restoration" },
+];
+
 export function Header({ logoUrl, phone }: { logoUrl?: string; phone?: string }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
@@ -62,7 +68,7 @@ export function Header({ logoUrl, phone }: { logoUrl?: string; phone?: string })
             name: srv.name,
             href: `/services/${srv.slug}`,
           }));
-          setMenuItems(mapped);
+          setMenuItems([...homeSectionLinks, ...mapped]);
         }
       })
       .catch((err) => {

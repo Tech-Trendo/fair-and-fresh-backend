@@ -90,7 +90,7 @@ function ReviewCard({ review }: { review: Review }) {
         </svg>
       </div>
       {/* Quote text */}
-      <p className="text-sm text-muted-foreground font-body leading-relaxed flex-grow mb-4">
+      <p className="text-sm text-muted-foreground font-body leading-relaxed flex-grow mb-4 line-clamp-4">
         &ldquo;{review.text}&rdquo;
       </p>
       {/* Author info */}

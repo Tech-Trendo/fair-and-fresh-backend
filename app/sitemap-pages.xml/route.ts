@@ -18,7 +18,7 @@ function toAbsoluteUrl(pathOrUrl: string): string {
 }
 
 export async function GET() {
-  const [dbCategories, dbBlogCategories, dbBlogs] = await Promise.all([
+  const [dbCategories, dbBlogCategories, dbBlogs, dbHomeCategories] = await Promise.all([
     db.query.serviceCategories.findMany({
       columns: { slug: true, canonicalUrl: true, metaRobots: true },
     }),
@@ -27,6 +27,9 @@ export async function GET() {
     }),
     db.query.blogs.findMany({
       columns: { slug: true, createdAt: true, canonicalUrl: true, metaRobots: true },
+    }),
+    db.query.homeServiceCategories.findMany({
+      columns: { slug: true, canonicalUrl: true, metaRobots: true },
     }),
   ]);
 
@@ -67,7 +70,16 @@ export async function GET() {
       priority: 0.7,
     }));
 
-  const entries = [...staticPages, ...categoryPages, ...blogCategoryPages, ...blogPages]
+  const homeCategoryPages = dbHomeCategories
+    .filter((c) => isIndexable(c.metaRobots))
+    .map((c) => ({
+      url: toAbsoluteUrl(c.canonicalUrl || `/home-services/${c.slug}`),
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+
+  const entries = [...staticPages, ...categoryPages, ...homeCategoryPages, ...blogCategoryPages, ...blogPages]
     .map(
       (e) =>
         `<url><loc>${e.url}</loc><lastmod>${(e.lastModified ?? new Date()).toISOString()}</lastmod><changefreq>${e.changeFrequency}</changefreq><priority>${e.priority}</priority></url>`

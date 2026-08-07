@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, slugify } from '@/lib/db';
-import { blogCategories, serviceCategories } from '@/lib/schema';
+import { blogCategories, serviceCategories, homeServiceCategories } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { getAdminUser } from '@/lib/jwt';
 import { formatCategory } from '@/lib/format-category';
+
+type CategoryTable = typeof serviceCategories | typeof blogCategories | typeof homeServiceCategories;
+
+function categoryTable(type: string): CategoryTable {
+  if (type === 'blog') return blogCategories;
+  if (type === 'home') return homeServiceCategories;
+  return serviceCategories;
+}
 
 export async function GET(
   request: NextRequest,
@@ -12,7 +20,7 @@ export async function GET(
   try {
     const { id } = await params;
     const type = request.nextUrl.searchParams.get('type') || 'service';
-    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
+    const targetTable = categoryTable(type);
 
     const result = await db.select().from(targetTable).where(eq(targetTable.id, id)).limit(1);
     const category = result[0];
@@ -42,7 +50,7 @@ export async function PUT(
 
     const { id } = await params;
     const type = request.nextUrl.searchParams.get('type') || 'service';
-    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
+    const targetTable = categoryTable(type);
 
     const body = await request.json();
     const {
@@ -105,6 +113,7 @@ export async function PUT(
       description: description || '',
       image: image || null,
       slug: finalSlug,
+      sort_order: 'sortOrder' in check[0] ? (check[0].sortOrder ?? 0) : 0,
       meta_title: meta_title || '',
       meta_description: meta_description || '',
       meta_keywords: meta_keywords || '',
@@ -141,7 +150,7 @@ export async function PATCH(
 
     const { id } = await params;
     const type = request.nextUrl.searchParams.get('type') || 'service';
-    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
+    const targetTable = categoryTable(type);
 
     const body = await request.json();
 
@@ -203,7 +212,7 @@ export async function DELETE(
 
     const { id } = await params;
     const type = request.nextUrl.searchParams.get('type') || 'service';
-    const targetTable = type === 'blog' ? blogCategories : serviceCategories;
+    const targetTable = categoryTable(type);
 
     const check = await db.select().from(targetTable).where(eq(targetTable.id, id)).limit(1);
     if (check.length === 0) {

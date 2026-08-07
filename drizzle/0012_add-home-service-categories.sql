@@ -1,0 +1,23 @@
+CREATE TABLE "home_service_categories" (
+	"id" text PRIMARY KEY NOT NULL,
+	"title" text NOT NULL,
+	"description" text,
+	"image" text,
+	"slug" text NOT NULL,
+	"sort_order" integer DEFAULT 0 NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"meta_title" text,
+	"meta_description" text,
+	"meta_keywords" text,
+	"og_title" text,
+	"og_description" text,
+	"og_image" text,
+	"og_type" text DEFAULT 'website',
+	"twitter_title" text,
+	"twitter_description" text,
+	"twitter_image" text,
+	"twitter_card" text DEFAULT 'summary_large_image',
+	"canonical_url" text,
+	"meta_robots" text,
+	CONSTRAINT "home_service_categories_slug_unique" UNIQUE("slug")
+);

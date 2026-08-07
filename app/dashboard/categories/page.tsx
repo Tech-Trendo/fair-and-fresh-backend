@@ -25,7 +25,7 @@ interface Category {
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryType, setCategoryType] = useState<'service' | 'blog'>('service');
+  const [categoryType, setCategoryType] = useState<'service' | 'blog' | 'home'>('service');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -127,7 +127,7 @@ export default function CategoriesPage() {
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('folder', categoryType === 'service' ? 'service' : 'blog');
+    formData.append('folder', categoryType === 'blog' ? 'blog' : 'service');
 
     try {
       const res = await apiFetch('/api/upload/', {
@@ -225,7 +225,7 @@ export default function CategoriesPage() {
       <div className="flex justify-between items-center">
         <div className="flex flex-col gap-1">
           <h1 className="text-lg font-bold text-[#111827] tracking-tight">Categories</h1>
-          <p className="text-xs text-[#4B5563]">Manage {categoryType === 'service' ? 'service' : 'blog'} category directories.</p>
+          <p className="text-xs text-[#4B5563]">Manage {categoryType === 'home' ? 'homepage section' : categoryType === 'blog' ? 'blog' : 'service'} category directories.</p>
         </div>
         <button
           onClick={openCreateModal}
@@ -256,6 +256,16 @@ export default function CategoriesPage() {
           }`}
         >
           Blog Categories
+        </button>
+        <button
+          onClick={() => setCategoryType('home')}
+          className={`px-4 py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+            categoryType === 'home'
+              ? 'bg-[#2563EB] text-white shadow-xs'
+              : 'bg-white text-[#4B5563] border border-[#E5E7EB] hover:bg-[#F9FAFB]'
+          }`}
+        >
+          Home Service Categories
         </button>
       </div>
 
