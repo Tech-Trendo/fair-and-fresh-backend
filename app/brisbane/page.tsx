@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { ServiceAreaMap } from "@/components/service-area-map";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Clock, CheckCircle2, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -178,6 +179,9 @@ export default function BrisbanePage() {
             </FadeIn>
           </div>
         </section>
+
+        {/* Service Area Google Map */}
+        <ServiceAreaMap />
 
         {/* CTA */}
         <CtaSection />

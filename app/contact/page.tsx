@@ -1,6 +1,7 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { HeaderWrapper } from "@/components/header-wrapper";
 import { Footer } from "@/components/footer";
+import { ServiceAreaMap } from "@/components/service-area-map";
 import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Clock, MessageSquare, FileText, ArrowRight, CheckCircle2, Shield, Award } from "lucide-react";
 import Link from "next/link";
@@ -175,6 +176,7 @@ export default async function ContactPage() {
         </div>
       </section>
 
+      <ServiceAreaMap />
       <Footer />
     </main>
   );
