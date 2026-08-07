@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import postgres from 'postgres';
 import * as schema from './schema';
 import crypto from 'crypto';
@@ -99,7 +99,6 @@ export async function seedDatabase() {
       { id: 'sc-site-email', key: 'site_email', value: 'support@fairandfreshcleaning.com.au', label: 'Email Address', group: 'site_settings', type: 'text' },
       { id: 'sc-site-address', key: 'site_address', value: 'Brisbane and Surrounding Areas', label: 'Service Address', group: 'site_settings', type: 'text' },
       { id: 'sc-site-hours', key: 'site_business_hours', value: 'Monday - Sunday: 7AM - 7PM', label: 'Business Hours', group: 'site_settings', type: 'text' },
-      { id: 'sc-site-whatsapp', key: 'site_whatsapp', value: '+610430799567', label: 'WhatsApp Number', group: 'site_settings', type: 'text' },
       { id: 'sc-site-facebook', key: 'site_facebook', value: '#', label: 'Facebook URL', group: 'site_settings', type: 'text' },
       { id: 'sc-site-instagram', key: 'site_instagram', value: '#', label: 'Instagram URL', group: 'site_settings', type: 'text' },
       { id: 'sc-site-youtube', key: 'site_youtube', value: '#', label: 'YouTube URL', group: 'site_settings', type: 'text' },
@@ -109,19 +108,10 @@ export async function seedDatabase() {
       { id: 'sc-home-hero-title', key: 'home_hero_title', value: 'Professional Fabric Cleaning in <span class="text-primary">Brisbane</span>', label: 'Hero Title (HTML allowed)', group: 'home', type: 'textarea' },
       { id: 'sc-home-hero-desc', key: 'home_hero_description', value: 'Expert cleaning services for carpets, mattresses, rugs, upholstery, curtains, and car seats in Brisbane. Fair pricing, fresh results.', label: 'Hero Description', group: 'home', type: 'textarea' },
       { id: 'sc-home-promo', key: 'home_promo_text', value: 'Get 20% OFF on same day booking!', label: 'Promo Banner Text', group: 'home', type: 'text' },
-      { id: 'sc-home-rating', key: 'home_rating_text', value: '4.9/5 Rating', label: 'Rating Text', group: 'home', type: 'text' },
-      { id: 'sc-home-stats-label', key: 'home_stats_label', value: 'Happy Customers', label: 'Stats Badge Label', group: 'home', type: 'text' },
-      { id: 'sc-home-stats-value', key: 'home_stats_value', value: '500+', label: 'Stats Badge Value', group: 'home', type: 'text' },
       { id: 'sc-home-hero-image', key: 'home_hero_image', value: '/professional-carpet-cleaning-service-in-modern-hom.jpg', label: 'Hero Image', group: 'home', type: 'image' },
       { id: 'sc-home-about-image', key: 'home_about_image', value: '/professional-cleaning-team-with-equipment-in-brisb.jpg', label: 'About Section Image', group: 'home', type: 'image' },
       { id: 'sc-home-about-heading', key: 'home_about_heading', value: "Brisbane's Most Trusted Fabric Cleaning Specialists", label: 'About Section Heading', group: 'home', type: 'text' },
       { id: 'sc-home-about-desc', key: 'home_about_description', value: 'For over 15 years, we have been transforming homes and businesses across Brisbane with our professional fabric cleaning services. We combine cutting-edge technology with eco-friendly practices to deliver exceptional results.', label: 'About Section Description', group: 'home', type: 'textarea' },
-      { id: 'sc-home-about-years-val', key: 'home_about_years_value', value: '15', label: 'Years Stat Value', group: 'home', type: 'number' },
-      { id: 'sc-home-about-years-lbl', key: 'home_about_years_label', value: 'Years', label: 'Years Stat Label', group: 'home', type: 'text' },
-      { id: 'sc-home-about-clients-val', key: 'home_about_clients_value', value: '75', label: 'Clients Stat Value (number)', group: 'home', type: 'number' },
-      { id: 'sc-home-about-clients-lbl', key: 'home_about_clients_label', value: 'Brisbane Suburbs', label: 'Clients Stat Label', group: 'home', type: 'text' },
-      { id: 'sc-home-about-satisfaction-val', key: 'home_about_satisfaction_value', value: '6', label: 'Satisfaction Stat Value', group: 'home', type: 'number' },
-      { id: 'sc-home-about-satisfaction-lbl', key: 'home_about_satisfaction_label', value: 'Cleaning Services', label: 'Satisfaction Stat Label', group: 'home', type: 'text' },
       { id: 'sc-home-about-cta-text', key: 'home_about_cta_text', value: 'Learn More About Us', label: 'CTA Button Text', group: 'home', type: 'text' },
       { id: 'sc-about-badge', key: 'about_badge', value: "Brisbane's Trusted Fabric Care Experts", label: 'Hero Badge', group: 'about', type: 'text' },
       { id: 'sc-about-hero-title', key: 'about_hero_title', value: 'Where expertise meets\n<span class="block text-primary mt-2">pristine perfection</span>', label: 'Hero Title (HTML allowed)', group: 'about', type: 'textarea' },
@@ -167,6 +157,25 @@ export async function seedDatabase() {
         });
     }
     console.log('✅ Default site content synced (labels & types updated for existing entries).');
+
+    // 2b. Delete site content keys whose frontend components have been removed.
+    //     Targeted by key id so manually created CMS entries are never touched.
+    const removedSiteContentIds = [
+      'sc-site-whatsapp',
+      'sc-home-rating',
+      'sc-home-stats-label',
+      'sc-home-stats-value',
+      'sc-home-about-years-val',
+      'sc-home-about-years-lbl',
+      'sc-home-about-clients-val',
+      'sc-home-about-clients-lbl',
+      'sc-home-about-satisfaction-val',
+      'sc-home-about-satisfaction-lbl',
+    ];
+    await db.delete(schema.siteContent).where(
+      inArray(schema.siteContent.id, removedSiteContentIds)
+    );
+    console.log('🧹 Removed obsolete site content entries (components no longer on the site).');
 
     // 3. Safely check if structural data (categories/services) is already seeded
     const categoriesCount = await db.select().from(schema.serviceCategories).limit(1);
