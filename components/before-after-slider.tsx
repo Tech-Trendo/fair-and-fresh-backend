@@ -76,9 +76,8 @@ function BeforeAfterCompare({ image }: { image: SliderImage }) {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className={`relative w-full aspect-[4/3] sm:aspect-[16/10] max-h-[600px] select-none touch-none bg-background overflow-hidden ${
-        dragging ? 'cursor-ew-resize' : 'cursor-col-resize'
-      }`}
+      className={`relative w-full aspect-[4/3] sm:aspect-[16/10] max-h-[600px] select-none touch-none bg-background overflow-hidden ${dragging ? 'cursor-ew-resize' : 'cursor-col-resize'
+        }`}
     >
       {/* After image (base layer) */}
       <Image
@@ -160,11 +159,11 @@ export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
     <section className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <span className="inline-block bg-accent-tint text-primary text-xs font-nav px-4 py-1.5 rounded-full mb-4">
-            Real Transformations: Before & After
-          </span>
-          <p className="text-base text-muted-foreground font-body max-w-2xl mx-auto">
+        <div className="text-center max-w-5xl mx-auto mb-10">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading-bold text-foreground mb-3 text-balance">
+            Transform with Advanced Cleaning Expertise
+          </h2>
+          <p className="text-base text-muted-foreground font-body w-full max-w-[920px] mx-auto px-4">
             Transform your living space with our professional services in Brisbane. Experience the perfect blend of expertise and care that eliminates tough stains, odors, and allergens, restoring the comfort and freshness of your furniture. Let us make your house look and feel as good as new.
           </p>
         </div>
@@ -220,9 +219,8 @@ export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
                   <button
                     key={idx}
                     onClick={() => setCurrent(idx)}
-                    className={`h-3 rounded-full transition-all duration-200 ${
-                      idx === current ? 'w-8 bg-primary' : 'w-3 bg-border hover:bg-primary/50'
-                    }`}
+                    className={`h-3 rounded-full transition-all duration-200 ${idx === current ? 'w-8 bg-primary' : 'w-3 bg-border hover:bg-primary/50'
+                      }`}
                     aria-label={`Go to slide ${idx + 1}`}
                   />
                 ))}
