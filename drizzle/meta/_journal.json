@@ -78,6 +78,13 @@
       "when": 1786079463483,
       "tag": "0010_add-before-image-url",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1786082193999,
+      "tag": "0011_add-testimonial-location",
+      "breakpoints": true
     }
   ]
 }

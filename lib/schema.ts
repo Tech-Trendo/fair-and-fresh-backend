@@ -168,6 +168,7 @@ export const testimonials = pgTable('testimonials', {
   author: text('author').notNull(),
   content: text('content').notNull(),
   rating: integer('rating').default(5).notNull(),
+  location: text('location'),
 });
 
 // Blacklisted Tokens Table (JWT token blacklist)

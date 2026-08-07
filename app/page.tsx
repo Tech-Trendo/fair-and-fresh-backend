@@ -96,7 +96,7 @@ export default async function Home() {
 
   const testimonialsList = dbTestimonials.map((t) => ({
     name: t.author,
-    location: "Brisbane, QLD",
+    location: t.location || "Brisbane, QLD",
     rating: t.rating,
     text: t.content,
     service: t.service?.name || "Cleaning Service",
