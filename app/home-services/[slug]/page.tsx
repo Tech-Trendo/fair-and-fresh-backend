@@ -150,7 +150,7 @@ export default async function HomeServicesCategoryPage({ params }: PageProps) {
                     href={`/home-services/${sec.slug}`}
                     className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
                       sec.slug === slug
-                        ? "bg-red-600 text-white"
+                        ? "bg-accent text-white"
                         : "bg-white text-foreground border border-border hover:bg-muted"
                     }`}
                   >
@@ -170,7 +170,7 @@ export default async function HomeServicesCategoryPage({ params }: PageProps) {
                 <h3 className="text-base font-heading-bold text-foreground">No services configured yet</h3>
                 <p className="text-sm text-muted-foreground font-body mt-1">Please check back later or contact us directly.</p>
                 <div className="mt-5">
-                  <Link href="/contact" className="inline-flex items-center px-5 py-2.5 rounded-full bg-red-600 text-primary-foreground text-sm font-nav hover:bg-red-700 transition-colors">
+                  <Link href="/contact" className="inline-flex items-center px-5 py-2.5 rounded-full bg-accent text-primary-foreground text-sm font-nav hover:bg-accent-dark transition-colors">
                     Contact Support
                   </Link>
                 </div>

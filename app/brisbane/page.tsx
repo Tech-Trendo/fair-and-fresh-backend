@@ -63,10 +63,10 @@ export default function BrisbanePage() {
                 Professional carpet, mattress, upholstery, and rug cleaning services across Brisbane, Gold Coast, Sunshine Coast, and all Queensland regions.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button asChild size="lg" className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground px-8 font-nav text-base">
+                <Button asChild size="lg" className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground px-8 font-nav text-base">
                   <Link href="/quote">Get Free Quote <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="rounded-full border-red-600 text-red-600 hover:bg-red-600 hover:text-primary-foreground px-8 font-nav text-base bg-transparent">
+                <Button asChild size="lg" variant="outline" className="rounded-full border-accent text-accent hover:bg-accent hover:text-primary-foreground px-8 font-nav text-base bg-transparent">
                   <a href="tel:0430799567"><Phone className="mr-2 h-4 w-4" /> Call 0430 799 567</a>
                 </Button>
               </div>
@@ -155,7 +155,7 @@ export default function BrisbanePage() {
 
             <FadeIn className="mt-10 text-center">
               <p className="text-sm text-muted-foreground font-body mb-5">Don&apos;t see your suburb listed? We service many more areas across Queensland!</p>
-              <Button asChild size="lg" className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav">
+              <Button asChild size="lg" className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground font-nav">
                 <a href="tel:0430799567"><Phone className="mr-2 h-4 w-4" /> Call to Check Your Area</a>
               </Button>
             </FadeIn>

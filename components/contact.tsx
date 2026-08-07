@@ -193,7 +193,7 @@ export function Contact() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full text-base md:text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg bg-red-600 hover:bg-red-700 text-primary-foreground"
+                    className="w-full text-base md:text-lg transition-all duration-300 hover:scale-105 hover:shadow-lg bg-accent hover:bg-accent-dark text-primary-foreground"
                   >
                     Get Free Quote
                   </Button>
@@ -213,7 +213,7 @@ export function Contact() {
             <Button
               variant="outline"
               size="lg"
-              className="border-red-600 text-red-600 hover:bg-red-600 hover:text-primary-foreground bg-transparent"
+              className="border-accent text-accent hover:bg-accent hover:text-primary-foreground bg-transparent"
             >
               Visit Our Contact Page
             </Button>

@@ -210,7 +210,7 @@ export default function BlogIndexPage() {
                       onClick={() => handlePageChange(pageNum)}
                       className={`w-10 h-10 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         currentPage === pageNum
-                          ? "bg-red-600 text-primary-foreground shadow-md"
+                          ? "bg-accent text-primary-foreground shadow-md"
                           : "bg-card text-muted-foreground hover:bg-muted border border-border"
                       }`}
                     >

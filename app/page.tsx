@@ -115,7 +115,7 @@ export default async function Home() {
   const homeContent = await getContentGroup('home');
   const siteSettings = await getContentGroup('site_settings');
   const heroContent = {
-    title: homeContent.home_hero_title || 'Professional Fabric Cleaning in <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Brisbane</span>',
+    title: homeContent.home_hero_title || 'Professional Fabric Cleaning in <span class="text-primary">Brisbane</span>',
     description: homeContent.home_hero_description || "Carpet, mattress, rug, upholstery, and curtain cleaning across Brisbane. Straightforward pricing, thorough work, and results you can see — and feel.",
     promoText: homeContent.home_promo_text || "Same-day booking — 20% off",
     heroImage: homeContent.home_hero_image || "/placeholder.svg",

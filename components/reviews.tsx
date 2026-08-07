@@ -321,7 +321,7 @@ export function Reviews({ reviews: customReviews, services: customServicesOption
             <Button
               size="lg"
               onClick={() => setShowReviewForm(!showReviewForm)}
-className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-sm"
+className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground font-nav text-sm"
             >
               Leave a Review
             </Button>
@@ -362,7 +362,7 @@ className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font
                       <textarea rows={4} value={content} onChange={(e) => setContent(e.target.value)} required className="w-full p-2.5 border border-border rounded-lg text-sm text-foreground bg-background" placeholder="Tell us about your experience..."></textarea>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Button type="submit" disabled={isSubmitting} className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-sm">
+                      <Button type="submit" disabled={isSubmitting} className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground font-nav text-sm">
                         {isSubmitting ? "Submitting..." : "Submit Review"}
                       </Button>
                       <Button type="button" variant="outline" onClick={() => setShowReviewForm(false)} className="rounded-full border-border bg-transparent font-nav text-sm">

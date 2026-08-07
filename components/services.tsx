@@ -53,7 +53,7 @@ export function Services({ services, sections = [] }: { services: ServiceData[];
                 onClick={() => setActiveSection(section.slug)}
                 className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors cursor-pointer ${
                   activeSection === section.slug
-                    ? "bg-red-600 text-white"
+                    ? "bg-accent text-white"
                     : "bg-white text-foreground border border-border hover:bg-muted"
                 }`}
               >
@@ -101,7 +101,7 @@ export function Services({ services, sections = [] }: { services: ServiceData[];
           <Link href="/quote">
             <Button
               size="lg"
-              className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground px-8 font-nav text-base"
+              className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground px-8 font-nav text-base"
             >
               Get Free Quote
             </Button>

@@ -24,28 +24,28 @@ export function About() {
 
             <div className="grid sm:grid-cols-2 gap-6">
               <div className="flex items-center gap-3">
-                <Shield className="h-8 w-8 text-blue-600" />
+                <Shield className="h-8 w-8 text-primary" />
                 <div>
                   <div className="font-semibold">Transparent Pricing</div>
                   <div className="text-sm text-gray-600">Honest quotes, no hidden fees</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Award className="h-8 w-8 text-blue-600" />
+                <Award className="h-8 w-8 text-primary" />
                 <div>
                   <div className="font-semibold">Experienced Team</div>
                   <div className="text-sm text-gray-600">Trained and careful technicians</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Users className="h-8 w-8 text-blue-600" />
+                <Users className="h-8 w-8 text-primary" />
                 <div>
                   <div className="font-semibold">Locally Owned</div>
                   <div className="text-sm text-gray-600">Brisbane family business</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Clock className="h-8 w-8 text-blue-600" />
+                <Clock className="h-8 w-8 text-primary" />
                 <div>
                   <div className="font-semibold">Same Day Service</div>
                   <div className="text-sm text-gray-600">Quick response</div>
@@ -70,19 +70,19 @@ export function About() {
                 <h3 className="text-xl font-semibold mb-4">Why Choose Us?</h3>
                 <ul className="space-y-3 text-gray-600">
                   <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
                     <span>Advanced cleaning technology and eco-friendly products</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
                     <span>Transparent pricing with no hidden fees</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
                     <span>Thorough post-job inspection on every service</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
                     <span>Flexible scheduling including weekends</span>
                   </li>
                 </ul>

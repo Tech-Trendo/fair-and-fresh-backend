@@ -246,10 +246,10 @@ export default function QuotePage() {
             {[1, 2].map((step) => (
               <div key={step} className="flex items-center">
                 <div className="flex flex-col items-center gap-2">
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 font-heading-bold text-sm transition-all ${currentStep >= step ? "bg-red-600 border-red-600 text-primary-foreground shadow-sm shadow-red-600/20" : "bg-white border-border text-muted-foreground"}`}>{step}</div>
+                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 font-heading-bold text-sm transition-all ${currentStep >= step ? "bg-accent border-accent text-primary-foreground shadow-sm shadow-accent/20" : "bg-white border-border text-muted-foreground"}`}>{step}</div>
                   <span className="text-[10px] font-nav text-muted-foreground hidden sm:block">{step === 1 ? "Services" : "Contact Details"}</span>
                 </div>
-                {step < 2 && <div className={`w-12 md:w-20 h-0.5 mx-2 mt-[-1.5rem] transition-all ${currentStep > step ? "bg-red-600" : "bg-border"}`} />}
+                {step < 2 && <div className={`w-12 md:w-20 h-0.5 mx-2 mt-[-1.5rem] transition-all ${currentStep > step ? "bg-accent" : "bg-border"}`} />}
               </div>
             ))}
           </div>
@@ -263,9 +263,9 @@ export default function QuotePage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {activeServices.map((service) => (
                       <button key={service.id} onClick={() => toggleService(service.id)}
-                        className={`p-4 rounded-xl border-2 text-left transition-all relative hover:shadow-md hover:-translate-y-0.5 ${formData.services.includes(service.id) ? "border-red-600 bg-red-600/5 shadow-sm shadow-red-600/10" : "border-border hover:border-red-600/50 bg-white hover:bg-red-600/[0.02]"}`}>
+                        className={`p-4 rounded-xl border-2 text-left transition-all relative hover:shadow-md hover:-translate-y-0.5 ${formData.services.includes(service.id) ? "border-accent bg-accent/5 shadow-sm shadow-accent/10" : "border-border hover:border-accent/50 bg-white hover:bg-accent/[0.02]"}`}>
                         <div className="flex items-center gap-4"><span className="text-2xl">{service.icon}</span><span className="text-sm font-heading text-foreground">{service.name}</span></div>
-                        {formData.services.includes(service.id) && <div className="absolute top-2 right-2 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center shadow-sm"><Check className="w-3 h-3 text-white" /></div>}
+                        {formData.services.includes(service.id) && <div className="absolute top-2 right-2 w-5 h-5 bg-accent rounded-full flex items-center justify-center shadow-sm"><Check className="w-3 h-3 text-white" /></div>}
                       </button>
                     ))}
                   </div>
@@ -306,8 +306,8 @@ export default function QuotePage() {
                 <div className="flex flex-col sm:flex-row gap-3 justify-between">
 <Button onClick={handleBack} variant="outline" className="rounded-full border-border font-nav text-sm text-muted-foreground hover:text-foreground hover:bg-white/50 shadow-none"><ArrowLeft className="mr-2 h-4 w-4" /> Back</Button>
                       <div className="flex flex-col sm:flex-row gap-3">
-<Button asChild className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-sm px-5 shadow-md"><Link href="tel:0430799567"><Phone className="mr-2 h-4 w-4" /> Quick Call Quote</Link></Button>
-                        <Button onClick={handleSubmit} className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-sm px-7 shadow-md hover:shadow-lg transition-shadow">Submit Quote Request</Button>
+<Button asChild className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground font-nav text-sm px-5 shadow-md"><Link href="tel:0430799567"><Phone className="mr-2 h-4 w-4" /> Quick Call Quote</Link></Button>
+                        <Button onClick={handleSubmit} className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground font-nav text-sm px-7 shadow-md hover:shadow-lg transition-shadow">Submit Quote Request</Button>
                   </div>
                 </div>
               </div>
@@ -316,7 +316,7 @@ export default function QuotePage() {
 
           {/* Need Help */}
           <div className="mt-6 text-center text-sm text-muted-foreground font-body">
-            Need immediate assistance? <Link href="tel:0430799567" className="text-red-600 font-heading hover:underline">Call us at 0430 799 567</Link>
+            Need immediate assistance? <Link href="tel:0430799567" className="text-accent font-heading hover:underline">Call us at 0430 799 567</Link>
           </div>
         </div>
       </div>

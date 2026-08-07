@@ -248,7 +248,7 @@ export default async function SuburbPage({ params }: PageProps) {
                 <Button
                   asChild
                   size="lg"
-                  className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground px-8 font-nav text-base"
+                  className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground px-8 font-nav text-base"
                 >
                   <Link href="/quote">
                     Get Free Quote <ArrowRight className="ml-2 h-4 w-4" />
@@ -258,7 +258,7 @@ export default async function SuburbPage({ params }: PageProps) {
                   asChild
                   size="lg"
                   variant="outline"
-                  className="rounded-full border-red-600 text-red-600 hover:bg-red-600 hover:text-primary-foreground px-8 font-nav text-base bg-transparent"
+                  className="rounded-full border-accent text-accent hover:bg-accent hover:text-primary-foreground px-8 font-nav text-base bg-transparent"
                 >
                   <a href="tel:0430799567">
                     <Phone className="mr-2 h-4 w-4" /> Call 0430 799 567

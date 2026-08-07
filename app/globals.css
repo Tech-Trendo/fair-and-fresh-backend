@@ -111,6 +111,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   --color-accent-tint: #E8EDF5;
+  --color-accent-dark: #d92828;
 }
 
 @layer base {

@@ -156,7 +156,7 @@ export function Header({ logoUrl, phone }: { logoUrl?: string; phone?: string })
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center self-center">
-            <Button asChild className="bg-red-600 hover:bg-red-700 text-primary-foreground rounded-full px-5 py-2.5 font-nav text-sm leading-none">
+            <Button asChild className="bg-accent hover:bg-accent-dark text-primary-foreground rounded-full px-5 py-2.5 font-nav text-sm leading-none">
               <Link href="/quote">Get Free Quote</Link>
             </Button>
           </div>
@@ -247,7 +247,7 @@ export function Header({ logoUrl, phone }: { logoUrl?: string; phone?: string })
                     </svg>
                     {phoneNumber}
                   </a>
-                  <Button asChild className="w-full bg-red-600 hover:bg-red-700 text-primary-foreground rounded-full font-nav">
+                  <Button asChild className="w-full bg-accent hover:bg-accent-dark text-primary-foreground rounded-full font-nav">
                     <Link href="/quote" onClick={() => setIsMenuOpen(false)}>Get Free Quote</Link>
                   </Button>
                 </div>

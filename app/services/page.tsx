@@ -111,12 +111,12 @@ export default async function ServicesPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/quote">
-                <Button size="lg" className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground px-8 font-nav text-base">
+                <Button size="lg" className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground px-8 font-nav text-base">
                   Get Free Quote <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="tel:0430799567">
-                <Button size="lg" variant="outline" className="rounded-full border-red-600 text-red-600 hover:bg-red-600 hover:text-primary-foreground px-8 font-nav text-base bg-transparent">
+                <Button size="lg" variant="outline" className="rounded-full border-accent text-accent hover:bg-accent hover:text-primary-foreground px-8 font-nav text-base bg-transparent">
                   <Phone className="mr-2 h-4 w-4" /> 0430 799 567
                 </Button>
               </Link>
@@ -156,7 +156,7 @@ export default async function ServicesPage() {
                       ))}
                     </div>
                     <Link href={`/services/${service.slug}`}>
-                      <Button className="w-full rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-sm">
+                      <Button className="w-full rounded-full bg-accent hover:bg-accent-dark text-primary-foreground font-nav text-sm">
                         Learn More <ArrowRight className="ml-2 h-3.5 w-3.5" />
                       </Button>
                     </Link>
@@ -230,7 +230,7 @@ export default async function ServicesPage() {
             </FadeIn>
             <FadeIn delay={0.2} className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/quote">
-                <Button size="lg" className="rounded-full bg-white text-red-600 hover:bg-white/90 font-nav text-base px-8">
+                <Button size="lg" className="rounded-full bg-white text-accent hover:bg-white/90 font-nav text-base px-8">
                   Get Free Quote <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>

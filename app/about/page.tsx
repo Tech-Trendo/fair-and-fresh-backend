@@ -84,8 +84,8 @@ export default async function AboutPage() {
               <div><div className="text-2xl md:text-3xl font-heading-bold text-primary"><CountUp end={6} suffix="+" /></div><div className="text-xs text-muted-foreground font-body">Cleaning Services</div></div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/quote"><Button size="lg" className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-base">Get Your Free Quote</Button></Link>
-              <Link href="/services"><Button variant="outline" size="lg" className="rounded-full border-red-600 text-red-600 hover:bg-red-600 hover:text-primary-foreground font-nav text-base bg-transparent">Explore Our Services</Button></Link>
+              <Link href="/quote"><Button size="lg" className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground font-nav text-base">Get Your Free Quote</Button></Link>
+              <Link href="/services"><Button variant="outline" size="lg" className="rounded-full border-accent text-accent hover:bg-accent hover:text-primary-foreground font-nav text-base bg-transparent">Explore Our Services</Button></Link>
             </div>
           </FadeIn>
         </div>
@@ -224,8 +224,8 @@ export default async function AboutPage() {
             <h2 className="text-2xl md:text-3xl font-heading-bold text-foreground mb-3">{ctaTitle}</h2>
             <p className="text-sm text-muted-foreground font-body mb-6 max-w-xl mx-auto">{ctaDesc}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-5">
-              <Link href="/quote"><Button size="lg" className="rounded-full bg-red-600 hover:bg-red-700 text-primary-foreground font-nav text-base">Get Free Quote</Button></Link>
-              <Link href={`tel:${sitePhone.replace(/\s/g, '')}`}><Button variant="outline" size="lg" className="rounded-full border-red-600 text-red-600 hover:bg-red-600 hover:text-primary-foreground font-nav text-base bg-transparent"><Phone className="mr-2 h-4 w-4" /> Call {sitePhone}</Button></Link>
+              <Link href="/quote"><Button size="lg" className="rounded-full bg-accent hover:bg-accent-dark text-primary-foreground font-nav text-base">Get Free Quote</Button></Link>
+              <Link href={`tel:${sitePhone.replace(/\s/g, '')}`}><Button variant="outline" size="lg" className="rounded-full border-accent text-accent hover:bg-accent hover:text-primary-foreground font-nav text-base bg-transparent"><Phone className="mr-2 h-4 w-4" /> Call {sitePhone}</Button></Link>
             </div>
             <div className="flex flex-col sm:flex-row justify-center gap-5 text-xs text-muted-foreground font-body">
               <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-primary" /> {siteEmail}</span>

@@ -79,8 +79,8 @@ export function CtaSection() {
             style={{ x: glowX, y: glowY }}
             className="pointer-events-none absolute inset-0"
           >
-            <div className="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-indigo-300/30 blur-3xl" />
-            <div className="absolute -bottom-32 -right-24 h-96 w-96 rounded-full bg-sky-300/20 blur-3xl" />
+            <div className="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-primary/30 blur-3xl" />
+            <div className="absolute -bottom-32 -right-24 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
           </motion.div>
 
           {/* Floating soap bubbles (parallax layer) */}
