@@ -17,14 +17,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { staticPages, beforeAfterImages } from "@/lib/schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, or } from "drizzle-orm";
 import { BeforeAfterSlider } from "@/components/before-after-slider";
 import { getContentGroup } from "@/lib/site-content";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion-wrapper";
 
+// Revalidated on a schedule so dashboard SEO edits appear without a full rebuild.
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const page = await db.query.staticPages.findFirst({
-    where: eq(staticPages.slug, "services"),
+    where: or(eq(staticPages.slug, "services"), eq(staticPages.id, "services")),
   });
 
   if (!page) {

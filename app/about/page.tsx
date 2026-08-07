@@ -10,12 +10,15 @@ import Link from "next/link";
 import { FadeIn, SlideIn, StaggerContainer, StaggerItem, CountUp } from "@/components/motion-wrapper";
 import { db } from "@/lib/db";
 import { staticPages } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { getContentGroup } from "@/lib/site-content";
+
+// Revalidated on a schedule so dashboard SEO edits appear without a full rebuild.
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await db.query.staticPages.findFirst({
-    where: eq(staticPages.slug, "about-us"),
+    where: or(eq(staticPages.slug, "about-us"), eq(staticPages.id, "about")),
   });
   if (!page) return { title: "About Us" };
   return {

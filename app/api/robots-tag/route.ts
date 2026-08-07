@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { staticPages, services, blogs } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 
 // Robots rules only change when an admin edits a page's SEO settings, so a short
 // in-memory TTL cache is safe and avoids a Postgres round-trip per request.
@@ -35,22 +35,22 @@ export async function GET(request: NextRequest) {
 
     if (cleanPath === '/' || cleanPath === '') {
       const page = await db.query.staticPages.findFirst({
-        where: eq(staticPages.slug, 'home'),
+        where: or(eq(staticPages.slug, 'home'), eq(staticPages.id, 'home')),
       });
       metaRobots = page?.metaRobots || '';
     } else if (cleanPath === '/about' || cleanPath === '/about-us') {
       const page = await db.query.staticPages.findFirst({
-        where: eq(staticPages.slug, 'about-us'),
+        where: or(eq(staticPages.slug, 'about-us'), eq(staticPages.id, 'about')),
       });
       metaRobots = page?.metaRobots || '';
     } else if (cleanPath === '/contact' || cleanPath === '/contact-us') {
       const page = await db.query.staticPages.findFirst({
-        where: eq(staticPages.slug, 'contact-us'),
+        where: or(eq(staticPages.slug, 'contact-us'), eq(staticPages.id, 'contact')),
       });
       metaRobots = page?.metaRobots || '';
     } else if (cleanPath === '/services') {
       const page = await db.query.staticPages.findFirst({
-        where: eq(staticPages.slug, 'services'),
+        where: or(eq(staticPages.slug, 'services'), eq(staticPages.id, 'services')),
       });
       metaRobots = page?.metaRobots || '';
     } else if (cleanPath.startsWith('/services/')) {
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       metaRobots = service?.metaRobots || '';
     } else if (cleanPath === '/blog') {
       const page = await db.query.staticPages.findFirst({
-        where: eq(staticPages.slug, 'blog'),
+        where: or(eq(staticPages.slug, 'blog'), eq(staticPages.id, 'blog')),
       });
       metaRobots = page?.metaRobots || '';
     } else if (cleanPath.startsWith('/blog/')) {

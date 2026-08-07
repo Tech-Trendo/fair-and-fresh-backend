@@ -33,6 +33,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Plus, Pencil, Trash2, RefreshCw, Star, Link2, Unlink } from "lucide-react";
 
+const PAGE_SIZE = 10;
+
 const REGIONS = [
   "brisbane-city-inner",
   "brisbane-north",
@@ -113,6 +115,7 @@ export default function SuburbsPage() {
   // ── Suburbs ────────────────────────────────────────────────────────────
   const [suburbs, setSuburbs] = useState<SuburbRow[]>([]);
   const [loading, setLoading] = useState(true); // starts true: first fetch happens in the mount effect
+  const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<SuburbRow | null>(null);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState(emptySuburbForm);
@@ -122,6 +125,7 @@ export default function SuburbsPage() {
 
   // ── Copy blocks ────────────────────────────────────────────────────────
   const [blocks, setBlocks] = useState<CopyBlock[]>([]);
+  const [blockPage, setBlockPage] = useState(1);
   const [blockFilterType, setBlockFilterType] = useState<string>("");
   const [blockFilterBlock, setBlockFilterBlock] = useState<string>("");
   const [blockDialog, setBlockDialog] = useState<CopyBlock | null>(null);
@@ -142,7 +146,10 @@ export default function SuburbsPage() {
     apiFetch("/api/suburbs?all=true")
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error("Failed to load suburbs"))))
       .then((data) => {
-        if (!cancelled) setSuburbs(data.results || []);
+        if (!cancelled) {
+          setSuburbs(data.results || []);
+          setPage(1);
+        }
       })
       .catch((e: unknown) => {
         if (!cancelled) toast.error(errMessage(e));
@@ -162,6 +169,7 @@ export default function SuburbsPage() {
       if (!res.ok) throw new Error("Failed to load suburbs");
       const data = await res.json();
       setSuburbs(data.results || []);
+      setPage(1);
     } catch (e: unknown) {
       toast.error(errMessage(e));
     } finally {
@@ -178,7 +186,10 @@ export default function SuburbsPage() {
     apiFetch(`/api/suburb-copy-blocks?${params.toString()}`)
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error("Failed to load copy blocks"))))
       .then((data) => {
-        if (!cancelled) setBlocks(data.results || []);
+        if (!cancelled) {
+          setBlocks(data.results || []);
+          setBlockPage(1);
+        }
       })
       .catch((e: unknown) => {
         if (!cancelled) toast.error(errMessage(e));
@@ -197,6 +208,7 @@ export default function SuburbsPage() {
       if (!res.ok) throw new Error("Failed to load copy blocks");
       const data = await res.json();
       setBlocks(data.results || []);
+      setBlockPage(1);
     } catch (e: unknown) {
       toast.error(errMessage(e));
     }
@@ -418,6 +430,20 @@ export default function SuburbsPage() {
     { key: "reviews", label: "Link Reviews" },
   ];
 
+  const totalCount = suburbs.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const hasPrev = safePage > 1;
+  const hasNext = safePage < totalPages;
+  const pagedSuburbs = suburbs.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  const blockTotalCount = blocks.length;
+  const blockTotalPages = Math.max(1, Math.ceil(blockTotalCount / PAGE_SIZE));
+  const safeBlockPage = Math.min(blockPage, blockTotalPages);
+  const blockHasPrev = safeBlockPage > 1;
+  const blockHasNext = safeBlockPage < blockTotalPages;
+  const pagedBlocks = blocks.slice((safeBlockPage - 1) * PAGE_SIZE, safeBlockPage * PAGE_SIZE);
+
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -473,6 +499,7 @@ export default function SuburbsPage() {
 
       {/* ── Suburbs tab ── */}
       {tab === "suburbs" && (
+        <>
         <div className="bg-white rounded-lg border border-[#E5E7EB] shadow-xs overflow-hidden">
           <Table>
             <TableHeader>
@@ -487,7 +514,7 @@ export default function SuburbsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {suburbs.map((row) => (
+              {pagedSuburbs.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell className="font-medium">
                     {row.name}
@@ -541,6 +568,59 @@ export default function SuburbsPage() {
             </TableBody>
           </Table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalCount > PAGE_SIZE && (
+          <div className="flex items-center justify-between border border-[#E5E7EB] bg-white px-4 py-3 sm:px-6 rounded-lg shadow-xs">
+            <div className="flex flex-1 justify-between sm:hidden">
+              <button
+                type="button"
+                onClick={() => setPage(safePage - 1)}
+                disabled={!hasPrev || loading}
+                className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                onClick={() => setPage(safePage + 1)}
+                disabled={!hasNext || loading}
+                className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs text-[#4B5563]">
+                  Showing{" "}
+                  <span className="font-semibold">{Math.min((safePage - 1) * PAGE_SIZE + 1, totalCount)}</span> to{" "}
+                  <span className="font-semibold">{Math.min(safePage * PAGE_SIZE, totalCount)}</span> of{" "}
+                  <span className="font-semibold">{totalCount}</span> suburbs
+                </p>
+              </div>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setPage(safePage - 1)}
+                  disabled={!hasPrev || loading}
+                  className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPage(safePage + 1)}
+                  disabled={!hasNext || loading}
+                  className="inline-flex h-8 items-center justify-center rounded-md bg-[#2563EB] px-4 text-xs font-semibold text-white hover:bg-[#1D4ED8] cursor-pointer transition-colors disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        </>
       )}
 
       {/* ── Copy blocks tab ── */}
@@ -582,7 +662,7 @@ export default function SuburbsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {blocks.map((b) => (
+                {pagedBlocks.map((b) => (
                   <TableRow key={b.id}>
                     <TableCell className="text-xs">{b.regionType}</TableCell>
                     <TableCell>
@@ -627,6 +707,58 @@ export default function SuburbsPage() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination Controls */}
+          {blockTotalCount > PAGE_SIZE && (
+            <div className="flex items-center justify-between border border-[#E5E7EB] bg-white px-4 py-3 sm:px-6 rounded-lg shadow-xs">
+              <div className="flex flex-1 justify-between sm:hidden">
+                <button
+                  type="button"
+                  onClick={() => setBlockPage(safeBlockPage - 1)}
+                  disabled={!blockHasPrev}
+                  className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBlockPage(safeBlockPage + 1)}
+                  disabled={!blockHasNext}
+                  className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs text-[#4B5563]">
+                    Showing{" "}
+                    <span className="font-semibold">{Math.min((safeBlockPage - 1) * PAGE_SIZE + 1, blockTotalCount)}</span>{" "}
+                    to <span className="font-semibold">{Math.min(safeBlockPage * PAGE_SIZE, blockTotalCount)}</span> of{" "}
+                    <span className="font-semibold">{blockTotalCount}</span> copy blocks
+                  </p>
+                </div>
+                <div className="flex gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setBlockPage(safeBlockPage - 1)}
+                    disabled={!blockHasPrev}
+                    className="inline-flex h-8 items-center justify-center rounded-md border border-[#E5E7EB] bg-white px-4 text-xs font-semibold text-[#4B5563] hover:bg-[#F9FAFB] cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBlockPage(safeBlockPage + 1)}
+                    disabled={!blockHasNext}
+                    className="inline-flex h-8 items-center justify-center rounded-md bg-[#2563EB] px-4 text-xs font-semibold text-white hover:bg-[#1D4ED8] cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

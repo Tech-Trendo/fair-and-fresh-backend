@@ -9,7 +9,7 @@ import { ServiceAreaMap } from "@/components/service-area-map";
 import { Footer } from "@/components/footer";
 import { db } from "@/lib/db";
 import { staticPages, beforeAfterImages, homeServiceCategories } from "@/lib/schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, or } from "drizzle-orm";
 import { getContentGroup } from "@/lib/site-content";
 import { normalizeHomeSection } from "@/lib/home-sections";
 import { BeforeAfterSlider } from "@/components/before-after-slider";
@@ -22,7 +22,7 @@ export const revalidate = 60;
 // Dynamically generate homepage metadata from staticPages table in DB
 export async function generateMetadata(): Promise<Metadata> {
   const page = await db.query.staticPages.findFirst({
-    where: eq(staticPages.slug, "home"),
+    where: or(eq(staticPages.slug, "home"), eq(staticPages.id, "home")),
   });
 
   if (!page) {

@@ -9,12 +9,15 @@ import Image from "next/image";
 import { FadeIn, SlideIn, StaggerContainer, StaggerItem, CountUp } from "@/components/motion-wrapper";
 import { db } from "@/lib/db";
 import { staticPages } from "@/lib/schema";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { getContentGroup } from "@/lib/site-content";
 import { ContactForm } from "@/components/contact-form";
 
+// Revalidated on a schedule so dashboard SEO edits appear without a full rebuild.
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await db.query.staticPages.findFirst({ where: eq(staticPages.slug, "contact-us") });
+  const page = await db.query.staticPages.findFirst({ where: or(eq(staticPages.slug, "contact-us"), eq(staticPages.id, "contact")) });
   if (!page) return { title: "Contact Us" };
   return {
     title: page.metaTitle || "Contact Us",
