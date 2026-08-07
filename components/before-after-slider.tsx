@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeftRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -22,6 +22,7 @@ function clampPos(value: number) {
 
 function BeforeAfterCompare({ image }: { image: SliderImage }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
   const [pos, setPos] = useState(50);
   const [dragging, setDragging] = useState(false);
 
@@ -52,17 +53,21 @@ function BeforeAfterCompare({ image }: { image: SliderImage }) {
   }
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
+    draggingRef.current = true;
     setDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
     updateFromClientX(e.clientX);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragging) return;
+    if (!draggingRef.current) return;
     updateFromClientX(e.clientX);
   };
 
-  const handlePointerUp = () => setDragging(false);
+  const handlePointerUp = () => {
+    draggingRef.current = false;
+    setDragging(false);
+  };
 
   return (
     <div
@@ -71,7 +76,7 @@ function BeforeAfterCompare({ image }: { image: SliderImage }) {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className={`relative aspect-[4/3] sm:aspect-[16/10] select-none touch-none bg-background overflow-hidden ${
+      className={`relative w-full aspect-[4/3] sm:aspect-[16/10] max-h-[600px] select-none touch-none bg-background overflow-hidden ${
         dragging ? 'cursor-ew-resize' : 'cursor-col-resize'
       }`}
     >
@@ -109,7 +114,6 @@ function BeforeAfterCompare({ image }: { image: SliderImage }) {
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(pos)}
-          onPointerDown={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
             if (e.key === 'ArrowLeft') {
               e.preventDefault();
@@ -144,14 +148,6 @@ function BeforeAfterCompare({ image }: { image: SliderImage }) {
 
 export function BeforeAfterSlider({ images = [] }: { images?: SliderImage[] }) {
   const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    if (!images || images.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrent((c) => (c === images.length - 1 ? 0 : c + 1));
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [images]);
 
   if (!images || images.length === 0) return null;
 
